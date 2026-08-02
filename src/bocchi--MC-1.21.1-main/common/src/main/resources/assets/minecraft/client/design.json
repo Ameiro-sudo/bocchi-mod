@@ -1,0 +1,47 @@
+{
+  "_readme": "bocchi 设计模板 (Design Template). 复制本文件到材质包 assets/minecraft/client/design.json 即可替换整个设计. 想换哪项就改哪项, 其余自动回退到 mod 内置默认. 所有以 _ 开头的键是注释/说明, 加载时会忽略. 路径格式: namespace:path, 省略命名空间则默认 minecraft. 颜色格式: #AARRGGBB 或 #RRGGBB.",
+  "textures": {
+    "_comment": "位图资源: 背景/立绘/Logo/加载图",
+    "bocchi": "client/textures/bocchi.png",
+    "bocchi_loading": "client/textures/bocchi_loading.png",
+    "logo": "client/textures/logo.png",
+    "gotoh": "client/textures/gotoh.png",
+    "gotoh_image_1": "client/textures/gotoh_image_1.png",
+    "gotoh_image_2": "client/textures/gotoh_image_2.png"
+  },
+  "svgs": {
+    "_comment": "主菜单按钮图标 (SVG), 与按钮 icon 参数对应: lang/multi/option/quit/single",
+    "lang": "client/svgs/lang.svg",
+    "multi": "client/svgs/multi.svg",
+    "option": "client/svgs/option.svg",
+    "quit": "client/svgs/quit.svg",
+    "single": "client/svgs/single.svg",
+    "theme": "client/svgs/theme.svg"
+  },
+  "fonts": {
+    "_comment": "Skia 字体. 键 = FontSet 中的字体名 (区分大小写), 值 = ttf/otf 文件路径. 换同名字体直接换文件, 换路径改这里.",
+    "Radikal-Black": "client/fonts/radikal-black.ttf",
+    "Radikal-Regular": "client/fonts/radikal-regular.ttf",
+    "meiryo-bold": "client/fonts/meiryo-bold.ttf",
+    "SourceHanSansSC-Light": "client/fonts/sourcehansanssc-light.ttf",
+    "SourceHanSansSC-Regular": "client/fonts/sourcehansanssc-regular.ttf",
+    "SourceHanSansSC-Heavy": "client/fonts/sourcehansanssc-heavy.ttf",
+    "SourceHanSansSC-Normal": "client/fonts/sourcehansanssc-normal.ttf",
+    "SourceHanSansSC-Bold": "client/fonts/sourcehansanssc-bold.ttf"
+  },
+  "colors": {
+    "_comment": "设计色板, 代码内硬编码颜色已接入此表. 格式 #RRGGBB 或 #AARRGGBB",
+    "vinyl_edge": "#050505",
+    "vinyl_base": "#1A1A1A",
+    "vinyl_shine_1": "#33FFFFFF",
+    "vinyl_shine_2": "#1AFFFFFF",
+    "vinyl_shine_3": "#001A1A1A",
+    "vinyl_groove": "#1FFFFFFF",
+    "vinyl_label": "#981A1A1A"
+  },
+  "menu": {
+    "_comment": "主菜单主题: misayos (喜多郁代, 默认) / poulsen (后藤独). 材质包覆盖此项即可切换主题, 资源重载后生效",
+    "theme": "misayos"
+  }
+  }
+}

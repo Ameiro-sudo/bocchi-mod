@@ -1,0 +1,72 @@
+name: Build & Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: '构建哪些版本 (all / 1.21.1 / 1.21.5)'
+        required: false
+        default: 'all'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      GRADLE_OPTS: -Dorg.gradle.jvmargs="-Xmx3g"
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: gradle
+
+      - name: Build 1.21.5
+        if: ${{ inputs.version != '1.21.1' }}
+        working-directory: src/bocchi--MC-1.21.5-main
+        run: |
+          chmod +x gradlew
+          ./gradlew :fabric:build :neoforge:build --no-daemon
+
+      - name: Build 1.21.1
+        if: ${{ inputs.version != '1.21.5' }}
+        working-directory: src/bocchi--MC-1.21.1-main
+        run: |
+          chmod +x gradlew
+          ./gradlew :fabric:build :neoforge:build --no-daemon
+
+      - name: Publish release 1.21.5
+        if: ${{ inputs.version != '1.21.1' }}
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: '1.21.5'
+          name: 'Bocchi Client 1.21.5'
+          body: |
+            **Bocchi Client** - Minecraft 1.21.5
+
+            - Fabric: `bocchi-fabric-1.21.5-0.1.0.jar`（需要 fabric-api）
+            - NeoForge: `bocchi-neoforge-1.21.5-0.1.0-all.jar`
+
+          files: |
+            src/bocchi--MC-1.21.5-main/fabric/build/libs/bocchi-fabric-1.21.5-0.1.0.jar
+            src/bocchi--MC-1.21.5-main/neoforge/build/libs/bocchi-neoforge-1.21.5-0.1.0-all.jar
+
+      - name: Publish release 1.21.1
+        if: ${{ inputs.version != '1.21.5' }}
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: '1.21.1'
+          name: 'Bocchi Client 1.21.1'
+          body: |
+            **Bocchi Client** - Minecraft 1.21.1
+
+            - Fabric: `bocchi-fabric-1.21.1-0.1.0.jar`（需要 fabric-api）
+            - NeoForge: `bocchi-neoforge-1.21.1-0.1.0-all.jar`
+          files: |
+            src/bocchi--MC-1.21.1-main/fabric/build/libs/bocchi-fabric-1.21.1-0.1.0.jar
+            src/bocchi--MC-1.21.1-main/neoforge/build/libs/bocchi-neoforge-1.21.1-0.1.0-all.jar

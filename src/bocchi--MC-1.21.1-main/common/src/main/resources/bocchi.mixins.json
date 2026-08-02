@@ -1,0 +1,25 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "aka.bocchi.injection.mixins",
+  "refmap": "${mod_id}.refmap.json",
+  "compatibilityLevel": "JAVA_18",
+  "mixins": [],
+  "client": [
+    "interfaces.IAccessorMinecraft",
+    "interfaces.IAccessorTextureManager",
+    "transformers.MixinGameRenderer",
+    "transformers.MixinInGameHUD",
+    "transformers.MixinLocalPlayer",
+    "transformers.MixinMinecraftClient",
+    "transformers.MixinMouseHandler",
+    "transformers.MixinSplashOverlay",
+    "transformers.gui.screen.MixinScreen",
+    "transformers.gui.screen.MixinTitleScreen"
+  ],
+  "server": [],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
+
