@@ -10,18 +10,18 @@ public interface EventMonitor {
     return true;
   }
 
-  default <T extends Event> Void createMonitor(Class<? extends T> event, Consumer<T> consumer) {
-    return createMonitor(event, 0, consumer);
+  default <T extends Event> void createMonitor(Class<? extends T> event, Consumer<T> consumer) {
+    createMonitor(event, 0, consumer);
   }
 
   default EventManager getAssociatedEventManager() {
     return Bocchi.INSTANCE.getEventManager();
   }
 
-  default <T extends Event> Void createMonitor(
+  default <T extends Event> void createMonitor(
       Class<? extends T> event, int priority, Consumer<T> consumer) {
     EventManager manager = getAssociatedEventManager();
-    return manager.register(event, this, priority, consumer);
+    manager.register(event, this, priority, consumer);
   }
 
   default void invalidateMonitor() {

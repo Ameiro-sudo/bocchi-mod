@@ -8,7 +8,7 @@ import me.baier.client.mod.setting.SettingGroup;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.Collection;
 import java.util.Map;
 
 public enum Mods implements Saveable {
@@ -45,8 +45,8 @@ public enum Mods implements Saveable {
         }
     }
 
-    public final HashSet<Mod> getMods() {
-        return new HashSet<>(map.values());
+    public final Collection<Mod> getMods() {
+        return map.values();
     }
 
     @Override
