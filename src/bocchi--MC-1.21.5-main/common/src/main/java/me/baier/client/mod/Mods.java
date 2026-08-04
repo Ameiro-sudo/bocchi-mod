@@ -7,8 +7,8 @@ import me.baier.client.mod.setting.Setting;
 import me.baier.client.mod.setting.SettingGroup;
 
 import java.lang.reflect.Field;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 
 public enum Mods implements Saveable {
@@ -45,13 +45,13 @@ public enum Mods implements Saveable {
         }
     }
 
-    public final HashSet<Mod> getMods() {
-        return new HashSet<>(map.values());
+    public final Collection<Mod> getMods() {
+        return map.values();
     }
 
     @Override
     public JsonObject save(JsonObject json) {
-        // 直接将每个Mod作为根JSON对象的子项
+        // 直接将每个Mod作为根JSON对象的子节点
         for (var entry : map.entrySet()) {
             json.add(entry.getKey(), entry.getValue().save(new JsonObject()));
         }

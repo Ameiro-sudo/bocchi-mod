@@ -68,17 +68,15 @@ public class SplashUI implements EventMonitor {
     iLogoX = frame.getMidX() - iLogoW / 2;
     iLogoY = frame.getMidY() - fontHeight - frame.getSpacing();
     iLogoC = 0xFFFFFFFF;
+    createMonitor(
+        MouseClickEvent.class,
+        event -> {
+          if (waitingForInput) {
+            waitingForInput = false;
+            onBeginFadeOut();
+          }
+        });
   }
-
-  private final Void onMouseClick =
-      createMonitor(
-          MouseClickEvent.class,
-          event -> {
-            if (waitingForInput) {
-              waitingForInput = false;
-              onBeginFadeOut();
-            }
-          });
 
   public void onOKToFadeOut() {
     waitingForInput = true;

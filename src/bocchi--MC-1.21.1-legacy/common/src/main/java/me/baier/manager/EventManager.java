@@ -12,7 +12,7 @@ public class EventManager {
 
   private final HashMap<Class<?>, ArrayList<EventRegistry<?>>> registry = new HashMap<>();
 
-  public <T extends Event> Void register(
+  public <T extends Event> void register(
       Class<? extends T> event, EventMonitor monitor, int priority, Consumer<T> handler) {
     if (!registry.containsKey(event)) {
       registry.put(event, new ArrayList<>());
@@ -22,7 +22,6 @@ public class EventManager {
     EventRegistry<T> eventRegistry = new EventRegistry<>(monitor, priority, handler, false);
     handlers.add(eventRegistry);
     handlers.sort(Comparator.comparingInt(EventRegistry::getPriority));
-    return null;
   }
 
   public void invalidateMonitor(EventMonitor monitor) {
