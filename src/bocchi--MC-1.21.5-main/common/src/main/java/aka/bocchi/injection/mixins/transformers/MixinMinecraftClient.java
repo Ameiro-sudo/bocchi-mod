@@ -49,10 +49,13 @@ public abstract class MixinMinecraftClient {
   private void hookReloadResourcePacks(CallbackInfoReturnable<CompletableFuture<Void>> info) {
     info.getReturnValue()
         .thenRun(
-            () -> {
-              Design.reload();
-              SkiaRenderEngine.clearTextureCache();
-            });
+            () ->
+                Minecraft.getInstance()
+                    .execute(
+                        () -> {
+                          Design.reload();
+                          SkiaRenderEngine.clearTextureCache();
+                        }));
   }
 
   @ModifyVariable(method = "setScreen", at = @At("HEAD"), argsOnly = true, index = 1)

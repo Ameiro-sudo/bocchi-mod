@@ -2,6 +2,7 @@ package me.baier.utils;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.Optional;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
@@ -15,6 +16,12 @@ public final class ResPack {
     try (InputStream in = open(res, classpathFallback)) {
       return in.readAllBytes();
     }
+  }
+
+  /** 返回该资源在资源包栈中的全部版本 (低优先级在前, 高优先级在后), 栈为空时返回空列表. */
+  public static List<Resource> getAll(ResourceLocation res) {
+    ResourceManager manager = getManager();
+    return manager != null ? manager.getResourceStack(res) : List.of();
   }
 
   public static InputStream open(ResourceLocation res, String classpathFallback) throws IOException {

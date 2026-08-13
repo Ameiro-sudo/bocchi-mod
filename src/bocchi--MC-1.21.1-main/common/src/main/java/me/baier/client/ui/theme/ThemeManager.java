@@ -82,6 +82,16 @@ public final class ThemeManager {
     }
   }
 
+  /** 清除持久化主题, 回到 design.json "menu.theme" (材质包可覆盖). */
+  public static void reset() {
+    persisted = null;
+    try {
+      Files.deleteIfExists(getThemeFile());
+    } catch (Exception e) {
+      // 删除失败不致命, 下次 set 会覆盖
+    }
+  }
+
   /** 切换到下一个主题 (注册顺序), 返回切换后的主题. */
   public static Theme toggle() {
     String current = currentId();

@@ -17,6 +17,7 @@ _archive/
 bocchi--MC-1.21.5-main-与原版差异.md
 
 # 已删除的顶层文件（历史移除，防止误加回）
+src/bocchi--MC-1.21.1-legacy/
 CHANGELOG.md
 来源.txt
 版本.txt

@@ -41,10 +41,13 @@ public abstract class MixinMinecraftClient {
   private void hookReloadResourcePacks(CallbackInfoReturnable<CompletableFuture<Void>> info) {
     info.getReturnValue()
         .thenRun(
-            () -> {
-              Design.reload();
-              SkiaRenderEngine.clearTextureCache();
-            });
+            () ->
+                Minecraft.getInstance()
+                    .execute(
+                        () -> {
+                          Design.reload();
+                          SkiaRenderEngine.clearTextureCache();
+                        }));
   }
 
   @Inject(method = "resizeDisplay", at = @At("TAIL"))
