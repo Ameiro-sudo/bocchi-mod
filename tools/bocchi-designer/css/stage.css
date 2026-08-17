@@ -1,0 +1,122 @@
+/* ============================================================================
+ * stage.css — 预览舞台 (加载页 / misayos / poulsen) 与选中交互
+ * 布局数值全部来自 js/facts.js, 这里只负责定位方式与外观
+ * ==========================================================================*/
+@font-face { font-family: "SH Heavy"; src: url("../assets/fonts/sourcehansanssc-heavy.ttf"); }
+@font-face { font-family: "SH Regular"; src: url("../assets/fonts/sourcehansanssc-regular.ttf"); }
+@font-face { font-family: "SH Light"; src: url("../assets/fonts/sourcehansanssc-light.ttf"); }
+@font-face { font-family: "SH Normal"; src: url("../assets/fonts/sourcehansanssc-normal.ttf"); }
+@font-face { font-family: "SH Bold"; src: url("../assets/fonts/sourcehansanssc-bold.ttf"); }
+@font-face { font-family: "Radikal Black"; src: url("../assets/fonts/radikal-black.ttf"); }
+@font-face { font-family: "Radikal Regular"; src: url("../assets/fonts/radikal-regular.ttf"); }
+@font-face { font-family: "Meiryo"; src: local("Meiryo"), local("Yu Gothic"), local("Hiragino Kaku Gothic ProN"); }
+
+/* ===== 加载页 ===== */
+.splash-bg { position: absolute; inset: 0; background: var(--splash-bg); }
+.splash-logo img { filter: brightness(0) invert(1); image-rendering: pixelated; }
+.progress-track { position: absolute; height: 9.4px; border-radius: 15px; background: rgba(255,255,255,.15); }
+.progress-fill { height: 100%; border-radius: 15px; background: #fff; }
+.loading-icon { position: absolute; background-image: url("../assets/textures/bocchi_loading.png"); background-repeat: no-repeat; image-rendering: pixelated; }
+.tap-text { position: absolute; font-family: "Radikal Regular"; color: #fff; animation: tapBreathe 1s ease-in-out infinite; cursor: pointer; line-height: 1; }
+@keyframes tapBreathe { 0%,100% { opacity: .45; } 50% { opacity: 1; } }
+
+/* ===== misayos 主菜单 ===== */
+.misayos-bg { position: absolute; inset: 0; background: linear-gradient(180deg, var(--bg-top), var(--bg-bottom)); }
+.m-block { position: absolute; }
+.m-block1 { background: #FC67A7; }
+.m-stroke1 { position: absolute; height: 1px; background: #FB85AE; }
+.m-block3 { position: absolute; overflow: hidden; box-shadow: -15px 0 30px rgba(0,0,0,.17); }
+.m-block3-grad { position: absolute; inset: 0; background: linear-gradient(225deg, #F69DB2, #FF78BB); }
+.m-watermark { position: absolute; opacity: .07; object-fit: cover; object-position: 100% 100%; image-rendering: pixelated; pointer-events: none; }
+.m-dash { position: absolute; height: 1px; border-top: .5px dashed #fff; }
+.m-rectw { position: absolute; background: #fff; }
+.m-tachie { position: absolute; transform-origin: 38% 100%; }
+.m-tachie img { width: 100%; height: 100%; object-fit: contain; image-rendering: pixelated; }
+.m-record { position: absolute; border-radius: 50%; overflow: hidden; }
+.m-record > div { position: absolute; border-radius: 50%; }
+.m-record .edge { inset: 2%; background: var(--vinyl-edge); }
+.m-record .disc { inset: 2.96%; background: var(--vinyl-base); }
+.m-record .white { inset: 18.8%; background: rgba(255,255,255,.5); }
+.m-record .shine { inset: 2.96%; background: radial-gradient(circle at 54.7% 35.9%, var(--vinyl-shine-1) 0%, var(--vinyl-shine-2) 40%, var(--vinyl-shine-3) 100%); }
+.m-record .label { inset: 38.95%; background: var(--vinyl-label); }
+.m-record .grooves { inset: 2.96%; background: repeating-radial-gradient(circle closest-side at 50% 50%, transparent 0 0.64%, var(--vinyl-groove) 0.64% 0.90%); }
+.m-record .cover { inset: 18.8%; clip-path: circle(50% at 50% 50%); }
+.m-record .cover img { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); image-rendering: pixelated; }
+.m-record .ring { inset: 18.95%; border: 5px solid #fff; }
+.title-bocchi, .title-rock { position: absolute; font-family: "SH Heavy"; color: #fff; white-space: nowrap; line-height: 1; }
+.box-tag { position: absolute; background: #000; color: #fff; border-radius: 4px; white-space: nowrap; }
+.info-text { position: absolute; font-family: "SH Light"; color: #fff; white-space: nowrap; line-height: 1; }
+.social-phobia { position: absolute; font-family: "SH Regular"; color: #fff; white-space: nowrap; line-height: 1; }
+.menu-logo img { filter: brightness(0) invert(1); image-rendering: pixelated; }
+
+/* ===== misayos 侧栏面板 ===== */
+.menu-panel { position: absolute; background: #F5F5F5; box-shadow: 0 0 20px rgba(0,0,0,.25); }
+.menu-panel .border { position: absolute; left: 0; top: 0; width: 5px; height: 100%; background: #fff; }
+.panel-title { position: absolute; font-family: "SH Heavy"; color: #353535; white-space: nowrap; line-height: 1; }
+.panel-version { position: absolute; font-family: "SH Regular"; color: #353535; white-space: nowrap; line-height: 1; border: .5px solid #353535; border-radius: 3px; }
+.panel-line { position: absolute; height: 1px; background: rgba(53,53,53,.4); }
+.panel-branch { position: absolute; font-family: "SH Heavy"; color: #353535; white-space: nowrap; line-height: 1; }
+.panel-copyright { position: absolute; font-family: "SH Normal"; color: #353535; text-align: center; white-space: nowrap; line-height: 1; }
+.btn { position: absolute; border-radius: 4px; background: var(--btn-bg); color: #fff; font-family: "SH Bold"; display: flex; align-items: center; cursor: pointer; overflow: hidden; transition: background .3s cubic-bezier(.33,1,.68,1); }
+.btn .ic { width: 30%; height: 100%; display: flex; align-items: center; justify-content: center; }
+.btn .ic img { width: 60%; height: 60%; object-fit: contain; filter: brightness(0) invert(.75); image-rendering: pixelated; }
+.btn .txt { letter-spacing: .5px; white-space: nowrap; }
+.btn:hover { background: var(--accent); }
+.btn:hover .txt { color: #1a0f20; }
+.btn:hover .ic img { filter: brightness(0) invert(0); }
+.btn-icon { position: absolute; border-radius: 4px; background: var(--btn-bg); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background .3s cubic-bezier(.33,1,.68,1); }
+.btn-icon img { width: 55%; height: 55%; object-fit: contain; filter: brightness(0) invert(.75); image-rendering: pixelated; }
+.btn-icon:hover { background: var(--accent); }
+.btn-icon:hover img { filter: brightness(0) invert(0); }
+.dim-mask { position: absolute; inset: 0; background: rgba(0,0,0,.49); pointer-events: none; opacity: 0; transition: opacity .4s; }
+
+/* ===== poulsen 主菜单 ===== */
+.poulsen-bg { position: absolute; inset: 0; background: #fff; }
+.p-rect { position: absolute; }
+.p-rect-pink { background: #F567B4; }
+.p-rect-lpink { background: #F198D3; }
+.p-strip { position: absolute; background: #fff; }
+.p-bgimg { position: absolute; opacity: .18; transform: scaleX(-1); image-rendering: pixelated; }
+.p-bigtext { position: absolute; font-family: "Radikal Black"; white-space: nowrap; line-height: 1; }
+.p-square { position: absolute; background: #E95A9F; }
+.p-whitebox { position: absolute; background: #fff; }
+.p-whitebox img { position: absolute; object-fit: contain; image-rendering: pixelated; }
+.p-bar { position: absolute; background: #E95A9F; }
+.p-jtext { position: absolute; font-family: "Meiryo"; white-space: nowrap; line-height: 1; }
+.p-alias { position: absolute; font-family: "Meiryo"; color: #fff; white-space: nowrap; line-height: 1; }
+.p-addinfo { position: absolute; background: #000; }
+.p-addinfo div { position: absolute; white-space: nowrap; line-height: 1; }
+.p-dots { position: absolute; }
+.p-dots i { position: absolute; width: 5px; height: 5px; border-radius: 50%; background: #fff; }
+.p-circle { position: absolute; width: 7px; height: 7px; border-radius: 50%; }
+.p-tachie { position: absolute; }
+.p-tachie img { width: 100%; height: 100%; object-fit: contain; image-rendering: pixelated; }
+.p-btn { position: absolute; font-family: "Radikal Regular"; color: #000; white-space: nowrap; line-height: 1; cursor: pointer; padding: 6px 10px; }
+.p-btn:hover { background: rgba(233,90,159,.19); border-radius: 8px; color: #E95A9F; }
+
+/* ===== 选中框 ===== */
+#selBox {
+  position: absolute; border: 1px solid var(--ui-pink, #f062a8); pointer-events: none;
+  display: none; z-index: 60; border-radius: 2px;
+  box-shadow: 0 0 0 1px rgba(240, 98, 168, .25), 0 0 18px rgba(240, 98, 168, .25);
+}
+#selBox .sel-move { position: absolute; inset: 0; pointer-events: auto; cursor: move; }
+#selBox i {
+  position: absolute; width: 10px; height: 10px; background: #fff;
+  border: 2px solid var(--ui-pink, #f062a8); border-radius: 3px;
+  pointer-events: auto; z-index: 2; box-shadow: 0 1px 4px rgba(0,0,0,.5);
+  transition: transform .12s;
+}
+#selBox i:hover { transform: scale(1.25); }
+#selBox i.nw { left: -6px; top: -6px; cursor: nwse-resize; }
+#selBox i.n  { left: calc(50% - 5px); top: -6px; cursor: ns-resize; }
+#selBox i.ne { right: -6px; top: -6px; cursor: nesw-resize; }
+#selBox i.e  { right: -6px; top: calc(50% - 5px); cursor: ew-resize; }
+#selBox i.se { right: -6px; bottom: -6px; cursor: nwse-resize; }
+#selBox i.s  { left: calc(50% - 5px); bottom: -6px; cursor: ns-resize; }
+#selBox i.sw { left: -6px; bottom: -6px; cursor: nesw-resize; }
+#selBox i.w  { left: -6px; top: calc(50% - 5px); cursor: ew-resize; }
+
+/* 可选中的元素: hover 轮廓 + 手型 */
+[data-sel] { cursor: pointer; }
+[data-sel]:hover { outline: 1px dashed rgba(240, 98, 168, .8); outline-offset: 1px; }
