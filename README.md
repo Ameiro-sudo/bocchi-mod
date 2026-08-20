@@ -19,7 +19,7 @@
 - **Design 设计系统**：所有纹理 / SVG / 字体 / 配色路径集中管理于 `design.json`，材质包可覆盖、可热重载
 - **Theme 主题系统**：`misayos` / `poulsen` 双主题运行时切换，无需重新构建
 - **NeoForge 加载画面适配**：Fabric / NeoForge 行为一致
-- **一键构建全部变体**：`tools/build-all.ps1`
+- **一键构建全部变体**：`tools/build-all.py`（跨平台，仅需 Python 3）
 
 ---
 
@@ -32,11 +32,11 @@
 
 ```bash
 # ---------- 1.21.5 ----------
-cd src/bocchi--MC-1.21.5-main
+cd src/bocchi-1.21.5
 ./gradlew :fabric:build :neoforge:build
 
 # ---------- 1.21.1 ----------
-cd src/bocchi--MC-1.21.1-main
+cd src/bocchi-1.21.1
 ./gradlew :fabric:build :neoforge:build
 ```
 
@@ -45,33 +45,31 @@ cd src/bocchi--MC-1.21.1-main
 ### 一键构建全部变体
 
 ```bash
-powershell -ExecutionPolicy Bypass -File tools/build-all.ps1
+python tools/build-all.py
 ```
 
 可选参数：
 
 | 参数 | 说明 |
 |------|------|
-| `-Only1215` | 仅构建 1.21.5 |
-| `-Only1211` | 仅构建 1.21.1 |
+| `--only-1215` | 仅构建 1.21.5 |
+| `--only-1211` | 仅构建 1.21.1 |
 
-构建矩阵：版本 (1.21.1 / 1.21.5) × 加载器 (Fabric / NeoForge) × 按钮样式 (原版 / 圆角)。
+构建矩阵：版本 (1.21.1 / 1.21.5) × 加载器 (Fabric / NeoForge)
 
 ### 产物位置
 
+`tools/build-all.py` 构建后输出：
+
 ```
-成品/
+release/
 ├── 1.21.5/
 │   ├── fabric/
-│   │   ├── 原版/  bocchi-fabric-1.21.5-0.1.0.jar
-│   │   └── 圆角/  bocchi-fabric-1.21.5-0.1.0.jar
+│   │   └── vanilla/  bocchi-fabric-1.21.5-0.1.0.jar
 │   └── neoforge/
-│       ├── 原版/  bocchi-neoforge-1.21.5-0.1.0-all.jar
-│       └── 圆角/  bocchi-neoforge-1.21.5-0.1.0-all.jar
+│       └── vanilla/  bocchi-neoforge-1.21.5-0.1.0-all.jar
 ├── 1.21.1/
 │   └── ...
-├── bocchi-design-template-1.21.5.zip
-└── bocchi-design-template-1.21.1.zip
 ```
 
 ---
@@ -93,7 +91,7 @@ powershell -ExecutionPolicy Bypass -File tools/build-all.ps1
 
 主题是运行时选项，无需重新构建 jar：
 
-1. 将 `成品/bocchi-design-template-<version>.zip`（或其中的 `design.json`）复制到资源包 `assets/minecraft/client/design.json`
+1. 从 mod jar 中提取 `assets/minecraft/client/design.json`，放入资源包同路径
 2. 修改 `menu.theme` 字段为 `"misayos"` 或 `"poulsen"`
 3. 游戏内装载/重载资源包即可生效
 
@@ -105,7 +103,7 @@ powershell -ExecutionPolicy Bypass -File tools/build-all.ps1
 
 ### 快速开始
 
-1. 将 `成品/bocchi-design-template-<version>.zip` 复制到资源包文件夹并启用
+1. 从 mod jar 中提取 `assets/minecraft/client/` 到资源包（含完整设计模板）
 2. 或只复制 `design.json` 到 `assets/minecraft/client/design.json`，按需覆盖字段
 
 `_` 开头的键为注释，未覆盖的字段自动回退 mod 内置默认值。
@@ -131,7 +129,7 @@ powershell -ExecutionPolicy Bypass -File tools/build-all.ps1
 ```
 bocchi-mod/
 ├── src/
-│   ├── bocchi--MC-1.21.5-main/
+│   ├── bocchi-1.21.5/
 │   │   ├── common/src/main/
 │   │   │   ├── java/me/baier/
 │   │   │   │   ├── design/Design.java       # 设计资源管理器
@@ -144,14 +142,12 @@ bocchi-mod/
 │   │   │       ├── textures/ svgs/ fonts/ media/
 │   │   ├── fabric/                          # Fabric 入口 + 构建
 │   │   └── neoforge/                        # NeoForge 入口 + 构建
-│   └── bocchi--MC-1.21.1-main/              # 同上结构
+│   └── bocchi-1.21.1/              # 同上结构
 ├── tools/
-│   ├── build-all.ps1                        # 全变体一键构建
+│   ├── build-all.py                        # 全变体一键构建
 │   └── bocchi-designer/                     # Design Editor (Web UI)
-├── 成品/
-│   ├── bocchi-design-template-*.zip         # 资源包模板
-│   ├── 1.21.x/{fabric,neoforge}/{原版,圆角}/ # 预构建 jar
-│   └── 05UI/                                # UI 资源（圆角控件 / 字体位图）
+├── release/
+│   └── 1.21.x/{fabric,neoforge}/            # 预构建 jar（build-all.py 生成）
 └── .github/workflows/build-release.yml      # CI: 构建 + Release 发布
 ```
 
@@ -171,14 +167,8 @@ GitHub Actions workflow (`build-release.yml`) 支持手动触发：
 | 项目 | 作者 | 许可证 | 用途 |
 |------|------|--------|------|
 | [bocchi-template-1.21.5](https://github.com/baier233/bocchi-template-1.21.5) | baier233 | CC0-1.0 | 代码基础 |
-| [CozyUI-Plus](https://github.com/Fogg05/CozyUI-Plus) | Fogg05 | GPL-3.0 | 圆角控件纹理 |
-| [MCsans-Plus](https://github.com/Fogg05/MCsans-Plus) | Fogg05 | MIT | 高清字体位图 |
-| [Emoji-Plus](https://github.com/Fogg05/Emoji-Plus) | Fogg05 | MIT | FluentEmoji 表情位图 |
 
-> 永远怀念 05 老师 — R.I.P
-
----
 
 ## 许可证
 
-本项目基于 [CC0-1.0](https://creativecommons.org/publicdomain/zero/1.0/)（公有领域），第三方资源许可证见 `成品/许可证/` 目录。
+本项目基于 [CC0-1.0](https://creativecommons.org/publicdomain/zero/1.0/)（公有领域）的 [bocchi-template](https://github.com/baier233/bocchi-template-1.21.5) 构建，按 **CC0-1.0** 授权（见根目录 `LICENSE`）。

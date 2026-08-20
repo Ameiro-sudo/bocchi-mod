@@ -19,7 +19,7 @@ import argparse
 ROOT = os.path.dirname(os.path.abspath(__file__))
 FACTS_JS = os.path.join(ROOT, "..", "js", "facts.js")
 SRC_DIR = os.path.join(ROOT, "..", "..", "..", "src")
-JAVA_BASE = ("bocchi--MC-1.21.5-main", "bocchi--MC-1.21.1-main")
+JAVA_BASE = ("bocchi-1.21.5", "bocchi-1.21.1")
 JAVA_SUB = os.path.join("common", "src", "main", "java", "me", "baier", "client")
 
 # ---------------------------------------------------------------- 表达式求值
@@ -453,7 +453,7 @@ def main():
         sys.stdout.reconfigure(encoding="utf-8", errors="replace")
     ap = argparse.ArgumentParser()
     ap.add_argument("--json", action="store_true", help="JSON 输出 (便于 CI)")
-    ap.add_argument("--tree", default="bocchi--MC-1.21.5-main", choices=JAVA_BASE, help="检查哪个版本树 (默认 1.21.5)")
+    ap.add_argument("--tree", default="bocchi-1.21.5", choices=JAVA_BASE, help="检查哪个版本树 (默认 1.21.5)")
     args = ap.parse_args()
 
     groups = load_facts()
