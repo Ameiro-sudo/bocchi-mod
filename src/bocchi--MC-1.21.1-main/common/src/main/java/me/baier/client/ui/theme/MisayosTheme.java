@@ -28,7 +28,9 @@ public class MisayosTheme implements Theme {
 
   @Override
   public void beginFadeIn(Screen menu) {
-    ((MainMenuMisayosScreen) menu).onBeginFadeIn();
+    if (menu instanceof MainMenuMisayosScreen ms) {
+      ms.onBeginFadeIn();
+    }
   }
 
   @Override

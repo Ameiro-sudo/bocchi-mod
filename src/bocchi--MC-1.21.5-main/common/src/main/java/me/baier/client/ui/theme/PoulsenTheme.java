@@ -28,7 +28,9 @@ public class PoulsenTheme implements Theme {
 
   @Override
   public void beginFadeIn(Screen menu) {
-    ((MainMenuScreen) menu).onBeginFadeIn();
+    if (menu instanceof MainMenuScreen ms) {
+      ms.onBeginFadeIn();
+    }
   }
 
   @Override

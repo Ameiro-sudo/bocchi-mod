@@ -21,7 +21,15 @@ public enum Cfgs {
             .create();
 
     public void initialize() {
-        final var defaultCfgFile = Bocchi.INSTANCE.getBase().resolve("default.json").toFile();
+        Path cfgDir = Bocchi.INSTANCE.getBase().resolve("cfgs");
+        try {
+            Files.createDirectories(cfgDir);
+        } catch (IOException e) {
+            Bocchi.INSTANCE.getLogger().error("Failed to create config directory: {}", e.getMessage());
+            return;
+        }
+        // 默认配置写入 cfgs/ 目录, 与其他用户配置同目录, 启动时一起被加载
+        final var defaultCfgFile = cfgDir.resolve("default.json").toFile();
         final var defaultCfg = new Cfg("default");
         if (!defaultCfgFile.exists()) {
             try {
@@ -30,14 +38,13 @@ public enum Cfgs {
                         gson.toJson(defaultCfg.save(new JsonObject())),
                         "UTF-8"
                 );
-            }catch (IOException e) {
-                e.printStackTrace();
+            } catch (IOException e) {
+                Bocchi.INSTANCE.getLogger().error("Failed to write default config", e);
             }
         }
-        Path cfgDir = Bocchi.INSTANCE.getBase().resolve("cfgs");
-        if (!cfgDir.toFile().exists()) cfgDir.toFile().mkdirs();
         try (final var list = Files.list(cfgDir)) {
             list.filter(path -> path.toString().endsWith(".json"))
+                    .sorted()
                     .forEach(this::loadConfigFile);
         } catch (IOException e) {
             Bocchi.INSTANCE.getLogger().error("Failed to scan config directory: {}", e.getMessage());
@@ -45,12 +52,14 @@ public enum Cfgs {
     }
 
     private void loadConfigFile(Path filePath) {
-        try {
-            JsonObject json = gson.fromJson(
-                    Files.newBufferedReader(filePath),
-                    JsonObject.class
-            );
-            final String name = json.get("name").getAsString();
+        try (var reader = Files.newBufferedReader(filePath)) {
+            JsonObject json = gson.fromJson(reader, JsonObject.class);
+            if (json == null) {
+                return;
+            }
+            final String name = json.has("name")
+                    ? json.get("name").getAsString()
+                    : filePath.getFileName().toString();
             Cfg cfg = new Cfg(name);
             cfg.load(json);
 

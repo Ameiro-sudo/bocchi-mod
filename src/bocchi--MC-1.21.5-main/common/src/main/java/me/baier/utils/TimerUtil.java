@@ -13,7 +13,8 @@ public class TimerUtil {
   }
 
   public void resetMS() {
-    this.lastMS = System.nanoTime();
+    // 统一使用 currentTimeMillis, 与 passedS/passedMs/getPassedTimeMs 保持一致
+    this.lastMS = System.currentTimeMillis();
   }
 
   public boolean hasTimeElapsed(long time, boolean reset) {
@@ -30,11 +31,11 @@ public class TimerUtil {
   }
 
   public boolean passedS(double s) {
-    return getMs(System.nanoTime() - lastMS) >= (long) (s * 1000.0);
+    return System.currentTimeMillis() - lastMS >= (long) (s * 1000.0);
   }
 
   public boolean passedMs(long ms) {
-    return getMs(System.nanoTime() - lastMS) >= ms;
+    return System.currentTimeMillis() - lastMS >= ms;
   }
 
   public boolean hasTimeElapsed(long time) {
@@ -54,10 +55,6 @@ public class TimerUtil {
   }
 
   public long getPassedTimeMs() {
-    return getMs(System.nanoTime() - lastMS);
-  }
-
-  public long getMs(long time) {
-    return time / 1000000L;
+    return System.currentTimeMillis() - lastMS;
   }
 }

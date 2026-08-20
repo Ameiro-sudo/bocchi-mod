@@ -1,27 +1,16 @@
-# Gradle / IDE
 build/
 .gradle/
 .idea/
 *.iml
 .run/
 .vscode/
-
-# OS
 Thumbs.db
 Desktop.ini
-
-# 产物/归档（不提交）
 成品/
 unused-resources/
 _archive/
-bocchi--MC-1.21.5-main-与原版差异.md
-
-# 已删除的顶层文件（历史移除，防止误加回）
 src/bocchi--MC-1.21.1-legacy/
 CHANGELOG.md
-来源.txt
-版本.txt
-修改说明与原项目差异.md
 mc-full.txt
 mc-setScreen.txt
 pausescreen.txt
@@ -29,8 +18,5 @@ screen.txt
 selectworld.txt
 titlescreen.txt
 titlescreen-full.txt
-
-# 本地保留（不上传云端）
-tools/build-all.ps1
-src/bocchi--MC-1.21.1-main/来源.txt
-src/bocchi--MC-1.21.5-main/来源.txt
+__pycache__/
+*.pyc

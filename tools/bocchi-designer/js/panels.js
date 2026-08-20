@@ -4,7 +4,7 @@
 (function () {
   "use strict";
   const BD = (window.BD = window.BD || {});
-  const { $, set } = BD.core;
+  const { $, set, debounce, rafThrottle } = BD.core;
   const { S, DEFAULT_DESIGN, DEFAULT_TEXTS, buildDesignJSON, hexToCss } = BD.design;
   const state = BD.state;
 
@@ -17,6 +17,10 @@
     const pre = $("jsonPreview");
     if (pre) pre.textContent = JSON.stringify(buildDesignJSON(), null, 2);
   }
+  // M3: 高频变更 (滑杆拖动/画布拖拽) 聚合到单帧重排 + 延迟落盘
+  const scheduleRelayout = rafThrottle(() => { relayout(); BD.interactions.updateSelBox(); });
+  const scheduleSave = debounce(() => BD.design.saveState(), 250);
+  window.addEventListener("beforeunload", () => scheduleSave.flush());
 
   /* ---------- 折叠分区 ---------- */
   const controls = $("controls");
@@ -69,7 +73,10 @@
     lab.style.cursor = "pointer";
     const input = document.createElement("input");
     input.type = "range"; input.min = min; input.max = max; input.step = step || 1;
-    input.value = state.OV[key] != null ? state.OV[key] : def;
+    // L8: 持久化值可能越界, 载入时收敛到滑块范围
+    const saved = state.OV[key] != null ? Math.min(Math.max(+state.OV[key], +min), +max) : +def;
+    input.value = saved;
+    if (state.OV[key] != null && +state.OV[key] !== saved) state.OV[key] = saved;
     const val = document.createElement("span");
     val.className = "val" + (input.value == def ? " is-default" : "");
     val.textContent = input.value;
@@ -94,9 +101,8 @@
     state.OV[key] = v;
     if (val) { val.textContent = v; val.classList.toggle("is-default", v == SLIDERS[key].def); }
     if (SLIDERS[key].input) setFill(SLIDERS[key].input);
-    relayout();
-    BD.interactions.updateSelBox();
-    BD.design.saveState();
+    scheduleRelayout();
+    scheduleSave();
   }
   function setOV(key, v) {
     if (typeof v !== "number" || Number.isNaN(v)) return;
@@ -109,9 +115,8 @@
       s.val.classList.toggle("is-default", v == s.def);
       setFill(s.input);
     }
-    relayout();
-    BD.interactions.updateSelBox();
-    BD.design.saveState();
+    scheduleRelayout();
+    scheduleSave();
   }
   function resetOV() {
     for (const k of Object.keys(SLIDERS)) {
@@ -162,10 +167,12 @@
     input.addEventListener("change", () => {
       const f = input.files[0];
       if (!f) return;
-      S[sec][key].blob = f;
+      // M1: 替换 blob 前 revoke 旧 ObjectURL
+      BD.design.setBlob(sec, key, f);
       if (sec === "fonts") {
         const cssFam = BD.fonts.FONT_SET_NAME[key];
-        if (cssFam) new FontFace(cssFam, f).load().then(ff => { document.fonts.add(ff); relayout(); }).catch(() => {});
+        // M2: 先移除旧 face 再注册, 二次上传立即生效
+        if (cssFam) BD.fonts.replaceFace(cssFam, f).then(() => { relayout(); }).catch(() => {});
       }
       updateResName(sec, key);
       BD.preview.refreshPreviews();
@@ -246,11 +253,16 @@
     TEXT_INPUTS[elId] = { input, row };
   }
   const INNER_HTML_IDS = new Set(["mPhobia", "mInfo", "pJKana", "pCopy1", "pCopy2"]);
+  // L7: 仅放行 <br>, 其余标签/脚本转义, 消除自我 XSS 面
+  function escapeHtml(s) {
+    return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
   function applyText(elId, html) {
     const el = $(elId);
     if (!el) return;
-    if (INNER_HTML_IDS.has(elId)) el.innerHTML = html;
-    else el.textContent = html;
+    if (INNER_HTML_IDS.has(elId)) {
+      el.innerHTML = String(html).split(/\s*<br\s*\/?>\s*/i).map(escapeHtml).join("<br>");
+    } else el.textContent = html;
   }
   /** 从舞台元素反查文本输入框并高亮 (双击舞台文本时调用) */
   function focusTextInput(elId) {

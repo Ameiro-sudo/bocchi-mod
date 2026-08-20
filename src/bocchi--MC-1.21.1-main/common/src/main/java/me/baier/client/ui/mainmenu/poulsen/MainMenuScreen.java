@@ -14,7 +14,6 @@ import me.baier.graphics.SkiaContext;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.client.gui.screens.multiplayer.JoinMultiplayerScreen;
 import net.minecraft.client.gui.screens.options.OptionsScreen;
 import net.minecraft.client.gui.screens.worldselection.SelectWorldScreen;
@@ -28,7 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 public class MainMenuScreen extends Screen {
-  public static MainMenuScreen INSTANCE;
+  public static volatile MainMenuScreen INSTANCE;
   private static final Component TITLE = Component.literal("Main Menu");
   private static final int BUTTON_Z_INDEX = 14;
   private final Map<Integer, IComponent<? super MainMenuPoulsenFrameContext>> components =
@@ -97,7 +96,8 @@ public class MainMenuScreen extends Screen {
 
   @Override
   public void onClose() {
-    Minecraft.getInstance().setScreen(new TitleScreen());
+    // 不能在这里 setScreen(new TitleScreen()): MixinMinecraftClient.hookSetScreen
+    // 会把 TitleScreen 重定向回本菜单, 造成 ESC 死循环.
     super.onClose();
   }
 
@@ -184,8 +184,8 @@ public class MainMenuScreen extends Screen {
 
   @Override
   public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-    if (keyCode == 256 && shouldCloseOnEsc()) {
-      this.onClose();
+    if (keyCode == 256) {
+      // 主菜单是顶层菜单 (取代原版标题画面): 与原版 TitleScreen 一致, ESC 不退出
       return true;
     }
     return super.keyPressed(keyCode, scanCode, modifiers);

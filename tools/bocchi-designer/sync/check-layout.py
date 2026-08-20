@@ -22,8 +22,6 @@ SRC_DIR = os.path.join(ROOT, "..", "..", "..", "src")
 JAVA_BASE = ("bocchi--MC-1.21.5-main", "bocchi--MC-1.21.1-main")
 JAVA_SUB = os.path.join("common", "src", "main", "java", "me", "baier", "client")
 
-W, H = 1280.0, 720.0
-
 # ---------------------------------------------------------------- 表达式求值
 TOKEN_RE = re.compile(r"""
     \s*(?:
@@ -338,7 +336,10 @@ def evaluate_file(text, prelude=None):
                 m = re.match(r"^([\w$]+)\s*=\s*(.+)$", chunk)
                 if m:
                     name, rhs = m.group(1), m.group(2)
-                    if name not in bind:
+                    # 自引用 (progress = clamp(progress, ...)) 不建立绑定:
+                    # 惰性求值会把自身拉成无限链, 保持未绑定走 elide 兜底即可
+                    self_ref = re.search(r"\b" + re.escape(name) + r"\b", rhs)
+                    if name not in bind and not self_ref:
                         mp = re.match(r"^(?:new\s+)?Point\s*\(\s*(.+?)\s*,\s*(.+?)\s*\)\s*$", rhs)
                         if mp:
                             bind[name + ".getX"] = mp.group(1).strip()
@@ -447,6 +448,9 @@ def resolve_one(groups, vals, group, name, seen):
 
 # ---------------------------------------------------------------- 主流程
 def main():
+    # Windows GBK 控制台无法打印 ✓/中文: 统一按 UTF-8 输出, 异常字符以 ? 代替而非崩溃
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
     ap = argparse.ArgumentParser()
     ap.add_argument("--json", action="store_true", help="JSON 输出 (便于 CI)")
     ap.add_argument("--tree", default="bocchi--MC-1.21.5-main", choices=JAVA_BASE, help="检查哪个版本树 (默认 1.21.5)")

@@ -6,6 +6,7 @@ import io.github.humbleui.skija.Typeface;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import lombok.extern.slf4j.Slf4j;
 import me.baier.design.Design;
 import me.baier.utils.ResPack;
 import net.minecraft.resources.ResourceLocation;
@@ -18,6 +19,7 @@ import java.util.Map;
 /**
  * @author AquaVase Created on 7/10/2024
  */
+@Slf4j
 @Accessors(chain = true)
 @Getter
 @Setter
@@ -30,6 +32,7 @@ public class SkiaFont {
   public SkiaFont(String name) {
     FontSet.FONTS.add(name);
 
+    Typeface loaded = null;
     try (InputStream inputStream =
         ResPack.open(
             Design.resource(
@@ -39,10 +42,13 @@ public class SkiaFont {
 
       byte[] array = inputStream.readAllBytes();
       Data data = Data.makeFromBytes(array, 0, array.length);
-      this.typeface = Typeface.makeFromData(data, 0);
+      loaded = Typeface.makeFromData(data, 0);
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      // 字体缺失不崩溃: 回退系统默认字体
+      log.warn("字体资源缺失, 使用系统默认字体: {}", name);
+      loaded = Typeface.makeDefault();
     }
+    this.typeface = loaded;
   }
 
   private static final int MAX_RENDERERS = 128;
@@ -53,6 +59,7 @@ public class SkiaFont {
       if (rendererMap.size() >= MAX_RENDERERS) {
         var oldest = rendererMap.entrySet().iterator().next();
         rendererMap.remove(oldest.getKey());
+        oldest.getValue().getFont().close();
       }
       rendererMap.put(size, new SkiaFontRenderer(new Font(typeface, size), size, this));
     }

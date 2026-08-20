@@ -43,6 +43,8 @@ public final class Design {
   /** 强制下次访问时重新读取 design.json (如资源重载后调用). */
   public static void reload() {
     loaded = false;
+    // 重载后允许同一 key 再次告警, 防止问题被永久压制
+    WARNED_KEYS.clear();
   }
 
   /** 按 "section.key" 取资源路径, 材质包优先, 未定义时返回 null. */

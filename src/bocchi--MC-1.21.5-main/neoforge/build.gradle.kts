@@ -6,9 +6,6 @@ plugins {
 }
 
 
-group = "me.baier"
-version = "0.1.0"
-
 repositories {
     mavenLocal()
     mavenCentral()

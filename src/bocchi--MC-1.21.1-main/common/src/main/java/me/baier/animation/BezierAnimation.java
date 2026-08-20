@@ -2,13 +2,11 @@ package me.baier.animation;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import lombok.Getter;
 import lombok.Setter;
-import me.baier.graphics.font.IFontRenderer;
 
 public class BezierAnimation<T> {
   private T startValue;
@@ -186,7 +184,7 @@ public class BezierAnimation<T> {
       return x;
     }
 
-    // 使用采样表进行初步估计
+    // 浣跨敤閲囨牱琛ㄨ繘琛屽垵姝ヤ及璁?
     float intervalStart = 0.0f;
     int currentSample = 1;
     int lastSample = SAMPLE_SIZE - 1;
@@ -214,7 +212,7 @@ public class BezierAnimation<T> {
       return guessForT;
     } else if (initialSlope == 0.0f) {
       return guessForT;
-    } else { // 二分法
+    } else { // 浜屽垎娉?
       float m_intervalStart = intervalStart; // a
       float m_intervalEnd = intervalStart + (1.0f / (SAMPLE_SIZE - 1)); // b
       int i = 0;
@@ -223,7 +221,7 @@ public class BezierAnimation<T> {
         float currentX = calcBezier(guessForT, ax, bx, cx) - x;
         if (Math.abs(currentX) < SUBDIVISION_PRECISION) return guessForT;
         if (currentX > 0.0f) m_intervalEnd = guessForT;
-        else m_intervalEnd = guessForT;
+        else m_intervalStart = guessForT; // 鍑芥暟鍊艰繃灏忔椂鏍瑰湪鍙冲崐鍖洪棿, 鏀剁缉宸︾鐐?
         ++i;
         if (i == SUBDIVISION_MAX_ITERATIONS) return guessForT;
       }
@@ -324,7 +322,7 @@ public class BezierAnimation<T> {
     return interpolate.interpolate(start, end, t);
   }
 
-  /** 检查动画是否已完成（基于时间进度）。 */
+  /** 妫€鏌ュ姩鐢绘槸鍚﹀凡瀹屾垚锛堝熀浜庢椂闂磋繘搴︼級銆?*/
   public boolean isComplete() {
     return progress >= 1.0f;
   }
@@ -333,7 +331,7 @@ public class BezierAnimation<T> {
     return this.currentValue != null && this.currentValue.equals(targetValue) && isComplete();
   }
 
-  /** 更新动画状态。由AnimationManager在每一帧调用。 */
+  /** 鏇存柊鍔ㄧ敾鐘舵€併€傜敱AnimationManager鍦ㄦ瘡涓€甯ц皟鐢ㄣ€?*/
   public T update() {
     if (!isAnimating || isPaused) {
       return currentValue;
@@ -343,20 +341,20 @@ public class BezierAnimation<T> {
     long elapsed = currentTime - startTime - totalPausedTime;
     this.progress = Math.max(0.0f, Math.min(1.0f, (float) elapsed / this.duration));
 
-    float t = getTForX(this.progress); // 根据时间进度x获取曲线参数t
-    float bezierProgressY = calcBezier(t, ay, by, cy); // 使用t计算缓动后的进度y
+    float t = getTForX(this.progress); // 鏍规嵁鏃堕棿杩涘害x鑾峰彇鏇茬嚎鍙傛暟t
+    float bezierProgressY = calcBezier(t, ay, by, cy); // 浣跨敤t璁＄畻缂撳姩鍚庣殑杩涘害y
     currentValue = interpolate.interpolate(startValue, targetValue, bezierProgressY);
 
     if (onUpdate != null) {
       onUpdate.accept(currentValue);
     }
 
-    // 检查并触发链式动画
+    // 妫€鏌ュ苟瑙﹀彂閾惧紡鍔ㄧ敾
     checkAndTriggerChainedAnimations();
 
     if (this.progress >= 1.0f) {
-      isAnimating = false; // 标记动画结束
-      // currentValue 应该已经通过插值到达 targetValue
+      isAnimating = false; // 鏍囪鍔ㄧ敾缁撴潫
+      // currentValue 搴旇宸茬粡閫氳繃鎻掑€煎埌杈?targetValue
       if (onComplete != null) {
         onComplete.run();
       }
@@ -410,166 +408,5 @@ public class BezierAnimation<T> {
 
   public BezierAnimation<T> then(T initialValue, T targetValue, long duration) {
     return then(initialValue, targetValue, duration, BezierControlPoints.EASE_IN_OUT, 1.0f);
-  }
-
-  public static void main(String[] args) {
-    Locale.setDefault(Locale.US);
-
-    System.out.println("--- BezierAnimation Standalone Test ---");
-
-    final List<BezierAnimation<?>> allAnimations = new ArrayList<>();
-
-    BezierAnimation<Float> anim1 =
-        BezierAnimation.createFloat(0f, 100f, 2000, BezierControlPoints.EASE_IN_OUT);
-    anim1.setTag("Anim1");
-
-    final BezierAnimation<Float> finalAnim1 = anim1;
-    anim1
-        .onUpdate(
-            value ->
-                System.out.printf(
-                    "%s Update: %.2f (Progress: %.2f)\n",
-                    finalAnim1.getTag(), value, finalAnim1.getProgress()))
-        .onComplete(
-            () ->
-                System.out.printf(
-                    "==> %s Complete! (Progress: %.2f) <==\n",
-                    finalAnim1.getTag(), finalAnim1.getProgress()));
-    allAnimations.add(anim1);
-
-    // 动画2: 链接到 anim1, 当 anim1 进度达到 50% 时开始 (1000ms)
-    BezierAnimation<Float> anim2 =
-        BezierAnimation.createFloat(0f, 10f, 1000, BezierControlPoints.LINEAR);
-    anim2.setTag("Anim2_ChainedTo_Anim1@0.5");
-    final BezierAnimation<Float> finalAnim2 = anim2;
-    anim2
-        .onUpdate(
-            value ->
-                System.out.printf(
-                    "  %s Update: %.2f (Progress: %.2f)\n",
-                    finalAnim2.getTag(), value, finalAnim2.getProgress()))
-        .onComplete(
-            () ->
-                System.out.printf(
-                    "  ==> %s Complete! (Progress: %.2f) <==\n",
-                    finalAnim2.getTag(), finalAnim2.getProgress()));
-    allAnimations.add(anim2);
-
-    // 动画3: 链接到 anim1, 当 anim1 完成时 (100% 进度) 开始 (1200ms)
-    BezierAnimation<Float> anim3 =
-        BezierAnimation.createFloat(100.f, 0.f, 1200, BezierControlPoints.EASE_OUT);
-    anim3.setTag("Anim3_ChainedTo_Anim1@1.0");
-    final BezierAnimation<Float> finalAnim3 = anim3;
-    anim3
-        .onUpdate(
-            value ->
-                System.out.printf(
-                    "  %s Update: %.2f (Progress: %.2f)\n",
-                    finalAnim3.getTag(), value, finalAnim3.getProgress()))
-        .onComplete(
-            () ->
-                System.out.printf(
-                    "  ==> %s Complete! (Progress: %.2f) <==\n",
-                    finalAnim3.getTag(), finalAnim3.getProgress()));
-    allAnimations.add(anim3);
-
-    // 动画4: 链接到 anim2, 当 anim2 进度达到 60% 时开始 (800ms)
-    BezierAnimation<Float> anim4 =
-        BezierAnimation.createFloat(500f, 1000f, 800, BezierControlPoints.EASE_IN);
-    anim4.setTag("Anim4_ChainedTo_Anim2@0.6");
-    final BezierAnimation<Float> finalAnim4 = anim4;
-    anim4
-        .onUpdate(
-            value ->
-                System.out.printf(
-                    "    %s Update: %.2f (Progress: %.2f)\n",
-                    finalAnim4.getTag(), value, finalAnim4.getProgress()))
-        .onComplete(
-            () ->
-                System.out.printf(
-                    "    ==> %s Complete! (Progress: %.2f) <==\n",
-                    finalAnim4.getTag(), finalAnim4.getProgress()));
-    allAnimations.add(anim4);
-
-    // --- 设置动画链 ---
-    System.out.println("\n--- Setting up Animation Chains ---");
-    anim1.then(anim2, 0.5f); // anim2 在 anim1 50% 时启动
-    anim1.then(anim3, 1.0f); // anim3 在 anim1 100% 时启动
-    anim2.then(anim4, 0.6f); // anim4 在 anim2 60% 时启动
-    System.out.println("Chaining setup complete.");
-
-    // --- 启动主动画 ---
-    anim1.start(); // 这会将 anim1 的 isAnimating 设为 true
-
-    // --- 手动模拟动画循环 ---
-    System.out.println("\n--- Manual Update Loop (Simulating Time Progression) ---");
-    long simulationLoopStartTime = System.currentTimeMillis();
-    long totalSimulationDurationMs = 4000;
-    long timeStepMs = 50;
-
-    boolean anyAnimationIsStillRunningInLoop;
-
-    do {
-      long currentLoopTime = System.currentTimeMillis();
-      anyAnimationIsStillRunningInLoop = false;
-
-      System.out.printf(
-          "\n--- Loop Tick @ t = %dms ---\n", (currentLoopTime - simulationLoopStartTime));
-
-      for (BezierAnimation<?> anim : allAnimations) {
-        if (anim.isAnimating() && !anim.isPaused()) {
-          anim.update();
-          if (anim.isAnimating()) {
-            anyAnimationIsStillRunningInLoop = true;
-          }
-        }
-      }
-
-      // 如果所有已知的动画都已完成，但模拟时间未结束，则继续等待（以防有延迟的日志或检查点）
-      if (!anyAnimationIsStillRunningInLoop
-          && (currentLoopTime - simulationLoopStartTime) < totalSimulationDurationMs) {
-        boolean allReallyComplete = true;
-        for (BezierAnimation<?> anim : allAnimations) {
-          if (anim.isAnimating() || (anim.getStartTime() > 0 && anim.getProgress() < 1.0f)) {
-            allReallyComplete = false;
-            anyAnimationIsStillRunningInLoop = true; // 重新标记为有动画在运行
-            break;
-          }
-        }
-        if (allReallyComplete) {
-          System.out.println(
-              "All known animations have completed. Loop will finish if simulation time is also up.");
-        }
-      }
-
-      try {
-        Thread.sleep(timeStepMs); // 暂停以模拟时间的流逝
-      } catch (InterruptedException e) {
-        throw new RuntimeException(e);
-      }
-
-    } while (anyAnimationIsStillRunningInLoop
-        && (System.currentTimeMillis() - simulationLoopStartTime) < totalSimulationDurationMs);
-
-    System.out.println("\n--- Simulation Loop Ended ---");
-
-    // 打印所有动画的最终状态
-    System.out.println("\nFinal states of all animations:");
-    for (BezierAnimation<?> anim : allAnimations) {
-      System.out.printf(
-          "Animation '%s': Progress = %.2f, IsAnimating = %b, IsPaused = %b, CurrentValue = %s\n",
-          anim.getTag(),
-          anim.getProgress(),
-          anim.isAnimating(),
-          anim.isPaused(),
-          anim.getCurrentValue() != null ? anim.getCurrentValue().toString() : "null");
-    }
-
-    System.out.println(
-        "\nNote: In a real scenario with AnimationManager, chained animations started via 'then'");
-    System.out.println(
-        "would be automatically managed and updated by the AnimationManager's loop.");
-    System.out.println(
-        "This test bypassed that manager's loop by manually calling update() on animations.");
   }
 }

@@ -2,11 +2,13 @@ package me.baier.client.ui.common.components;
 
 import io.github.humbleui.skija.*;
 import io.github.humbleui.types.Rect;
+import lombok.extern.slf4j.Slf4j;
 import me.baier.design.Design;
 import me.baier.graphics.SkiaCallback;
 import me.baier.graphics.SkiaRenderEngine;
 import net.minecraft.resources.ResourceLocation;
 
+@Slf4j
 public class LogoRenderer {
   private static final String GLOW_RUNTIME_EFFECT =
       "uniform shader image;\n"
@@ -52,7 +54,7 @@ public class LogoRenderer {
     try {
       logoImage = SkiaRenderEngine.getImageFromResource(LOGO_TEXTURE);
       if (logoImage == null) {
-        System.err.println("Logo image not found: " + LOGO_TEXTURE);
+        log.warn("Logo image not found: {}", LOGO_TEXTURE);
         return;
       }
 
@@ -60,22 +62,21 @@ public class LogoRenderer {
       Rect destinationRect = Rect.makeXYWH(x, y, w, h);
 
       try (Paint imagePaint = new Paint()) {
-        imagePaint.setColorFilter(ColorFilter.makeBlend(color, BlendMode.SRC_IN));
-        imagePaint.setAntiAlias(true);
+        try (var blendFilter = ColorFilter.makeBlend(color, BlendMode.SRC_IN)) {
+          imagePaint.setColorFilter(blendFilter);
+          imagePaint.setAntiAlias(true);
 
-        if (callback != null) {
-          callback.apply(imagePaint);
+          if (callback != null) {
+            callback.apply(imagePaint);
+          }
+
+          canvas.drawImageRect(
+              logoImage, sourceRect, destinationRect, SamplingMode.LINEAR, imagePaint, true);
         }
-
-        canvas.drawImageRect(
-            logoImage, sourceRect, destinationRect, SamplingMode.LINEAR, imagePaint, true);
       }
 
     } catch (Exception e) {
-      System.err.println("Error rendering logo with color: " + e.getMessage());
-      e.printStackTrace();
-    } finally {
-
+      log.error("Error rendering logo with color", e);
     }
   }
 }

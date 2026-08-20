@@ -15,7 +15,8 @@
 
   const W = 1280, H = 720;
 
-  /* ---------- 表达式求值 (安全子集: 数字 + - * / ( ) min() + 绑定变量) ---------- */
+  /* ---------- 表达式求值 (安全子集: 数字 + - * / ( ) min()/max() + 绑定变量) ---------- */
+  // L1: 标识符一律按函数/调用令牌处理; 裸标识符在绑定替换后不会残留
   const TOKEN_RE = /\s*(?:(\d+\.?\d*|\.\d+)(?:[eE][+-]?\d+)?|([A-Za-z_][\w.]*)\(\)?|([+\-*/(),]))/y;
   function parseExpr(src) {
     const toks = [];
@@ -25,7 +26,7 @@
       const m = TOKEN_RE.exec(src);
       if (!m) throw new Error("无法解析表达式: " + src + " (位置 " + pos + ")");
       if (m[1]) toks.push({ t: "num", v: parseFloat(m[1]) });
-      else if (m[2]) toks.push({ t: m[3] ? "id" : "fn", v: m[2] });
+      else if (m[2]) toks.push({ t: "fn", v: m[2] });
       else toks.push({ t: m[3], v: m[3] });
       pos = TOKEN_RE.lastIndex;
     }
@@ -66,12 +67,6 @@
           return x.v === "min" ? Math.min(...vals) : Math.max(...vals);
         }
         throw new Error("未知函数 " + x.v + " in: " + src);
-      }
-      if (x.t === "id") {
-        // 标识符函数调用, 如 block3Pos.getX() — 展开为已绑定变量
-        const v = parseExpr2();
-        expect(")");
-        return v;
       }
       throw new Error("意外的符号 " + x.v + " in: " + src);
     }
@@ -170,7 +165,7 @@
       logoX:        { expr: "rect1X * 0.3",                                 java: "ui/splash/SplashUI.java:100", note: "rect1X = (W - W*0.412)/2 (poulsen rect1)" },
       logoY:        { expr: "scaledHeight * 0.1",                           java: "ui/splash/SplashUI.java:101" },
       barX:         { expr: "scaledWidth * 0.2",                            java: "ui/splash/SplashUI.java:144" },
-      barW:         { expr: "scaledWidth * 0.6",                            java: "ui/splash/SplashUI.java:146" },
+      barW:         { expr: "scaledWidth * 0.6",                            java: "ui/splash/SplashUI.java:162" },
       loadingFrameW:{ expr: "23.5", note: "webOnly: 预览帧宽 = 图标宽度/20 (雪碧图 1800×90, 20 帧), Java 端见 LoadingAnimateRenderer" },
     },
   };
@@ -193,8 +188,11 @@
     for (const k of Object.keys(bind)) s = s.replace(new RegExp("\\b" + k + "\\b", "g"), "(" + bind[k] + ")");
     return parseExpr(s);
   }
-  function value(name) {
+  // L2: 环检测 — A 引用 B, B 又引用 A 时给出明确报错而非无限递归
+  function value(name, stack) {
     if (cache[name] !== undefined) return cache[name];
+    stack = stack || [];
+    if (stack.includes(name)) throw new Error("布局常量循环引用: " + stack.concat([name]).join(" -> "));
     const [group, key] = name.split(".");
     const fact = G[group] && G[group][key];
     if (!fact) throw new Error("未知布局常量: " + name);
@@ -202,8 +200,8 @@
     for (const id of refsOf(fact.expr)) {
       // 引用另一组的 fact (如 splash.logoX -> poulsen.rect1X)
       const other = G[group][id];
-      if (other) bind[id] = value(group + "." + id);
-      else if (G.poulsen[id]) bind[id] = value("poulsen." + id);
+      if (other) bind[id] = value(group + "." + id, stack.concat([name]));
+      else if (G.poulsen[id]) bind[id] = value("poulsen." + id, stack.concat([name]));
       else throw new Error("布局常量引用未定义: " + name + " 引用了 " + id);
     }
     const result = evalWithBindings(fact.expr, bind);

@@ -7,7 +7,9 @@ import java.util.ArrayList;
 import java.util.Stack;
 import java.util.function.Consumer;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Getter
 public class SkiaEnvironment implements AutoCloseable {
 
@@ -123,7 +125,7 @@ public class SkiaEnvironment implements AutoCloseable {
       runnable.accept(env);
       context.end();
     } catch (Exception e) {
-      System.out.println("Error running environment: " + e.getMessage());
+      log.error("Error running environment", e);
       // 恢复 OpenGL 状态, 避免 begin() 的 resetAll/scale 未配对导致渲染管道永久损坏
       try {
         context.end();

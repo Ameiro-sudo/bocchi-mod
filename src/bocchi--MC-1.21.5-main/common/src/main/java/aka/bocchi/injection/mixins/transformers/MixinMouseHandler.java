@@ -25,6 +25,7 @@ public abstract class MixinMouseHandler {
             .posX(getScaledXPos(window))
             .posY(getScaledYPos(window))
             .button(button)
+            .action(action)
             .build();
     Bocchi.INSTANCE.getEventManager().forward(event);
   }

@@ -18,10 +18,16 @@ import net.minecraft.util.Mth;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 import static me.baier.utils.ColorUtil.lerpColor;
 
 public class ButtonChild extends SkComponent {
+  /** 资源缺失时的占位图标 (透明圆), 避免主菜单因单个图标缺失直接崩溃. */
+  private static final String FALLBACK_SVG =
+      "<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16'>"
+          + "<circle cx='8' cy='8' r='6' fill='#000000' fill-opacity='0'/></svg>";
+
   private SVGDOM dom;
   private String display;
   private Runnable onClick;
@@ -44,7 +50,8 @@ public class ButtonChild extends SkComponent {
       Data data = Data.makeFromBytes(array, 0, array.length);
       dom = new SVGDOM(data);
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      // 图标资源缺失不崩溃: 回退空白占位
+      dom = new SVGDOM(Data.makeFromBytes(FALLBACK_SVG.getBytes(StandardCharsets.UTF_8)));
     }
     this.display = buttonText;
   }
@@ -64,6 +71,9 @@ public class ButtonChild extends SkComponent {
   }
 
   public void drawIcon(SkiaEnvironment env, Point pos, Point bounds, SVGDOM svg, int color) {
+    if (svg == null) {
+      return;
+    }
     var canvas = env.getCanvas();
     try (SVGSVG root = svg.getRoot()) {
 
@@ -77,12 +87,13 @@ public class ButtonChild extends SkComponent {
       canvas.translate(pos.getX(), pos.getY());
       canvas.scale(scale, scale);
       // TODO : use path.makeFromSVGString to improve performance.
-      var fillColorPaint =
-          env.borrowPaint().setColorFilter(ColorFilter.makeBlend(color, BlendMode.SRC_IN));
-      canvas.saveLayer(Rect.makeWH(env.getWidth(), env.getHeight()), fillColorPaint);
-      svg.render(canvas);
-      env.recyclePaint(fillColorPaint);
-      canvas.restore();
+      try (var colorFilter = ColorFilter.makeBlend(color, BlendMode.SRC_IN)) {
+        var fillColorPaint = env.borrowPaint().setColorFilter(colorFilter);
+        canvas.saveLayer(Rect.makeWH(env.getWidth(), env.getHeight()), fillColorPaint);
+        svg.render(canvas);
+        env.recyclePaint(fillColorPaint);
+        canvas.restore();
+      }
       canvas.restore();
     }
   }

@@ -5,9 +5,6 @@ plugins {
 }
 
 
-group = "me.baier"
-version = "0.1.0"
-
 repositories {
     mavenCentral()
     maven("https://maven.fabricmc.net/")
@@ -51,8 +48,6 @@ dependencies {
     library("io.github.humbleui:types:0.2.0")
 
     library("org.jetbrains:annotations:26.0.2")
-
-    library("com.mojang:brigadier:1.0.18")
 }
 
 configurations {

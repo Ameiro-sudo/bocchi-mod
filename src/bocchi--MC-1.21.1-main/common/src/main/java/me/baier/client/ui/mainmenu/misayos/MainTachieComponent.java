@@ -120,17 +120,19 @@ public class MainTachieComponent extends AbstractBaseComponent<MainMenuMisayosFr
       canvas.save();
       canvas.clipRect(rect3);
 
-      SkiaRenderEngine.drawImage(
-          TACHIE_TEXTURE,
-          currentImageX - 15.f,
-          currentImageY,
-          mainImageFinalWidth,
-          mainImageFinalHeight,
-          currentImageAlpha,
-          paint -> {
-            paint.setColorFilter(ColorFilter.makeBlend(0x40000000, BlendMode.SRC_IN));
-            paint.setAntiAlias(true);
-          });
+      try (var blendFilter = ColorFilter.makeBlend(0x40000000, BlendMode.SRC_IN)) {
+        SkiaRenderEngine.drawImage(
+            TACHIE_TEXTURE,
+            currentImageX - 15.f,
+            currentImageY,
+            mainImageFinalWidth,
+            mainImageFinalHeight,
+            currentImageAlpha,
+            paint -> {
+              paint.setColorFilter(blendFilter);
+              paint.setAntiAlias(true);
+            });
+      }
       canvas.restore();
 
       canvas.save();

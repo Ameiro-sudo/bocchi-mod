@@ -1,5 +1,8 @@
 package me.baier.client.ui.api;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class BreathingUtil {
 
   private long startTimeMillis;
@@ -15,7 +18,7 @@ public class BreathingUtil {
       float temp = minValue;
       minValue = maxValue;
       maxValue = temp;
-      System.err.println("Warning: minValue was greater than maxValue. They have been swapped.");
+      log.warn("minValue was greater than maxValue. They have been swapped.");
     }
 
     this.durationMillis = durationMillis;

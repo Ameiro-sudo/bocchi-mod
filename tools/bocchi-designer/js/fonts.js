@@ -36,19 +36,28 @@
     return mctx.measureText(text).width + (spacing || 0) * text.length;
   }
 
+  /** M2: 先移除同族旧 face, 再注册新的 (FontFaceSet 先入者优先, 否则二次上传不生效) */
+  function replaceFace(cssFam, source) {
+    const fam = String(cssFam).replace(/^"|"$/g, "");
+    for (const face of [...document.fonts]) {
+      if (String(face.family).replace(/^"|"$/g, "") === fam) document.fonts.delete(face);
+    }
+    const url = source instanceof Blob ? URL.createObjectURL(source) : source;
+    return fetch(url)
+      .then(r => r.arrayBuffer())
+      .then(buf => new FontFace(cssFam, buf).load().then(ff => { document.fonts.add(ff); return ff; }))
+      .finally(() => { if (source instanceof Blob) URL.revokeObjectURL(url); });
+  }
+
   /** 加载上传的字体到页面 (异步, 完成后回调) */
   async function loadUploadedFonts(done) {
     const jobs = [];
     for (const [name, cssFam] of Object.entries(FONT_SET_NAME)) {
       const f = BD.design.S.fonts[name];
-      if (f && f.blob) {
-        jobs.push(fetch(URL.createObjectURL(f.blob)).then(r => r.arrayBuffer()).then(buf => {
-          return new FontFace(cssFam, buf).load().then(ff => document.fonts.add(ff));
-        }).catch(() => {}));
-      }
+      if (f && f.blob) jobs.push(replaceFace(cssFam, f.blob).catch(() => {}));
     }
     if (done) await Promise.all(jobs).then(done);
   }
 
-  BD.fonts = { FONT_META, FONT_SET_NAME, gh, cssTop, tw, loadUploadedFonts };
+  BD.fonts = { FONT_META, FONT_SET_NAME, gh, cssTop, tw, replaceFace, loadUploadedFonts };
 })();

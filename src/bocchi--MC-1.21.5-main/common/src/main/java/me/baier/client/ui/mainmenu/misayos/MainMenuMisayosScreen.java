@@ -18,7 +18,6 @@ import me.baier.skui.SkComponent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
@@ -28,7 +27,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class MainMenuMisayosScreen extends Screen {
-  public static MainMenuMisayosScreen INSTANCE;
+  public static volatile MainMenuMisayosScreen INSTANCE;
   private static final Component TITLE = Component.literal("Main Menu(Misayos)");
   private final Map<Integer, IComponent<? super MainMenuMisayosFrameContext>> components =
       new HashMap<>();
@@ -47,7 +46,8 @@ public class MainMenuMisayosScreen extends Screen {
     components.put(2, new TextElementsComponent());
     components.put(3, new MainTachieComponent());
     components.put(4, new LogoComponent());
-    components.put(5, guiComponent);
+    // guiComponent 只挂在 root 下渲染 (面板 UI + 交互层), 不再重复放进 components,
+    // 避免每帧被画两遍; 其 update() 在 render() 中单独驱动
     root.addChild(guiComponent);
     onBeginFadeIn();
     root.initialize();
@@ -96,6 +96,7 @@ public class MainMenuMisayosScreen extends Screen {
         components.entrySet()) {
       entry.getValue().update(frame);
     }
+    guiComponent.update(frame); // 面板 UI 由 root 渲染, 动画仍需逐帧更新
 
     var ctx = SkiaContext.get();
     var canvas = ctx.canvas();
@@ -107,25 +108,23 @@ public class MainMenuMisayosScreen extends Screen {
           int globalAlpha = Math.round(Math.clamp(alphaAnimation.getCurrentValue(), 0, 255));
           canvas.saveLayerAlpha(screenBounds, globalAlpha);
           var sigma = Mth.lerp(guiComponent.getExpandAnimation().getCurrentValue(), 0.01f, 1.f);
-          var blurPaint =
-              env.borrowPaint()
-                  .setImageFilter(ImageFilter.makeBlur(sigma, sigma, FilterTileMode.CLAMP));
-          canvas.saveLayer(screenBounds, blurPaint);
-          canvas.translate(screenBounds.getWidth() / 2, screenBounds.getHeight() / 2);
-          canvas.scale(
-              1 + guiComponent.getExpandAnimation().getCurrentValue() / 20,
-              1 + guiComponent.getExpandAnimation().getCurrentValue() / 20);
-          canvas.translate(-screenBounds.getWidth() / 2, -screenBounds.getHeight() / 2);
-          env.recyclePaint(blurPaint);
+          try (ImageFilter blurFilter =
+              ImageFilter.makeBlur(sigma, sigma, FilterTileMode.CLAMP)) {
+            var blurPaint = env.borrowPaint().setImageFilter(blurFilter);
+            canvas.saveLayer(screenBounds, blurPaint);
+            canvas.translate(screenBounds.getWidth() / 2, screenBounds.getHeight() / 2);
+            canvas.scale(
+                1 + guiComponent.getExpandAnimation().getCurrentValue() / 20,
+                1 + guiComponent.getExpandAnimation().getCurrentValue() / 20);
+            canvas.translate(-screenBounds.getWidth() / 2, -screenBounds.getHeight() / 2);
+            env.recyclePaint(blurPaint);
 
-          for (int i = 0; i < components.size(); i++) {
-            if (renderAsBackground && i == 5) {
-              continue;
+            for (int i = 0; i < components.size(); i++) {
+              components.get(i).render(ctx, frame);
             }
-            components.get(i).render(ctx, frame);
-          }
 
-          canvas.restore();
+            canvas.restore();
+          }
 
           if (!renderAsBackground) {
             this.root.render(env, mouseX, mouseY);
@@ -149,8 +148,8 @@ public class MainMenuMisayosScreen extends Screen {
 
   @Override
   public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-    if (keyCode == 256 && shouldCloseOnEsc()) {
-      this.onClose();
+    if (keyCode == 256) {
+      // 主菜单是顶层菜单 (取代原版标题画面): 与原版 TitleScreen 一致, ESC 不退出
       return true;
     }
     return this.root.handleKeyPressed(keyCode, scanCode, modifiers);
@@ -158,7 +157,8 @@ public class MainMenuMisayosScreen extends Screen {
 
   @Override
   public void onClose() {
-    Minecraft.getInstance().setScreen(new TitleScreen());
+    // 不能在这里 setScreen(new TitleScreen()): MixinMinecraftClient.hookSetScreen
+    // 会把 TitleScreen 重定向回本菜单, 造成 ESC 死循环.
     super.onClose();
   }
 

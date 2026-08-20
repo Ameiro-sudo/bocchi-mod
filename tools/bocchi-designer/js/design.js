@@ -40,9 +40,34 @@
     for (const [k, v] of Object.entries(DEFAULT_DESIGN[sec])) S[sec][k] = { path: v, blob: null };
   }
   S.colors = { ...DEFAULT_DESIGN.colors };
+  // H2: 导入时未知键/未知 section 原样保留, 导出时合并回去 (与 Java 端纯累加覆盖语义一致)
+  S.extra = {};
 
   const localAsset = (p) => "assets/" + p.replace(/^[a-z0-9_.-]+:/, "").replace(/^client\//, "");
-  const usedPath = (sec, k) => (S[sec][k].blob ? URL.createObjectURL(S[sec][k].blob) : localAsset(S[sec][k].path));
+  const usedPath = (sec, k) => (S[sec][k].blob ? blobUrl(S[sec][k]) : localAsset(S[sec][k].path));
+
+  /* ---------- blob ObjectURL 缓存 (M1: 不再每次调用新建, 替换时 revoke) ---------- */
+  const blobUrl = (entry) => {
+    if (entry._url) return entry._url;
+    return (entry._url = URL.createObjectURL(entry.blob));
+  };
+  function revokeBlobUrl(entry) {
+    if (entry._url) { URL.revokeObjectURL(entry._url); entry._url = null; }
+  }
+  /** 替换/清空资源 blob: 先 revoke 旧 URL, 再写新值 */
+  function setBlob(sec, k, blob) {
+    const entry = S[sec][k];
+    if (entry && entry._url) revokeBlobUrl(entry);
+    if (entry) entry.blob = blob || null;
+  }
+
+  /* ---------- design.json 路径解析 (H1: 保留命名空间) ---------- */
+  const NS_RE = /^([a-z0-9_.-]+):(.+)$/;
+  function splitPath(p) {
+    const m = NS_RE.exec(p || "");
+    return m ? { ns: m[1], rest: m[2] } : { ns: "minecraft", rest: p };
+  }
+  const zipEntry = (p) => "assets/" + splitPath(p).ns + "/" + splitPath(p).rest;
 
   /* ---------- 颜色 ---------- */
   function hexToCss(hex) {
@@ -74,15 +99,28 @@
     for (const [k, v] of Object.entries(S[sec])) o[k] = v.path;
     return o;
   }
+  function mergeExtras(sec, base) {
+    const ex = S.extra[sec];
+    if (!ex || typeof ex !== "object") return base;
+    const out = { ...base };
+    for (const [k, v] of Object.entries(ex)) if (!(k in out)) out[k] = v;
+    return out;
+  }
   function buildDesignJSON() {
-    return {
+    const o = {
       _readme: "bocchi 设计模板 (Design Template). 复制本文件到材质包 assets/minecraft/client/design.json 即可替换整个设计. 想换哪项就改哪项, 其余自动回退到 mod 内置默认. 所有以 _ 开头的键是注释/说明, 加载时会忽略. 路径格式: namespace:path, 省略命名空间则默认 minecraft. 颜色格式: #AARRGGBB 或 #RRGGBB.",
-      textures: { _comment: "位图资源: 立绘/Logo/加载图", ...objOf("textures") },
-      svgs: { _comment: "主菜单按钮图标 (SVG), 与按钮 icon 参数对应: lang/multi/option/quit/single/theme", ...objOf("svgs") },
-      fonts: { _comment: "Skia 字体. 键 = FontSet 中的字体名 (区分大小写), 值 = ttf/otf 文件路径. 换同名字体直接换文件, 换路径改这里.", ...objOf("fonts") },
-      colors: { _comment: "设计色板, 代码内硬编码颜色已接入此表. 格式 #RRGGBB 或 #AARRGGBB", ...objOf("colors") },
+      textures: mergeExtras("textures", { _comment: "位图资源: 立绘/Logo/加载图", ...objOf("textures") }),
+      svgs: mergeExtras("svgs", { _comment: "主菜单按钮图标 (SVG), 与按钮 icon 参数对应: lang/multi/option/quit/single/theme", ...objOf("svgs") }),
+      fonts: mergeExtras("fonts", { _comment: "Skia 字体. 键 = FontSet 中的字体名 (区分大小写), 值 = ttf/otf 文件路径. 换同名字体直接换文件, 换路径改这里.", ...objOf("fonts") }),
+      colors: mergeExtras("colors", { _comment: "设计色板, 代码内硬编码颜色已接入此表. 格式 #RRGGBB 或 #AARRGGBB", ...objOf("colors") }),
       menu: { _comment: "主菜单主题: misayos (喜多郁代, 默认) / poulsen (后藤独). 材质包覆盖此项即可切换主题, 资源重载后生效", theme: S.menu.theme },
     };
+    for (const [sec, val] of Object.entries(S.extra)) {
+      if (sec === "textures" || sec === "svgs" || sec === "fonts" || sec === "colors") continue;
+      if (sec === "menu") { for (const [k, v] of Object.entries(val)) if (!(k in o.menu)) o.menu[k] = v; continue; }
+      o[sec] = typeof val === "object" && val !== null ? { ...val } : val;
+    }
+    return o;
   }
 
   /* ---------- 状态持久化 (localStorage) ----------
@@ -118,5 +156,5 @@
     } catch (e) { /* 损坏状态忽略 */ }
   }
 
-  BD.design = { DEFAULT_DESIGN, S, DEFAULT_TEXTS, localAsset, usedPath, hexToCss, buildDesignJSON, saveState, loadState };
+  BD.design = { DEFAULT_DESIGN, S, DEFAULT_TEXTS, localAsset, usedPath, blobUrl, revokeBlobUrl, setBlob, splitPath, zipEntry, hexToCss, buildDesignJSON, saveState, loadState };
 })();

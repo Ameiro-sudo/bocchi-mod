@@ -27,7 +27,9 @@
     };
     BD.panels.setStatus("<b>" + names[name] + "</b> · 1:1 预览 · 1280×720 设计分辨率" + (name === "misayos" ? " · 点击元素可选中拖拽" : ""));
     if (name === "splash") startSplashDemo();
-    else replay(name);
+    else { clearInterval(splashTimer); replay(name); } // L6: 离开加载页清理演示定时器
+    if (name === "misayos") startAmbient();
+    else stopAmbient(); // M4: 离开 misayos 停止常驻动画, 不再空转
   }
 
   /* ---------- 入场动画重播 ---------- */
@@ -223,15 +225,24 @@
     else if (k === "Escape") { clearSel(); }
   });
 
-  // 常驻动画: 立绘呼吸 + 唱片旋转
-  setInterval(() => {
-    const t = Date.now() / 1000;
-    if (current !== "misayos") return;
-    const breath = Math.sin(t * 2 * Math.PI / 3) * 3;
-    const base = +($("mTachie").dataset.baseRot || 0);
-    $("mTachie").style.transform = `rotate(${base - (breath + 1.5) / 3}deg)`;
-    $("mRecord").style.transform = `rotate(${(t * 20) % 360}deg)`;
-  }, 33);
+  // 常驻动画: 立绘呼吸 + 唱片旋转 (M4: 仅在 misayos 舞台运行, 切换后清理)
+  let ambientTimer = null;
+  function startAmbient() {
+    stopAmbient();
+    ambientTimer = setInterval(() => {
+      const t = Date.now() / 1000;
+      const breath = Math.sin(t * 2 * Math.PI / 3) * 3;
+      const base = +($("mTachie").dataset.baseRot || 0);
+      $("mTachie").style.transform = `rotate(${base - (breath + 1.5) / 3}deg)`;
+      $("mRecord").style.transform = `rotate(${(t * 20) % 360}deg)`;
+    }, 33);
+  }
+  function stopAmbient() {
+    if (ambientTimer) { clearInterval(ambientTimer); ambientTimer = null; }
+  }
+
+  // L3: 阻止舞台内图片被浏览器原生拖拽
+  $("stage").addEventListener("dragstart", e => { if (e.target.closest("[data-sel]")) e.preventDefault(); });
 
   /* ---------- 缩放控制 ---------- */
   function fitStage() {
@@ -258,7 +269,7 @@
   });
 
   BD.interactions = {
-    showStage, replay, startSplashDemo, updateSelBox, fitStage,
+    showStage, replay, startSplashDemo, updateSelBox, fitStage, startAmbient, stopAmbient,
     current: () => current, selKey: () => selKey, setSel: (k) => { selKey = k; updateSelBox(); },
   };
 })();

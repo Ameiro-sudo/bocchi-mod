@@ -37,6 +37,27 @@
     toastTimer = setTimeout(() => t.classList.remove("show"), 3200);
   }
 
+  /* ---------- debounce (M3: 拖拽/滑杆高频变更聚合) ---------- */
+  function debounce(fn, ms) {
+    let t = null;
+    const g = function (...args) { clearTimeout(t); t = setTimeout(() => { t = null; fn.apply(this, args); }, ms); };
+    g.cancel = () => { if (t) { clearTimeout(t); t = null; } };
+    g.flush = () => { if (t) { clearTimeout(t); t = null; fn(); } };
+    return g;
+  }
+  /* rAF 节流: 合并同帧多次调用为一次 */
+  function rafThrottle(fn) {
+    let pending = false, lastArgs = null;
+    const g = function (...args) {
+      lastArgs = args;
+      if (pending) return;
+      pending = true;
+      requestAnimationFrame(() => { pending = false; fn.apply(this, lastArgs); });
+    };
+    g.flush = function () { if (pending) { cancelAnimationFrame(0); pending = false; fn.apply(this, lastArgs); } };
+    return g;
+  }
+
   /* ---------- 下载 ---------- */
   function download(blob, name) {
     const a = document.createElement("a");
@@ -46,7 +67,10 @@
     setTimeout(() => URL.revokeObjectURL(a.href), 30000);
   }
 
-  /* ---------- ZIP 写入 (store 压缩) ---------- */
+  /* ---------- ZIP 写入 (store 压缩) ----------
+   * 边界说明 (L10): 仅支持 zip32 (单文件/总大小 < 4GiB); 目录条目不排重 (后写覆盖先写);
+   * 文件名按 UTF-8 (EFS 标志) 写入。
+   */
   const CRC_TABLE = (() => {
     const t = new Uint32Array(256);
     for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c; }
@@ -63,6 +87,7 @@
     let offset = 0;
     for (const f of files) {
       const name = enc.encode(f.name);
+      if (f.data.length > 0xFFFFFFFF) throw new Error("zip32 不支持超过 4GiB 的文件: " + f.name);
       const crc = crc32(f.data);
       const lh = new DataView(new ArrayBuffer(30));
       lh.setUint32(0, 0x04034b50, true); lh.setUint16(4, 20, true); lh.setUint16(6, 0x0800, true);
@@ -98,11 +123,14 @@
     if (eocd < 0) throw new Error("不是有效的 zip 文件");
     const dv = new DataView(buf.buffer, buf.byteOffset, buf.byteLength);
     const count = dv.getUint16(eocd + 10, true);
+    // zip64: EOCD 中 count 为 0xFFFF 且存在 zip64 EOCD 记录
+    if (count === 0xFFFF) throw new Error("暂不支持 zip64 格式的包");
     let cdPos = dv.getUint32(eocd + 16, true);
     const out = {};
     for (let i = 0; i < count; i++) {
       if (dv.getUint32(cdPos, true) !== 0x02014b50) throw new Error("zip 中央目录损坏");
       const method = dv.getUint16(cdPos + 10, true);
+      const crc = dv.getUint32(cdPos + 16, true);
       const compSize = dv.getUint32(cdPos + 20, true);
       const nameLen = dv.getUint16(cdPos + 28, true), extraLen = dv.getUint16(cdPos + 30, true), commentLen = dv.getUint16(cdPos + 32, true);
       const localOffset = dv.getUint32(cdPos + 42, true);
@@ -112,15 +140,18 @@
       const dataStart = localOffset + 30 + lnameLen + lextraLen;
       let data = buf.subarray(dataStart, dataStart + compSize);
       if (method === 8) {
+        if (typeof DecompressionStream === "undefined") throw new Error("浏览器不支持 DecompressionStream, 无法解压 zip: " + name);
         data = new Uint8Array(await new Response(new Blob([data]).stream().pipeThrough(new DecompressionStream("deflate-raw"))).arrayBuffer());
       } else if (method !== 0) {
         throw new Error("不支持的 zip 压缩方式: " + method + " (" + name + ")");
       }
+      // CRC 校验: 解压后数据损坏能尽早暴露
+      if (crc32(data) !== crc) throw new Error("zip 校验失败 (CRC 不符): " + name);
       out[name] = data;
       cdPos += 46 + nameLen + extraLen + commentLen;
     }
     return out;
   }
 
-  BD.core = { $, set, toast, download, zipWrite, zipRead };
+  BD.core = { $, set, toast, download, zipWrite, zipRead, debounce, rafThrottle };
 })();

@@ -33,7 +33,21 @@ import static me.baier.utils.ColorUtil.lerpColor;
 public class SplashUI implements EventMonitor {
 
   public static final int BRAND_ARGB = FastColor.ARGB32.color(255, 0X1F, 0X1F, 0X1F);
-  public static SplashUI INSTANCE;
+
+  private static volatile SplashUI instance;
+
+  /** 单例: Fabric/NeoForge 下多份 mixin 配置会各自 new 一个 SplashUI,
+   *  共享单例避免重复注册 MouseClickEvent monitor. */
+  public static SplashUI getInstance() {
+    if (instance == null) {
+      synchronized (SplashUI.class) {
+        if (instance == null) {
+          instance = new SplashUI();
+        }
+      }
+    }
+    return instance;
+  }
 
   public ResourceLocation BOCCHI_LOADING_TEXTURE = Design.resource("textures.bocchi_loading");
 
@@ -56,8 +70,7 @@ public class SplashUI implements EventMonitor {
   private int iLogoC, tLogoC;
   @Getter private boolean waitingForInput = false;
 
-  public SplashUI() {
-    INSTANCE = this;
+  private SplashUI() {
     animateRenderer = new LoadingAnimateRenderer(BOCCHI_LOADING_TEXTURE, 20);
     if (frame == null) {
       frame = new SplashFrameContext();
@@ -70,7 +83,8 @@ public class SplashUI implements EventMonitor {
     createMonitor(
         MouseClickEvent.class,
         event -> {
-          if (waitingForInput) {
+          // 只响应左键按下, 避免右键/抬起/滚轮误触发
+          if (event.getAction() == 1 && event.getButton() == 0 && waitingForInput) {
             waitingForInput = false;
             onBeginFadeOut();
           }
@@ -139,6 +153,8 @@ public class SplashUI implements EventMonitor {
 
   public void renderProgress(SkiaContext ctx, float progress, float f) throws IOException {
     if (progressAnim != null) progressAnim.update();
+    // 钳制进度, 防止 fadeOutStart==-1 时传入的 -1 产生负宽度 RRect
+    progress = Math.clamp(progress, 0.0f, 1.0f);
     int alpha = Math.round(Math.clamp(f, 0.0F, 3.f) * 85);
     int argb = FastColor.ARGB32.color(alpha, 255, 255, 255);
     var posX = (float) (frame.getScaledWidth()) * 0.2f;
@@ -147,62 +163,78 @@ public class SplashUI implements EventMonitor {
 
     var canvas = SkiaContext.get().canvas();
 
-    canvas.saveLayerAlpha(
-        null,
-        Math.round(255 - (progressAnim != null ? progressAnim.getCurrentValue() : 0.f) * 255.f));
+    // 本帧 save 的图层在 finally 中统一 restore, 异常路径不再残留图层污染后续渲染
+    boolean alphaLayerSaved = false;
+    boolean globalLayerSaved = globalAlphaAnim != null;
+    try {
+      canvas.saveLayerAlpha(
+          null,
+          Math.round(255 - (progressAnim != null ? progressAnim.getCurrentValue() : 0.f) * 255.f));
+      alphaLayerSaved = true;
 
-    animateRenderer.computeFrame();
-    try (Paint paint = new Paint()) {
-      paint.setAntiAlias(true);
-      paint.setColor(argb);
-      var rrect = RRect.makeXYWH(posX, posY, width, fontHeight, 15.f);
-      canvas.saveLayer(rrect, null);
-      // Render as mask
-      canvas.drawRRect(rrect, paint);
+      animateRenderer.computeFrame();
+      try (Paint paint = new Paint()) {
+        paint.setAntiAlias(true);
+        paint.setColor(argb);
+        var rrect = RRect.makeXYWH(posX, posY, width, fontHeight, 15.f);
+        canvas.saveLayer(rrect, null);
+        try {
+          // Render as mask
+          canvas.drawRRect(rrect, paint);
+          animateRenderer.render(
+              canvas,
+              posX + width - fontHeight * 1.5f,
+              posY - fontHeight * 1.5f,
+              fontHeight * 2.5f,
+              fontHeight * 2.5f,
+              1,
+              b -> b.setBlendMode(BlendMode.DST_OUT));
+        } finally {
+          canvas.restore();
+        }
+      }
+
       animateRenderer.render(
           canvas,
           posX + width - fontHeight * 1.5f,
           posY - fontHeight * 1.5f,
           fontHeight * 2.5f,
           fontHeight * 2.5f,
-          1,
-          b -> b.setBlendMode(BlendMode.DST_OUT));
-      canvas.restore();
-    }
+          alpha / 255.f,
+          SkiaCallback.DEFAULT);
 
-    animateRenderer.render(
-        canvas,
-        posX + width - fontHeight * 1.5f,
-        posY - fontHeight * 1.5f,
-        fontHeight * 2.5f,
-        fontHeight * 2.5f,
-        alpha / 255.f,
-        SkiaCallback.DEFAULT);
+      canvas.restore(); // Restore layer(alpha)
+      alphaLayerSaved = false;
 
-    canvas.restore(); // Restore layer(alpha)
-
-    if (progressAnim != null) {
-      var fontRenderer = FontSet.RADIKAL_REGULAR.getFont(15);
-      var stringWidth = fontRenderer.getStringWidth("TAP TO START");
-      var midX = frame.getMidX() - stringWidth / 2;
-      var textAlpha = progressAnim.getCurrentValue() * 255.f;
-      var color =
-          ColorUtil.replaceAlpha(
-              0xFFFFFFFF,
-              Math.round(Mth.lerp(breathingTextAlpha.getCurrentValue(), 0.f, textAlpha)));
-      fontRenderer.drawString(
-          "TAP TO START",
-          midX,
-          posY + fontRenderer.getHalfHeight() / 2f,
-          color,
-          false,
-          paint -> {
-            paint.setMaskFilter(MaskFilter.makeBlur(FilterBlurMode.SOLID, 5f));
-          });
-    }
-
-    if (globalAlphaAnim != null) {
-      canvas.restore();
+      if (progressAnim != null) {
+        var fontRenderer = FontSet.RADIKAL_REGULAR.getFont(15);
+        var stringWidth = fontRenderer.getStringWidth("TAP TO START");
+        var midX = frame.getMidX() - stringWidth / 2;
+        var textAlpha = progressAnim.getCurrentValue() * 255.f;
+        var color =
+            ColorUtil.replaceAlpha(
+                0xFFFFFFFF,
+                Math.round(Mth.lerp(breathingTextAlpha.getCurrentValue(), 0.f, textAlpha)));
+        try (var blurFilter = MaskFilter.makeBlur(FilterBlurMode.SOLID, 5f)) {
+          fontRenderer.drawString(
+              "TAP TO START",
+              midX,
+              posY + fontRenderer.getHalfHeight() / 2f,
+              color,
+              false,
+              paint -> {
+                paint.setMaskFilter(blurFilter);
+              });
+        }
+      }
+    } finally {
+      if (alphaLayerSaved) {
+        canvas.restore();
+      }
+      // 与 render() 中 saveLayerAlpha 配对; 异常路径也必须恢复, 否则残留 alpha 层
+      if (globalLayerSaved) {
+        canvas.restore();
+      }
     }
 
     if (logoAnimation != null) {

@@ -45,7 +45,11 @@ public abstract class MixinMinecraftClient {
     PostEffectRenderer.onResized(this.mainRenderTarget.width, this.mainRenderTarget.height);
   }
 
-  @Inject(method = "reloadResourcePacks", at = @At("TAIL"))
+  // 带描述符精确匹配无参重载 reloadResourcePacks(), 避免同时命中
+  // reloadResourcePacks(boolean, GameLoadCookie) 导致每次重载执行两遍
+  @Inject(
+      method = "reloadResourcePacks()Ljava/util/concurrent/CompletableFuture;",
+      at = @At("TAIL"))
   private void hookReloadResourcePacks(CallbackInfoReturnable<CompletableFuture<Void>> info) {
     info.getReturnValue()
         .thenRun(

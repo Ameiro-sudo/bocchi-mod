@@ -12,6 +12,11 @@ public class EventManager {
 
   private final HashMap<Class<?>, ArrayList<EventRegistry<?>>> registry = new HashMap<>();
 
+  /**
+   * 注册事件监听. 优先级按升序排序执行 (数值小者先执行).
+   * 注意: forward 使用快照迭代, 事件派发过程中 register/invalidateMonitor 的变更
+   * 不影响当前一轮派发.
+   */
   public <T extends Event> void register(
       Class<? extends T> event, EventMonitor monitor, int priority, Consumer<T> handler) {
     if (!registry.containsKey(event)) {

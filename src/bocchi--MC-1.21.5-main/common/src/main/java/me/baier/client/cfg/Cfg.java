@@ -16,16 +16,14 @@ public class Cfg implements Saveable {
 
     @Override
     public JsonObject save(JsonObject json) {
-        // 直接将所有Mod扁平化保存到根JSON对象中
-        Bocchi.INSTANCE.getModManager().getMods().forEach(mod -> 
-            json.add(mod.getLabel(), mod.save(new JsonObject()))
-        );
-        return json;
+        // 保存格式: { "name": ..., <modLabel>: { <settingLabel>: {...} } }
+        // 与 load() 严格对称, 由 Mods 统一负责 mod 节点的读写
+        json.addProperty("name", name);
+        return Bocchi.INSTANCE.getModManager().save(json);
     }
 
     @Override
     public void load(JsonObject json) {
-        final var maybe = json.get("mod").getAsJsonObject();
-        Bocchi.INSTANCE.getModManager().getMods().forEach(mod -> mod.load(maybe));
+        Bocchi.INSTANCE.getModManager().load(json);
     }
 }

@@ -280,12 +280,11 @@ public class SkiaRenderEngine implements ClientInstance {
   public Image getImageFromResource(ResourceLocation res) {
     if (!TEXTURE_MAP.containsKey(res.toString())) {
 
-      try {
-        InputStream inputStream =
-            ((IAccessorTextureManager) mc.getTextureManager())
-                .getResourceContainer()
-                .getResourceOrThrow(res)
-                .open();
+      try (InputStream inputStream =
+          ((IAccessorTextureManager) mc.getTextureManager())
+              .getResourceContainer()
+              .getResourceOrThrow(res)
+              .open()) {
         var image = Image.makeDeferredFromEncodedBytes(inputStream.readAllBytes());
         putCached(res.toString(), image);
         return image;
@@ -379,12 +378,14 @@ public class SkiaRenderEngine implements ClientInstance {
       texture = TEXTURE_MAP.get(rawKey);
     }
     if (texture == null) {
-      InputStream inputStream =
+      Image decoded;
+      try (InputStream inputStream =
           ((IAccessorTextureManager) mc.getTextureManager())
               .getResourceContainer()
               .getResourceOrThrow(res)
-              .open();
-      var decoded = Image.makeDeferredFromEncodedBytes(inputStream.readAllBytes());
+              .open()) {
+        decoded = Image.makeDeferredFromEncodedBytes(inputStream.readAllBytes());
+      }
       float scaleW = width * uiScale / decoded.getWidth();
       float scaleH = height * uiScale / decoded.getHeight();
       boolean shouldPreScale =
@@ -482,14 +483,15 @@ public class SkiaRenderEngine implements ClientInstance {
 
     if (!TEXTURE_MAP.containsKey(res.toString())) {
 
-      InputStream inputStream =
+      try (InputStream inputStream =
           ((IAccessorTextureManager) mc.getTextureManager())
               .getResourceContainer()
               .getResourceOrThrow(res)
-              .open();
-      var image = Image.makeDeferredFromEncodedBytes(inputStream.readAllBytes());
+              .open()) {
+        var image = Image.makeDeferredFromEncodedBytes(inputStream.readAllBytes());
 
-      putCached(res.toString(), image);
+        putCached(res.toString(), image);
+      }
     }
 
     Image texture = TEXTURE_MAP.get(res.toString());

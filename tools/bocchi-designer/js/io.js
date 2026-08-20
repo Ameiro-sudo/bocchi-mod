@@ -5,7 +5,7 @@
   "use strict";
   const BD = (window.BD = window.BD || {});
   const { $, toast, download, zipWrite, zipRead } = BD.core;
-  const { S, buildDesignJSON, usedPath, localAsset } = BD.design;
+  const { S, buildDesignJSON, usedPath, localAsset, zipEntry } = BD.design;
 
   const README_TEXT = [
     "bocchi design pack - exported by Bocchi Designer",
@@ -32,24 +32,29 @@
         { name: "assets/minecraft/client/design.json", data: enc.encode(JSON.stringify(buildDesignJSON(), null, 2)) },
       ];
       const missing = [];
+      const skipped = [];
       for (const sec of ["textures", "svgs", "fonts"]) {
         for (const [k, v] of Object.entries(S[sec])) {
-          const path = v.path.replace(/^[a-z0-9_.-]+:/, "");
-          const name = "assets/minecraft/" + path;
+          // H1: 保留命名空间 — 打包到 assets/<namespace>/<rest>, 默认 minecraft
+          const name = zipEntry(v.path);
           if (v.blob) {
             files.push({ name, data: new Uint8Array(await v.blob.arrayBuffer()) });
           } else {
             try {
-              const r = await fetch(localAsset(path));
+              const r = await fetch(localAsset(v.path));
               if (!r.ok) throw new Error("fetch " + r.status);
               files.push({ name, data: new Uint8Array(await r.arrayBuffer()) });
-            } catch (e) { missing.push(v.path); }
+            } catch (e) {
+              // 内置资源缺失 (如 meiryo-bold.ttf 未随工具分发): 不打包, 游戏端回退内置默认
+              skipped.push(v.path);
+            }
           }
         }
       }
       download(new Blob([zipWrite(files)]), "bocchi-design-pack.zip");
-      const warn = missing.length ? `；缺失 ${missing.length} 个内置资源: ${missing.join(", ")}` : "";
-      toast(`导出成功！${files.length - 3} 个资源已打包${warn}`);
+      const warn = missing.length ? `；缺失 ${missing.length} 个资源: ${missing.join(", ")}` : "";
+      const skip = skipped.length ? `；${skipped.length} 个内置资源未分发, 游戏端回退默认: ${skipped.join(", ")}` : "";
+      toast(`导出成功！${files.length - 3} 个资源已打包${warn}${skip}`);
     } catch (err) {
       toast("导出失败: " + err.message, true);
     }
@@ -72,26 +77,62 @@
   /** 从已解析的 design.json 对象载入编辑态 (导入 zip 与单文件共用) */
   function applyDesignJSON(root, entries) {
     let count = 0;
-    for (const sec of ["textures", "svgs", "fonts", "colors"]) {
-      const obj = root[sec];
-      if (!obj || typeof obj !== "object") continue;
+    const KNOWN = new Set(["textures", "svgs", "fonts", "colors", "menu"]);
+    for (const [sec, obj] of Object.entries(root)) {
+      if (sec.startsWith("_")) continue;
+      if (!obj || typeof obj !== "object" || Array.isArray(obj)) {
+        // 非对象 section 值: 原样保留
+        S.extra[sec] = obj;
+        continue;
+      }
+      if (!KNOWN.has(sec)) {
+        // H2: 未知 section 原样保留 (Java 端纯累加覆盖, 不丢弃)
+        S.extra[sec] = { ...obj };
+        continue;
+      }
+      if (sec === "menu") {
+        for (const [k, v] of Object.entries(obj)) {
+          if (k.startsWith("_")) continue;
+          if (k === "theme" && typeof v === "string" && ["misayos", "poulsen"].includes(v)) {
+            S.menu.theme = v;
+            const sel = BD.panels.getThemeSel();
+            if (sel) sel.value = v;
+          } else {
+            if (!S.extra.menu) S.extra.menu = {};
+            S.extra.menu[k] = v;
+          }
+        }
+        continue;
+      }
       for (const [k, val] of Object.entries(obj)) {
-        if (k.startsWith("_") || !(k in S[sec]) || typeof val !== "string") continue;
+        if (k.startsWith("_")) continue;
+        if (!(k in S[sec])) {
+          // H2: 已知 section 中的未知键原样保留
+          if (!S.extra[sec]) S.extra[sec] = {};
+          S.extra[sec][k] = val;
+          continue;
+        }
         if (sec === "colors") {
           S.colors[k] = val;
           continue;
         }
+        if (typeof val !== "string") {
+          // 路径字段必须为字符串, 否则保留原值并入 extras
+          if (!S.extra[sec]) S.extra[sec] = {};
+          S.extra[sec][k] = val;
+          continue;
+        }
+        // H1: 保留命名空间前缀, 仅在按命名空间查 zip 条目时拆分
         S[sec][k].path = val;
-        S[sec][k].blob = null;
+        BD.design.setBlob(sec, k, null);
         if (entries) {
-          const path = val.replace(/^[a-z0-9_.-]+:/, "");
-          const entry = entries["assets/minecraft/" + path];
+          const { ns, rest } = BD.design.splitPath(val);
+          const entry = entries["assets/" + ns + "/" + rest];
           if (entry) { S[sec][k].blob = new Blob([entry]); count++; }
         }
       }
     }
     if (root.menu && typeof root.menu.theme === "string" && ["misayos", "poulsen"].includes(root.menu.theme)) {
-      S.menu.theme = root.menu.theme;
       const sel = BD.panels.getThemeSel();
       if (sel) sel.value = root.menu.theme;
     }
@@ -109,7 +150,6 @@
       if (!dj) throw new Error("包内未找到 assets/minecraft/client/design.json");
       const root = JSON.parse(new TextDecoder().decode(dj));
       const count = applyDesignJSON(root, entries);
-      BD.interactions.showStage("misayos");
       toast(`导入成功: ${file.name}（design.json + ${count} 个资源已载入预览）`);
     } catch (err) {
       toast("导入失败: " + err.message, true);
@@ -120,7 +160,6 @@
     try {
       const root = JSON.parse(await file.text());
       const count = applyDesignJSON(root, null);
-      BD.interactions.showStage("misayos");
       toast(`已载入 design.json: ${file.name}（${count} 个资源路径, 上传文件需重新选择）`);
     } catch (err) {
       toast("导入失败: " + err.message, true);
@@ -128,6 +167,7 @@
   }
 
   /* ---------- 事件绑定 ---------- */
+  let dragDepth = 0; // L4: 进入/离开计数, 避免跨子元素闪烁
   function bind() {
     $("btnImport").addEventListener("click", () => $("importInput").click());
     $("importInput").addEventListener("change", e => {
@@ -135,14 +175,31 @@
       if (f) importFileByExt(f);
       e.target.value = "";
     });
-    window.addEventListener("dragover", e => { e.preventDefault(); $("dropOverlay").style.display = "flex"; });
-    window.addEventListener("dragleave", () => { $("dropOverlay").style.display = "none"; });
+    window.addEventListener("dragenter", e => {
+      if (!hasFiles(e)) return;
+      e.preventDefault();
+      if (dragDepth === 0) $("dropOverlay").style.display = "flex";
+      dragDepth++;
+    });
+    window.addEventListener("dragover", e => {
+      if (!hasFiles(e)) return;
+      e.preventDefault();
+    });
+    window.addEventListener("dragleave", e => {
+      if (!hasFiles(e)) return;
+      dragDepth = Math.max(0, dragDepth - 1);
+      if (dragDepth === 0) $("dropOverlay").style.display = "none";
+    });
     window.addEventListener("drop", e => {
       e.preventDefault();
+      dragDepth = 0;
       $("dropOverlay").style.display = "none";
       const f = e.dataTransfer.files && e.dataTransfer.files[0];
       if (f) importFileByExt(f);
     });
+  }
+  function hasFiles(e) {
+    return e.dataTransfer && e.dataTransfer.types && Array.prototype.indexOf.call(e.dataTransfer.types, "Files") >= 0;
   }
   function importFileByExt(f) {
     if (/\.json$/i.test(f.name)) importJsonFile(f);

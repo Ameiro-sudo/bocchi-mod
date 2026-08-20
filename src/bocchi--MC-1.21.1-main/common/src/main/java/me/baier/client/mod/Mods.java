@@ -7,10 +7,12 @@ import me.baier.client.mod.setting.Setting;
 import me.baier.client.mod.setting.SettingGroup;
 
 import java.lang.reflect.Field;
-import java.util.HashMap;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public enum Mods implements Saveable {
     INSTANCE;
 
@@ -41,7 +43,8 @@ public enum Mods implements Saveable {
             mod.groups.add(mod.defaultGroup);
             map.put(mod.getLabel(), mod);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            // 单个 mod 注册失败不应让游戏启动崩溃: 记录并跳过
+            log.error("Failed to register mod {}", klass.getName(), e);
         }
     }
 

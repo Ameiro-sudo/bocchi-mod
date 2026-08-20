@@ -1,18 +1,9 @@
-import java.io.BufferedOutputStream
-import java.util.jar.JarFile
-import java.util.jar.Manifest
-import java.util.zip.ZipEntry
-import java.util.zip.ZipOutputStream
-
 plugins {
     java
     id("multiloader-loader")
     id("fabric-loom")
     id("com.gradleup.shadow")
 }
-
-group = "me.baier"
-version = "0.1.0"
 
 repositories {
     mavenCentral()
@@ -72,35 +63,15 @@ sourceSets {
 tasks.shadowJar {
     archiveClassifier = "named"
     configurations = listOf(modLibrary)
+    manifest {
+        attributes["Multi-Release"] = true
+    }
 }
 
 tasks.remapJar {
     dependsOn(tasks.shadowJar)
     inputFile = tasks.shadowJar.get().archiveFile
     outputs.upToDateWhen { false }
-    doLast {
-        val f = archiveFile.get().asFile
-        val tmp = File.createTempFile("bocchi-mr", ".jar", f.parentFile)
-        JarFile(f).use { src ->
-            ZipOutputStream(BufferedOutputStream(tmp.outputStream())).use { out ->
-                val man = src.manifest ?: Manifest()
-                man.mainAttributes.putValue("Multi-Release", "true")
-                out.putNextEntry(ZipEntry("META-INF/MANIFEST.MF"))
-                man.write(out)
-                out.closeEntry()
-                val it = src.entries()
-                while (it.hasMoreElements()) {
-                    val e = it.nextElement()
-                    if (e.name == "META-INF/MANIFEST.MF") continue
-                    out.putNextEntry(ZipEntry(e.name))
-                    src.getInputStream(e).copyTo(out)
-                    out.closeEntry()
-                }
-            }
-        }
-        f.delete()
-        tmp.renameTo(f)
-    }
 }
 
 tasks.javadocJar { enabled = false }

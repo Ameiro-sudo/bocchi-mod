@@ -6,6 +6,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import me.baier.design.Design;
@@ -43,10 +44,12 @@ public final class ThemeManager {
     try {
       Path file = getThemeFile();
       if (Files.exists(file)) {
-        JsonObject json = JsonParser.parseReader(Files.newBufferedReader(file)).getAsJsonObject();
-        String id = json.get("theme").getAsString();
-        if (THEMES.containsKey(id)) {
-          persisted = id;
+        try (var reader = Files.newBufferedReader(file)) {
+          JsonObject json = JsonParser.parseReader(reader).getAsJsonObject();
+          String id = json.get("theme").getAsString();
+          if (THEMES.containsKey(id)) {
+            persisted = id;
+          }
         }
       }
     } catch (Exception e) {
@@ -109,6 +112,6 @@ public final class ThemeManager {
   }
 
   public static Map<String, Theme> themes() {
-    return THEMES;
+    return Collections.unmodifiableMap(THEMES);
   }
 }
