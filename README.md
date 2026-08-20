@@ -21,8 +21,6 @@
 - **NeoForge 加载画面适配**：Fabric / NeoForge 行为一致
 - **一键构建全部变体**：`tools/build-all.ps1`
 
-详细差异对照见 [`bocchi--MC-1.21.5-main-与原版差异.md`](bocchi--MC-1.21.5-main-与原版差异.md)。
-
 ---
 
 ## 环境要求
@@ -154,7 +152,6 @@ bocchi-mod/
 │   ├── bocchi-design-template-*.zip         # 资源包模板
 │   ├── 1.21.x/{fabric,neoforge}/{原版,圆角}/ # 预构建 jar
 │   └── 05UI/                                # UI 资源（圆角控件 / 字体位图）
-├── docs/
 └── .github/workflows/build-release.yml      # CI: 构建 + Release 发布
 ```
 
