@@ -13,7 +13,6 @@ import me.baier.graphics.font.FontSet;
 import me.baier.graphics.font.SkiaFont;
 import me.baier.skui.SkComponent;
 import me.baier.utils.ResPack;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 
 import java.io.IOException;
@@ -23,12 +22,17 @@ import java.nio.charset.StandardCharsets;
 import static me.baier.utils.ColorUtil.lerpColor;
 
 public class ButtonChild extends SkComponent {
+  private static final org.slf4j.Logger LOGGER =
+      org.slf4j.LoggerFactory.getLogger(ButtonChild.class);
+
   /** 资源缺失时的占位图标 (透明圆), 避免主菜单因单个图标缺失直接崩溃. */
   private static final String FALLBACK_SVG =
       "<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16'>"
           + "<circle cx='8' cy='8' r='6' fill='#000000' fill-opacity='0'/></svg>";
 
   private SVGDOM dom;
+  /** SVG 预录制缓存: 矢量指令只展开一次, 之后每帧 drawPicture 重放 (见 getOrRecordIcon). */
+  private Picture iconPicture;
   private String display;
   private Runnable onClick;
 
@@ -70,8 +74,34 @@ public class ButtonChild extends SkComponent {
     return buttonPath;
   }
 
+  /** 把 SVG 矢量指令录制成 Picture (按图标固有尺寸), 只做一次. */
+  private Picture getOrRecordIcon(SVGDOM svg) {
+    if (iconPicture != null) {
+      return iconPicture;
+    }
+    try (SVGSVG root = svg.getRoot()) {
+      SVGLengthContext lc = new SVGLengthContext(new Point(0, 0));
+      float width = lc.resolve(root.getWidth(), SVGLengthType.HORIZONTAL);
+      float height = lc.resolve(root.getHeight(), SVGLengthType.VERTICAL);
+      svg.setContainerSize(new Point(width, height));
+      try (PictureRecorder recorder = new PictureRecorder()) {
+        svg.render(recorder.beginRecording(Rect.makeWH(width, height)));
+        iconPicture = recorder.finishRecordingAsPicture();
+      }
+    } catch (Exception e) {
+      // 录制失败不崩溃: 返回 null, 本帧跳过图标 (与资源缺失占位同策略)
+      LOGGER.warn("bocchi: failed to record icon picture", e);
+      return null;
+    }
+    return iconPicture;
+  }
+
   public void drawIcon(SkiaEnvironment env, Point pos, Point bounds, SVGDOM svg, int color) {
     if (svg == null) {
+      return;
+    }
+    Picture picture = getOrRecordIcon(svg);
+    if (picture == null) {
       return;
     }
     var canvas = env.getCanvas();
@@ -81,16 +111,16 @@ public class ButtonChild extends SkComponent {
       var width = lc.resolve(root.getWidth(), SVGLengthType.HORIZONTAL);
       var height = lc.resolve(root.getHeight(), SVGLengthType.VERTICAL);
 
-      svg.setContainerSize(bounds);
       var scale = Math.min(bounds.getX() / width, bounds.getY() / height);
       canvas.save();
       canvas.translate(pos.getX(), pos.getY());
       canvas.scale(scale, scale);
-      // TODO : use path.makeFromSVGString to improve performance.
+      // 染色层只覆盖图标包围盒 (旧实现是整屏离屏层 x 按钮数, 白白多付全屏带宽):
+      // SRC_IN 需要与下层内容隔离才能按 SVG 自身 alpha 染色, 所以仍需 saveLayer, 但面积缩到最小
       try (var colorFilter = ColorFilter.makeBlend(color, BlendMode.SRC_IN)) {
         var fillColorPaint = env.borrowPaint().setColorFilter(colorFilter);
-        canvas.saveLayer(Rect.makeWH(env.getWidth(), env.getHeight()), fillColorPaint);
-        svg.render(canvas);
+        canvas.saveLayer(Rect.makeWH(width, height), fillColorPaint);
+        canvas.drawPicture(picture);
         env.recyclePaint(fillColorPaint);
         canvas.restore();
       }
@@ -100,7 +130,7 @@ public class ButtonChild extends SkComponent {
 
   @Override
   protected void onRender(SkiaEnvironment env, int mouseX, int mouseY) {
-    if (isHovered() || isChildHovered() && isValidMousePos()) {
+    if (isHovered() || (isChildHovered() && isValidMousePos())) {
       if (!hovered) {
         // was hovered
         hovered = true;
@@ -121,12 +151,15 @@ public class ButtonChild extends SkComponent {
     hoverAnimation.update();
     var canvas = env.getCanvas();
     var paint = env.borrowPaint();
-    var path = getButtonPath();
     paint.setColor(lerpColor(0XFF353535, 0XFFFBA0BE, hoverAnimation.getCurrentValue()));
     paint.setMode(PaintMode.FILL);
     paint.setAntiAlias(true);
 
-    canvas.drawPath(path, paint);
+    // Path 是 native 资源, 用完即还; (旧代码在 drawPath 后调 path.close(),
+    // 那是"闭合轮廓"绘图指令而非释放, 纯属误用)
+    try (Path path = getButtonPath()) {
+      canvas.drawPath(path, paint);
+    }
     paint.setColor(lerpColor(0xFF5B5B5B, 0xFFFFFFFF, hoverAnimation.getCurrentValue()));
     float iconX, iconY;
     if (display != null) {
@@ -161,14 +194,12 @@ public class ButtonChild extends SkComponent {
           0xFFFFFFFF);
     }
     env.recyclePaint(paint);
-    path.close();
   }
 
   public boolean isHovered() {
-    Path path = getButtonPath();
-    boolean isInside = path.contains(this.getMouseX(), this.getMouseY());
-    path.close();
-    return isInside;
+    try (Path path = getButtonPath()) {
+      return path.contains(this.getMouseX(), this.getMouseY());
+    }
   }
 
   @Override
