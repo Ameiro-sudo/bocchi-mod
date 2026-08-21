@@ -21,6 +21,7 @@
         "bocchi.mixins.json",
         "bocchi.fabric.mixins.json"
     ],
+    "icon": "bocchi.png",
     "environment": "client",
     "contributors": [
         "BaierOops"

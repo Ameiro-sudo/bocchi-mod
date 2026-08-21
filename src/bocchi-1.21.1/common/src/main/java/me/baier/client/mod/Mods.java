@@ -54,7 +54,7 @@ public enum Mods implements Saveable {
 
     @Override
     public JsonObject save(JsonObject json) {
-        // 直接将每个Mod作为根JSON对象的子项
+        // 直接将每个Mod作为根JSON对象的子节点
         for (var entry : map.entrySet()) {
             json.add(entry.getKey(), entry.getValue().save(new JsonObject()));
         }
