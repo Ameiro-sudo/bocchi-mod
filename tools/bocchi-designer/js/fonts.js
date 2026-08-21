@@ -1,4 +1,4 @@
-﻿/* ============================================================================
+/* ============================================================================
  * fonts.js - 字体度量与加载
  *
  * Skia 约定: 屏上字号 = Java 字号/2, baseline = y + getHeight。
@@ -53,12 +53,13 @@ export function replaceFace(cssFam, source) {
     .finally(() => { if (source instanceof Blob) URL.revokeObjectURL(url); });
 }
 
-/** 加载上传的字体到页面 (异步, 完成后回调) */
+/** 加载上传/导入的字体到页面 (异步; 总是等待全部注册完成, 便于调用方随后重排取准确度量) */
 export async function loadUploadedFonts(done) {
   const jobs = [];
   for (const [name, cssFam] of Object.entries(FONT_SET_NAME)) {
     const f = S.fonts[name];
     if (f && f.blob) jobs.push(replaceFace(cssFam, f.blob).catch(() => {}));
   }
-  if (done) await Promise.all(jobs).then(done);
+  await Promise.all(jobs);
+  if (done) await done();
 }
