@@ -22,6 +22,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL33C;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,6 +31,7 @@ import java.util.Map;
 public class MainMenuMisayosScreen extends Screen {
   public static volatile MainMenuMisayosScreen INSTANCE;
   private static final Component TITLE = Component.literal("Main Menu(Misayos)");
+  private static final Logger LOGGER = LoggerFactory.getLogger(MainMenuMisayosScreen.class);
   private final Map<Integer, IComponent<? super MainMenuMisayosFrameContext>> components =
       new HashMap<>();
 
@@ -110,32 +113,44 @@ public class MainMenuMisayosScreen extends Screen {
     SkiaEnvironment.run(
         ctx,
         env -> {
-          Rect screenBounds = Rect.makeWH(frame.getScaledWidth(), frame.getScaledHeight());
-          int globalAlpha = Math.round(Math.clamp(alphaAnimation.getCurrentValue(), 0, 255));
-          canvas.saveLayerAlpha(screenBounds, globalAlpha);
-          var sigma = Mth.lerp(guiComponent.getExpandAnimation().getCurrentValue(), 0.01f, 1.f);
-          try (ImageFilter blurFilter =
-              ImageFilter.makeBlur(sigma, sigma, FilterTileMode.CLAMP)) {
-            var blurPaint = env.borrowPaint().setImageFilter(blurFilter);
-            canvas.saveLayer(screenBounds, blurPaint);
-            canvas.translate(screenBounds.getWidth() / 2, screenBounds.getHeight() / 2);
-            canvas.scale(
-                1 + guiComponent.getExpandAnimation().getCurrentValue() / 20,
-                1 + guiComponent.getExpandAnimation().getCurrentValue() / 20);
-            canvas.translate(-screenBounds.getWidth() / 2, -screenBounds.getHeight() / 2);
-            env.recyclePaint(blurPaint);
+          // 与 poulsen MainMenuScreen 同款异常隔离: 任一组件渲染抛错时只丢弃本帧,
+          // 不让异常穿透 SkiaEnvironment.run 崩掉游戏, 也不在画布上残留未配对的图层/变换.
+          // (v1.0 只加固了 poulsen 一侧, misayos 漏了同步)
+          int saveLevel = canvas.getSaveCount();
+          try {
+            Rect screenBounds = Rect.makeWH(frame.getScaledWidth(), frame.getScaledHeight());
+            int globalAlpha = Math.round(Math.clamp(alphaAnimation.getCurrentValue(), 0, 255));
+            canvas.saveLayerAlpha(screenBounds, globalAlpha);
+            var sigma =
+                Mth.lerp(guiComponent.getExpandAnimation().getCurrentValue(), 0.01f, 1.f);
+            try (ImageFilter blurFilter =
+                ImageFilter.makeBlur(sigma, sigma, FilterTileMode.CLAMP)) {
+              var blurPaint = env.borrowPaint().setImageFilter(blurFilter);
+              canvas.saveLayer(screenBounds, blurPaint);
+              canvas.translate(screenBounds.getWidth() / 2, screenBounds.getHeight() / 2);
+              canvas.scale(
+                  1 + guiComponent.getExpandAnimation().getCurrentValue() / 20,
+                  1 + guiComponent.getExpandAnimation().getCurrentValue() / 20);
+              canvas.translate(-screenBounds.getWidth() / 2, -screenBounds.getHeight() / 2);
+              env.recyclePaint(blurPaint);
 
-            for (int i = 0; i < components.size(); i++) {
-              components.get(i).render(ctx, frame);
+              for (int i = 0; i < components.size(); i++) {
+                components.get(i).render(ctx, frame);
+              }
+
+              canvas.restore();
             }
 
+            if (!renderAsBackground) {
+              this.root.render(env, mouseX, mouseY);
+            }
             canvas.restore();
+          } catch (Throwable t) {
+            LOGGER.error("bocchi: main menu render failed", t);
+          } finally {
+            // 正常路径下图层栈已配对回 saveLevel, 此调用为空操作; 异常路径负责兜底回收
+            canvas.restoreToCount(saveLevel);
           }
-
-          if (!renderAsBackground) {
-            this.root.render(env, mouseX, mouseY);
-          }
-          canvas.restore();
         });
     GlStateManager._blendFuncSeparate(
         GL33C.GL_SRC_ALPHA, GL33C.GL_ONE_MINUS_SRC_ALPHA, GL33C.GL_ONE, GL33C.GL_ZERO);
