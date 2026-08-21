@@ -63,7 +63,9 @@
     "pAliasText": "ギターヒーロー",
     "pAdd1": "FEBRUARY 21",
     "pAdd2": "50 kg & 156 cm",
-    "pAdd3": "Aqua eye"
+    "pAdd3": "Aqua eye",
+    "sTitle": "CFGS",
+    "sDone": "DONE"
   },
   "menu": {
     "_comment": "主菜单主题: misayos (后藤独, 默认) / poulsen (后藤独·姓名版). 材质包覆盖此项即可切换主题, 资源重载后生效",

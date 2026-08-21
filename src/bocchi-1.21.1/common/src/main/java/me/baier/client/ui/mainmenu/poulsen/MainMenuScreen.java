@@ -9,6 +9,7 @@ import me.baier.animation.BezierControlPoints;
 import me.baier.client.ui.mainmenu.common.LogoComponent;
 import me.baier.client.ui.mainmenu.component.interfaces.IComponent;
 import me.baier.client.ui.model.MainMenuPoulsenFrameContext;
+import me.baier.client.ui.settings.SettingsScreen;
 import me.baier.client.ui.theme.ThemeManager;
 import me.baier.graphics.SkiaContext;
 import net.minecraft.client.Minecraft;
@@ -66,7 +67,11 @@ public class MainMenuScreen extends Screen {
         "Options",
         btn -> Minecraft.getInstance().setScreen(new OptionsScreen(this, Minecraft.getInstance().options)),
         2);
-    addButton("Quit", btn -> Minecraft.getInstance().stop(), 3);
+    addButton(
+        "Cfgs",
+        btn -> Minecraft.getInstance().setScreen(new SettingsScreen(this)),
+        3);
+    addButton("Quit", btn -> Minecraft.getInstance().stop(), 4);
     // 主题按钮: 文案与目标动态取自 ThemeManager (新增主题无需改这里)
     addButton(
         ThemeManager.nextId().toUpperCase(Locale.ROOT),
@@ -74,7 +79,7 @@ public class MainMenuScreen extends Screen {
           ThemeManager.toggle();
           Minecraft.getInstance().setScreen(ThemeManager.get().getMainMenuScreen());
         },
-        4);
+        5);
 
     onBeginFadeIn();
   }
