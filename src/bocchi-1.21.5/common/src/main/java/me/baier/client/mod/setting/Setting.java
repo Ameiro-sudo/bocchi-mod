@@ -37,12 +37,17 @@ public abstract class Setting<T> implements Labelable, Saveable {
 
         public B value(V value) {
             this.value = value;
+            // 未显式给过 defaultValue 时跟随当前值, 修复裸 .value() 后 default 恒为 null 的旧语义
+            // (显式 .defaultValue(...) 在链上后置时仍可覆盖)
+            if (this.defaultValue == null) {
+                this.defaultValue = value;
+            }
             return (B) this;
         }
 
         public B defaultValue(V defaultValue) {
+            // 只声明默认值, 不再强制覆盖当前值: "默认开、当前关" 的合法组合需要能表达
             this.defaultValue = defaultValue;
-            this.value = defaultValue;
             return (B) this;
         }
 

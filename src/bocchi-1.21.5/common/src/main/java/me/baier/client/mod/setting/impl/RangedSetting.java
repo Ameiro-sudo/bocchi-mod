@@ -42,7 +42,19 @@ public class RangedSetting<T extends Number> extends Setting<T> {
         if (json.has("value")) {
             try {
                 Number number = json.get("value").getAsNumber();
-                setValue((T) number);
+                // 按当前值的实际类型转换 (与 NumberSetting 同策略): gson 返回的是 LazilyParsedNumber,
+                // 直接 (T) 强转会污染 Integer 字段, 且后续 save() 的 instanceof 分支全部落空丢值
+                if (value instanceof Integer) {
+                    setValue((T) Integer.valueOf(number.intValue()));
+                } else if (value instanceof Double) {
+                    setValue((T) Double.valueOf(number.doubleValue()));
+                } else if (value instanceof Float) {
+                    setValue((T) Float.valueOf(number.floatValue()));
+                } else if (value instanceof Long) {
+                    setValue((T) Long.valueOf(number.longValue()));
+                } else {
+                    setValue((T) number);
+                }
             } catch (Exception e) {
                 // 保持默认值
             }

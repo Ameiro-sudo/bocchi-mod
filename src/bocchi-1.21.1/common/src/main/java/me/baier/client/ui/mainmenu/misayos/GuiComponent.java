@@ -11,6 +11,7 @@ import me.baier.client.ui.mainmenu.misayos.childs.ButtonChild;
 import me.baier.client.ui.mainmenu.misayos.childs.ExpandArrowChild;
 
 import me.baier.client.ui.mainmenu.misayos.childs.IconButtonChild;
+import me.baier.client.ui.settings.SettingsScreen;
 import me.baier.client.ui.model.MainMenuMisayosFrameContext;
 import me.baier.design.Design;
 
@@ -74,6 +75,11 @@ public class GuiComponent extends SkComponent implements IComponent<MainMenuMisa
                         MainMenuMisayosScreen.INSTANCE,
                         Minecraft.getInstance().options)));
     this.addChild(optionButton);
+    // Cfgs 设置面板入口 (图标复用 option 齿轮, 不新增资产)
+    var cfgsButton = new ButtonChild("option", "Cfgs");
+    cfgsButton.setOnClick(
+        () -> Minecraft.getInstance().setScreen(new SettingsScreen(MainMenuMisayosScreen.INSTANCE)));
+    this.addChild(cfgsButton);
     var langIcon = new IconButtonChild("lang");
     langIcon.setOnClick(
         () ->

@@ -76,6 +76,13 @@ sourceSets {
     main {
         compileClasspath += library
     }
+
+    // 测试源集完整继承 main 的 classpath (MC 系传递依赖 gson/slf4j/commons-io 由
+    // moddev 插件注入 main 的 compile/runtimeClasspath, 默认不传导到 test)
+    test {
+        compileClasspath += sourceSets.main.get().output + sourceSets.main.get().compileClasspath
+        runtimeClasspath += sourceSets.main.get().output + sourceSets.main.get().runtimeClasspath
+    }
 }
 
 
@@ -87,4 +94,14 @@ tasks {
     javadocJar {
         enabled = false
     }
+}
+
+// 持久化往返测试: cfg/mod/setting 包为纯 Java (Gson+Lombok+slf4j), 不依赖 MC 运行时
+dependencies {
+    testImplementation("org.junit.jupiter:junit-jupiter:5.10.2")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+}
+
+tasks.withType<Test>().configureEach {
+    useJUnitPlatform()
 }
