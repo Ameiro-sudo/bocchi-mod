@@ -9,12 +9,12 @@ if %errorlevel%==0 goto open
 
 where py >nul 2>nul
 if %errorlevel%==0 (
-  start "Bocchi Designer Server :8833" /min cmd /c "py -m http.server 8833 --bind 127.0.0.1"
+  start "Bocchi Designer Server :8833" /min cmd /c "py -m http.server 8833 --bind 127.0.0.1 >nul 2>&1"
   goto waitopen
 )
 where python >nul 2>nul
 if %errorlevel%==0 (
-  start "Bocchi Designer Server :8833" /min cmd /c "python -m http.server 8833 --bind 127.0.0.1"
+  start "Bocchi Designer Server :8833" /min cmd /c "python -m http.server 8833 --bind 127.0.0.1 >nul 2>&1"
   goto waitopen
 )
 echo [ERROR] Python 3 not found in PATH. Install Python or serve this folder
