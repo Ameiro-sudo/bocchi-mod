@@ -95,20 +95,23 @@ public final class ThemeManager {
     }
   }
 
-  /** 切换到下一个主题 (注册顺序), 返回切换后的主题. */
-  public static Theme toggle() {
+  /** 下一个主题 id (按注册顺序循环), 不改变当前选择; 供按钮文案等 UI 预告用. */
+  public static String nextId() {
     String current = currentId();
     var it = THEMES.keySet().iterator();
     while (it.hasNext()) {
       if (it.next().equals(current)) {
-        String next = it.hasNext() ? it.next() : THEMES.keySet().iterator().next();
-        set(next);
-        return THEMES.get(next);
+        return it.hasNext() ? it.next() : THEMES.keySet().iterator().next();
       }
     }
-    Theme first = THEMES.values().iterator().next();
-    set(first.id());
-    return first;
+    return THEMES.keySet().iterator().next();
+  }
+
+  /** 切换到下一个主题 (注册顺序), 返回切换后的主题. */
+  public static Theme toggle() {
+    String next = nextId();
+    set(next);
+    return THEMES.get(next);
   }
 
   public static Map<String, Theme> themes() {

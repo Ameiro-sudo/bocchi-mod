@@ -34,6 +34,7 @@ import net.minecraft.util.Mth;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import static me.baier.utils.RenderUtils.drawTextStrokeBox;
 
@@ -86,10 +87,11 @@ public class GuiComponent extends SkComponent implements IComponent<MainMenuMisa
     var quitIcon = new IconButtonChild("quit");
     quitIcon.setOnClick(() -> Minecraft.getInstance().stop());
     this.addChild(quitIcon);
-    var themeButton = new ButtonChild("theme", "POULSEN");
+    // 主题按钮: 文案与目标动态取自 ThemeManager (新增主题无需改这里)
+    var themeButton = new ButtonChild("theme", ThemeManager.nextId().toUpperCase(Locale.ROOT));
     themeButton.setOnClick(
         () -> {
-          ThemeManager.set("poulsen");
+          ThemeManager.toggle();
           Minecraft.getInstance().setScreen(ThemeManager.get().getMainMenuScreen());
         });
     this.addChild(themeButton);
@@ -194,7 +196,7 @@ public class GuiComponent extends SkComponent implements IComponent<MainMenuMisa
 
     expandChild.setY(this.getHeight() / 2);
 
-    if (isHovered() || isChildHovered() && isValidMousePos()) {
+    if (isHovered() || (isChildHovered() && isValidMousePos())) {
       if (!expandState) {
         // was hovered
         expandState = true;

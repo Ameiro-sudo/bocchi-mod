@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class MainMenuScreen extends Screen {
@@ -66,10 +67,11 @@ public class MainMenuScreen extends Screen {
         btn -> Minecraft.getInstance().setScreen(new OptionsScreen(this, Minecraft.getInstance().options)),
         2);
     addButton("Quit", btn -> Minecraft.getInstance().stop(), 3);
+    // 主题按钮: 文案与目标动态取自 ThemeManager (新增主题无需改这里)
     addButton(
-        "MISAYOS",
+        ThemeManager.nextId().toUpperCase(Locale.ROOT),
         btn -> {
-          ThemeManager.set("misayos");
+          ThemeManager.toggle();
           Minecraft.getInstance().setScreen(ThemeManager.get().getMainMenuScreen());
         },
         4);
