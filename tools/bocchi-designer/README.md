@@ -1,4 +1,4 @@
-﻿# Bocchi Designer
+# Bocchi Designer
 
 Bocchi Client 的 **Design Editor**: 在浏览器里 1:1 复刻三个游戏界面舞台
 (加载页 / misayos 主菜单 / poulsen 主菜单), 编辑文案 / 配色 / 布局微调 /
@@ -34,14 +34,15 @@ main.js (组装根 + 启动)
 │   └─ core(state)
 ├─ fonts.js       字体度量 (Skia 约定换算) + FontFace 注册
 │   └─ design(S)
+├─ history.js     撤销/重做栈 (纯逻辑: 时间窗合并 + 手势括号 + 回放守卫)
 ├─ preview.js     预览资源刷新 (纹理/SVG/唱片配色)
 ├─ layout.js      三舞台布局计算 (全部魔法数字取自 facts.js)
 ├─ render.js      重排编排 (relayout / scheduleRelayout / 重排后回调注入点)
-├─ ov.js          布局微调值域 (滑杆注册表 / setOV / 复位)
+├─ ov.js          布局微调值域 (滑杆注册表 / setOV / 复位, 经 history 入栈)
 ├─ status.js      状态栏写入器
 ├─ panels.js      右侧控制面板 DOM 构建
 ├─ interactions.js 舞台切换 / 入场动画 / 选中拖拽 / 键盘微调 / 缩放
-└─ io.js          材质包导入导出 (applyDesignJSON 为纯模型变更)
+└─ io.js          材质包导入导出 (applyDesignJSON 为纯模型变更; 导入清空历史)
 ```
 
 模块间无环。跨层协作通过 **main.js 组装期依赖注入** (替代全局服务定位器):
@@ -68,6 +69,14 @@ python sync/check-layout.py --tree bocchi-1.21.5   # 或 bocchi-1.21.1
   检查器通过 `valueIn(name, 480, 270)` 对齐参考系。
 - ⚠️ 回退解析器对 facts.js 格式敏感: 组头行必须形如 `name: {` 且以 `{` 结尾,
   fact 行需含 `expr:` 与 `java:` 字段。解析到 0 条常量会以退出码 2 报错 (防静默绿灯)。
+
+## 撤销 / 重做
+
+布局微调（滑杆/画布拖拽/方向键/复位）、文本、配色、主题、资源替换均入撤销栈：
+`Ctrl+Z` 撤销，`Ctrl+Y` / `Ctrl+Shift+Z` 重做（输入框聚焦期间交给浏览器原生撤销，
+失焦后走模型栈）。连续拖动按同键 700ms 时间窗合并为一步；画布拖拽以手势为单位合并；
+导入 zip/design.json 会整体替换模型并清空历史。核心逻辑在 `js/history.js`
+（纯模块，`test/history.test.mjs` 覆盖）。
 
 ## 测试
 
