@@ -264,8 +264,8 @@ public final class SettingRows {
     @Override
     protected void drawControl(SkiaEnvironment env) {
       var glyphFont = FontSet.SH_HEAVY.getFont(7);
-      drawBox(env, leftBoxX(), "‹", glyphFont);
-      drawBox(env, rightBoxX(), "›", glyphFont);
+      drawBox(env, leftBoxX(), "-", glyphFont);
+      drawBox(env, rightBoxX(), "+", glyphFont);
 
       String text = format(setting.getValue());
       float centerX = (leftBoxX() + BOX + rightBoxX()) / 2;
