@@ -1,4 +1,4 @@
-﻿/* ============================================================================
+/* ============================================================================
  * main.js - 组装根: 模块接线 + 启动序列
  *
  * 依赖注入点 (替代旧 window.BD 全局定位器):
@@ -25,7 +25,10 @@ function syncAllFromModel() {
   const sel = $("themeSel");
   if (sel) sel.value = S.menu.theme;
   refreshPreviews();
-  relayout();
+  // zip 导入携带的字体 blob 与上传同效: 先注册 FontFace 再重排 (度量才准确)
+  loadUploadedFonts()
+    .then(() => relayout())
+    .catch(() => relayout());
 }
 
 function boot() {
