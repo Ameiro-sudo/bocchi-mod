@@ -1,4 +1,4 @@
-﻿/* ============================================================================
+/* ============================================================================
  * io.js - 材质包 导入/导出 (zip), design.json 单文件下载/复制
  *
  * 与旧版差异: applyDesignJSON 只做模型变更 (纯数据 + blob 接线), 不再直接调用
@@ -9,6 +9,7 @@ import {
   S, buildDesignJSON, usedPath, localAsset, zipEntry,
   UNSAFE_KEYS, cleanCopy, setBlob, splitPath,
 } from "./design.js";
+import { clearHistory } from "./history.js";
 
 const README_TEXT = [
   "bocchi design pack - exported by Bocchi Designer",
@@ -190,7 +191,10 @@ function hasFiles(e) {
 }
 async function importFileByExt(f) {
   const ok = /\.json$/i.test(f.name) ? await importJsonFile(f) : await importPack(f);
-  if (ok && onImported) onImported();
+  if (ok && onImported) {
+    clearHistory();   // 导入整体替换模型, 旧历史不再适用
+    onImported();
+  }
 }
 let onImported = null;
 

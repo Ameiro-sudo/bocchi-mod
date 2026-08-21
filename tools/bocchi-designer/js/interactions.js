@@ -1,4 +1,4 @@
-﻿/* ============================================================================
+/* ============================================================================
  * interactions.js - 舞台切换 / 入场动画 / 加载页演示 / 选中拖拽 / 键盘微调 / 缩放
  *
  * 可选中对象统一走 SEL 配置表 (移动轴 / 缩放语义 / 显示名), 拖拽与键盘微调共用
@@ -9,7 +9,8 @@ import { state } from "./core.js";
 import { saveState } from "./design.js";
 import { W, H, value as factValue } from "./facts.js";
 import { setStatus } from "./status.js";
-import { setOV, snapshotOV } from "./ov.js";
+import { setOV, snapshotOV, pushOVGesture } from "./ov.js";
+import { beginGesture, endGesture } from "./history.js";
 
 /** 舞台双击文本时定位输入框的回调, 由 main.js 接线为 panels.focusTextInput */
 export const hooks = {};
@@ -174,6 +175,7 @@ $("stageScale").addEventListener("mousedown", e => {
     e.preventDefault();
     const handle = handleEl && handleEl.dataset.h;
     drag = { mode: handle ? "resize" : "move", handle, start: stagePos(e), startOV: snapshotOV() };
+    beginGesture();   // 静音区: 逐帧 setOV 不入栈, 收尾时合成一条完整命令
     return;
   }
   const t = e.target.closest("[id]");
@@ -182,6 +184,7 @@ $("stageScale").addEventListener("mousedown", e => {
     // 已选中: 直接开始拖拽
     e.preventDefault();
     drag = { mode: "move", handle: null, start: stagePos(e), startOV: snapshotOV() };
+    beginGesture();
     return;
   }
   selKey = key || null;
@@ -193,7 +196,14 @@ window.addEventListener("mousemove", e => {
   const p = stagePos(e);
   applyDelta(SEL[selKey], drag.startOV, p.x - drag.start.x, p.y - drag.start.y, drag.handle || "");
 });
-window.addEventListener("mouseup", () => { drag = null; updateSelBox(); });
+window.addEventListener("mouseup", () => {
+  if (!drag) return;
+  const label = (drag.handle ? "缩放 " : "拖拽 ") + SEL[selKey].label;
+  endGesture();                              // 先关静音区
+  pushOVGesture(label, drag.startOV);        // 起止快照合成一条命令 (无位移则不留痕)
+  drag = null;
+  updateSelBox();
+});
 
 // 双击文本元素 -> 定位到编辑框
 $("stage").addEventListener("dblclick", e => {

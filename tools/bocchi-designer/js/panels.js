@@ -1,4 +1,4 @@
-﻿/* ============================================================================
+/* ============================================================================
  * panels.js - 右侧控制面板 (可折叠分区 / 滑杆 / 文本 / 资源 / 配色 / 导出)
  *
  * OV 滑杆的值域逻辑在 ov.js (注册表/设值/复位); 本模块只负责行 DOM 的创建与文案。
@@ -7,13 +7,14 @@ import { $, toast } from "./core.js";
 import { state } from "./core.js";
 import { escapeHtml } from "./core.js";
 import {
-  S, DEFAULT_DESIGN, DEFAULT_TEXTS, buildDesignJSON, hexToCss, saveState, setBlob,
+  S, DEFAULT_DESIGN, DEFAULT_TEXTS, buildDesignJSON, hexToCss, saveState, setBlob, localAsset,
 } from "./design.js";
 import { refreshPreviews, refreshVinyl } from "./preview.js";
 import { FONT_SET_NAME, replaceFace } from "./fonts.js";
-import { registerSlider, clampSaved, onSliderInput, resetAll, setFill, SLIDERS } from "./ov.js";
+import { registerSlider, clampSaved, onSliderInput, resetAll, setFill, setOV } from "./ov.js";
 import { relayout, scheduleRelayout } from "./render.js";
 import { exportPack, exportJson, copyJson } from "./io.js";
+import { push as pushHistory } from "./history.js";
 
 const OV = state.OV;
 
@@ -72,13 +73,8 @@ function addSlider(body, label, key, min, max, def, step) {
   const val = document.createElement("span");
   val.className = "val" + (input.value == def ? " is-default" : "");
   val.textContent = input.value;
-  lab.addEventListener("dblclick", () => {
-    input.value = def; val.textContent = def;
-    val.classList.add("is-default");
-    setFill(input);
-    onSliderInput(key, +def, val);
-  });
-  input.addEventListener("input", () => onSliderInput(key, +input.value, val));
+  lab.addEventListener("dblclick", () => setOV(key, +def));   // 复位单项 (可撤销)
+  input.addEventListener("input", () => onSliderInput(key, +input.value));
   setFill(input);
   row.append(lab, input, val);
   body.appendChild(row);
@@ -104,7 +100,23 @@ function addPreviewColor(body, label, key) {
   body.appendChild(wrap);
 }
 
-/* ---------- 资源上传行 ---------- */
+/* ---------- 资源上传行 ----------
+ * applyRes 是"资源态落地"的唯一入口 (上传/撤销/恢复内置共用):
+ * blob + path 一起写回, 字体段同步重注册 FontFace, 再刷新预览。 */
+function applyRes(sec, key, blob, path) {
+  const entry = S[sec][key];
+  setBlob(sec, key, blob);
+  if (entry) entry.path = path;
+  if (sec === "fonts") {
+    const cssFam = FONT_SET_NAME[key];
+    // blob 与内置文件二选一作为字体源; 注册完成后再重排 (度量准确)
+    if (cssFam && (blob || path)) replaceFace(cssFam, blob || localAsset(path)).then(() => relayout()).catch(() => {});
+  }
+  updateResName(sec, key);
+  refreshPreviews();
+  relayout();
+}
+
 function addResRow(body, label, sec, key) {
   const row = document.createElement("div");
   row.className = "res-row";
@@ -119,17 +131,15 @@ function addResRow(body, label, sec, key) {
   input.addEventListener("change", () => {
     const f = input.files[0];
     if (!f) return;
-    // M1: 替换 blob 前 revoke 旧 ObjectURL
-    setBlob(sec, key, f);
-    if (sec === "fonts") {
-      const cssFam = FONT_SET_NAME[key];
-      // M2: 先移除旧 face 再注册, 二次上传立即生效
-      if (cssFam) replaceFace(cssFam, f).then(() => { relayout(); }).catch(() => {});
-    }
-    updateResName(sec, key);
-    refreshPreviews();
-    relayout();
-    toast(`已上传 ${f.name} (仅本次会话生效, 刷新后还原)`);
+    // 记录可撤销的资源替换 (blob 引用互换, 无拷贝开销)
+    const prevBlob = S[sec][key].blob, prevPath = S[sec][key].path;
+    applyRes(sec, key, f, prevPath);
+    pushHistory({
+      label: `替换资源 ${label}`,
+      undo: () => applyRes(sec, key, prevBlob, prevPath),
+      redo: () => applyRes(sec, key, f, prevPath),
+    });
+    toast(`已上传 ${f.name} (仅本次会话生效, 刷新后还原; Ctrl+Z 可撤销)`);
     input.value = "";
   });
   btn.addEventListener("click", () => input.click());
@@ -164,19 +174,38 @@ function addColorRow(body, label, key) {
   const m6 = /^#?([0-9a-fA-F]{6})$/.exec(S.colors[key]);
   if (m8) pick.value = "#" + m8[1].slice(2);
   else if (m6) pick.value = "#" + m6[1];
-  const apply = () => {
-    S.colors[key] = text.value.trim() || DEFAULT_DESIGN.colors[key];
+  /** 落地函数 (入栈与回放共用) */
+  const applyColor = (value) => {
+    S.colors[key] = value;
+    text.value = value;
     refreshVinyl();
     relayout();
     saveState();
   };
-  text.addEventListener("change", apply);
+  let committedColor = S.colors[key];   // 最近一次入栈的值 (时间窗合并的基准)
+  /** 值变化后调用: 与 committedColor 比对入栈; 同键连续拖取色器自动合并 */
+  const commitColor = () => {
+    const cur = S.colors[key];
+    if (cur === committedColor) return;
+    const from = committedColor, to = cur;
+    pushHistory({
+      label: `配色 ${key}`,
+      undo: () => applyColor(from),
+      redo: () => applyColor(to),
+    }, "color:" + key);
+    committedColor = cur;
+  };
+  text.addEventListener("change", () => {
+    applyColor(text.value.trim() || DEFAULT_DESIGN.colors[key]);
+    commitColor();
+  });
   pick.addEventListener("input", () => {
     const old = S.colors[key];
     const a = /^#?([0-9a-fA-F]{2})([0-9a-fA-F]{6})$/.exec(old);
-    text.value = a ? "#" + a[1] + pick.value.slice(1) : pick.value;
-    apply();
+    applyColor(a ? "#" + a[1] + pick.value.slice(1) : pick.value);
+    commitColor();
   });
+  pick.addEventListener("change", commitColor);   // 松手收尾 (合并窗已覆盖, 兜底)
   row.append(lab, text, pick);
   body.appendChild(row);
 }
@@ -185,6 +214,14 @@ function addColorRow(body, label, key) {
  * input 与舞台元素双向关联: 点舞台元素可定位到对应输入框
  */
 const TEXT_INPUTS = {};
+/** 文本模型落地函数 (输入/入栈/回放共用); 输入框聚焦时不回写 value 防光标跳动 */
+function setTextModel(elId, v, input) {
+  state.TEXTS[elId] = v;
+  if (document.activeElement !== input) input.value = v;
+  applyText(elId, v);
+  relayout();
+  saveState();
+}
 function addTextRow(body, label, elId) {
   const row = document.createElement("div");
   row.className = "text-row";
@@ -195,6 +232,19 @@ function addTextRow(body, label, elId) {
   const input = document.createElement("input");
   input.type = "text";
   input.value = state.TEXTS[elId] != null ? state.TEXTS[elId] : DEFAULT_TEXTS[elId];
+  // 撤销基准: 最近入栈值 -> change (失焦/回车) 时与最新值比对入栈
+  const rec = { input, row, committed: input.value };
+  input.addEventListener("change", () => {
+    const to = input.value;
+    if (to === rec.committed) return;
+    const from = rec.committed;
+    pushHistory({
+      label: `文本 ${label}`,
+      undo: () => setTextModel(elId, from, input),
+      redo: () => setTextModel(elId, to, input),
+    });
+    rec.committed = to;
+  });
   input.addEventListener("input", () => {
     state.TEXTS[elId] = input.value;
     applyText(elId, input.value);
@@ -203,7 +253,7 @@ function addTextRow(body, label, elId) {
   });
   row.append(dot, lab, input);
   body.appendChild(row);
-  TEXT_INPUTS[elId] = { input, row };
+  TEXT_INPUTS[elId] = rec;
 }
 const INNER_HTML_IDS = new Set(["mPhobia", "mInfo", "pJKana", "pCopy1", "pCopy2"]);
 // L7: 仅放行 <br>, 其余标签/脚本转义 (escapeHtml 见 core.js), 消除自我 XSS 面
@@ -229,7 +279,10 @@ export function applyAllTexts() {
     const v = state.TEXTS[elId] != null ? state.TEXTS[elId] : DEFAULT_TEXTS[elId];
     applyText(elId, v);
     const rec = TEXT_INPUTS[elId];
-    if (rec && document.activeElement !== rec.input) rec.input.value = v;
+    if (rec) {
+      if (document.activeElement !== rec.input) rec.input.value = v;
+      rec.committed = v;   // 模型被导入整体替换后, 撤销基准一并重置
+    }
   }
 }
 
@@ -250,7 +303,7 @@ export function build() {
   /* misayos 布局微调 */
   body = addSection("misayos 布局微调（画布上可直接拖拽）", "layout-misayos", {
     tool: { label: "全部复位", onClick: () => resetAll() },
-    badge: "↑↓←→ 微调 · Shift×10 · 双击滑杆标签复位",
+    badge: "↑↓←→ 微调 · Shift×10 · 双击滑杆标签复位 · Ctrl+Z 撤销",
   });
   const lg = document.createElement("div");
   lg.className = "grid";
@@ -273,7 +326,7 @@ export function build() {
   addSlider(lg, "block1 Y 偏移", "blockY", -200, 200, 0);
   const hint = document.createElement("div");
   hint.className = "hint";
-  hint.innerHTML = "画布上: 点击选中 → 拖拽移动 / 拖角缩放; 双击文字定位到编辑框; Esc 取消选中; 方向键微调。";
+  hint.innerHTML = "画布上: 点击选中 → 拖拽移动 / 拖角缩放; 双击文字定位到编辑框; Esc 取消选中; 方向键微调。布局/文本/配色/资源替换均可 Ctrl+Z 撤销、Ctrl+Y 重做。";
   body.appendChild(hint);
 
   /* 文本内容 */
@@ -350,11 +403,23 @@ export function build() {
     themeSel.appendChild(o);
   }
   themeSel.value = S.menu.theme;
-  themeSel.addEventListener("change", () => {
-    S.menu.theme = themeSel.value;
+  /** 主题落地函数 (入栈与回放共用) */
+  const applyTheme = (v) => {
+    S.menu.theme = v;
+    themeSel.value = v;
     relayout();
     saveState();
-    toast("主题已改为 " + S.menu.theme + "（design.json menu.theme）");
+    toast("主题已改为 " + v + "（design.json menu.theme）");
+  };
+  themeSel.addEventListener("change", () => {
+    const from = S.menu.theme, to = themeSel.value;
+    if (from === to) return;
+    applyTheme(to);
+    pushHistory({
+      label: `主题 ${to}`,
+      undo: () => applyTheme(from),
+      redo: () => applyTheme(to),
+    });
   });
   themeRow.append(themeLab, themeSel);
   body.appendChild(themeRow);
