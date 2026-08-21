@@ -148,13 +148,14 @@ public class AlbumRenderer {
       float dx = dstCenterX - imgW * scale / 2f;
       float dy = dstCenterY - imgH * scale / 2f - dst.getHeight() / 4.5f;
 
-      Path circlePath = new Path().addCircle(dstCenterX, dstCenterY, albumArtRadius);
-      canvas.save();
-      canvas.clipPath(circlePath, ClipMode.INTERSECT, true);
-      SkiaRenderEngine.drawImage(
-          canvas, RECORD_TEXTURE, dx, dy, scaledWidth, scaledHeight, 1f, SkiaCallback.DEFAULT);
-      canvas.restore();
-      circlePath.close();
+      // circlePath.close() 是"闭合轮廓"指令而非释放, native Path 曾每帧泄漏; 改 try-with-resources
+      try (Path circlePath = new Path().addCircle(dstCenterX, dstCenterY, albumArtRadius)) {
+        canvas.save();
+        canvas.clipPath(circlePath, ClipMode.INTERSECT, true);
+        SkiaRenderEngine.drawImage(
+            canvas, RECORD_TEXTURE, dx, dy, scaledWidth, scaledHeight, 1f, SkiaCallback.DEFAULT);
+        canvas.restore();
+      }
     }
 
     float innerBorderWidth = Math.max(1f, 2f * (baseSize / 600f));
