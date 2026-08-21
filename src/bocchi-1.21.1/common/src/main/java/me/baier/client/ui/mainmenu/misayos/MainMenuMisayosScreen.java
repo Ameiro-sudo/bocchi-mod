@@ -75,6 +75,9 @@ public class MainMenuMisayosScreen extends Screen {
         components.entrySet()) {
       lastMajorAnchorAnimation = entry.getValue().initAnimations(frame, lastMajorAnchorAnimation);
     }
+    // guiComponent 不进 components(避免每帧重复渲染), 但入场动画链必须在此接上:
+    // v1.0 曾漏掉这行, fadeInAnimation 恒为 null, 主菜单第一帧渲染即 NPE 崩溃
+    lastMajorAnchorAnimation = guiComponent.initAnimations(frame, lastMajorAnchorAnimation);
 
     alphaAnimation.set(alphaAnimation.getTargetValue());
   }

@@ -174,6 +174,10 @@ public class GuiComponent extends SkComponent implements IComponent<MainMenuMisa
   public void update(MainMenuMisayosFrameContext frame) {
 
     expandAnimation.update();
+    if (fadeInAnimation == null) {
+      // 兜底: 动画链未接线时按已完成状态补齐, 宁可面板直接可见也不让主菜单 NPE 崩游戏
+      fadeInAnimation = BezierAnimation.createFloat(1.f, 1.f, entranceDuration, easeFunc);
+    }
     fadeInAnimation.update();
 
     var lerp = expandAnimation.getCurrentValue();
