@@ -9,14 +9,20 @@ Bocchi Client 的 **Design Editor**: 在浏览器里 1:1 复刻三个游戏界�
 
 ## 快速开始
 
+**Windows**: 双击 `start-designer.bat` —— 自动起本地服务(最小化窗口, 关掉即停)
+并打开浏览器; 已在运行则直接复用。
+
+命令行方式:
+
 ```bash
 cd tools/bocchi-designer
 python -m http.server 8833 --bind 127.0.0.1   # 或: npm run serve
 # 打开 http://127.0.0.1:8833/
 ```
 
-> 必须经 http 访问: 资源内嵌 fetch、字体上传、zip 导入/导出都依赖网络 API,
-> `file://` 下这些功能不可用。
+> 为什么不能直接双击 index.html: 页面是 ES Module, 浏览器禁止模块脚本跑在
+> `file://` 下(CORS); 且资源内嵌 fetch、字体上传、zip 导入/导出本就依赖网络 API。
+> 需要任意静态服务器即可, 无其他依赖。
 
 ## 架构 (ES Module 依赖图)
 
