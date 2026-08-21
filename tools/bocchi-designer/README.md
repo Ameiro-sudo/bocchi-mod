@@ -75,7 +75,8 @@ python sync/check-layout.py --tree bocchi-1.21.5   # 或 bocchi-1.21.1
 布局微调（滑杆/画布拖拽/方向键/复位）、文本、配色、主题、资源替换均入撤销栈：
 `Ctrl+Z` 撤销，`Ctrl+Y` / `Ctrl+Shift+Z` 重做（输入框聚焦期间交给浏览器原生撤销，
 失焦后走模型栈）。连续拖动按同键 700ms 时间窗合并为一步；画布拖拽以手势为单位合并；
-导入 zip/design.json 会整体替换模型并清空历史。核心逻辑在 `js/history.js`
+导入 zip/design.json 会整体替换模型并清空历史。资源行与配色行的「内置」按钮一键还原
+mod 内置默认（同样可撤销）。核心逻辑在 `js/history.js`
 （纯模块，`test/history.test.mjs` 覆盖）。
 
 ## 测试

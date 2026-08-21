@@ -124,6 +124,9 @@ function addResRow(body, label, sec, key) {
   lab.className = "r-label"; lab.textContent = label;
   const name = document.createElement("div");
   name.className = "r-name"; name.id = `rn_${sec}_${key}`;
+  const rst = document.createElement("button");
+  rst.className = "row-reset"; rst.textContent = "内置";
+  rst.title = "恢复 mod 内置默认 (上传/导入路径一并还原, Ctrl+Z 可撤销)";
   const btn = document.createElement("button");
   btn.className = "r-btn"; btn.textContent = "选择文件...";
   const input = document.createElement("input");
@@ -143,7 +146,21 @@ function addResRow(body, label, sec, key) {
     input.value = "";
   });
   btn.addEventListener("click", () => input.click());
-  row.append(lab, name, btn, input);
+  // 「内置」: 还原 mod 内置默认路径 + 清除已上传 blob (可撤销)
+  rst.addEventListener("click", () => {
+    const entry = S[sec][key];
+    const defPath = DEFAULT_DESIGN[sec][key];
+    if (!entry.blob && entry.path === defPath) { toast(`${label} 已是内置默认`); return; }
+    const prevBlob = entry.blob, prevPath = entry.path;
+    applyRes(sec, key, null, defPath);
+    pushHistory({
+      label: `还原资源 ${label}`,
+      undo: () => applyRes(sec, key, prevBlob, prevPath),
+      redo: () => applyRes(sec, key, null, defPath),
+    });
+    toast(`已还原内置默认: ${label}`);
+  });
+  row.append(lab, name, rst, btn, input);
   body.appendChild(row);
 }
 
@@ -206,7 +223,23 @@ function addColorRow(body, label, key) {
     commitColor();
   });
   pick.addEventListener("change", commitColor);   // 松手收尾 (合并窗已覆盖, 兜底)
-  row.append(lab, text, pick);
+  // 「内置」: 还原 design.json 默认色板 (可撤销)
+  const rst = document.createElement("button");
+  rst.className = "row-reset"; rst.textContent = "内置";
+  rst.title = "恢复默认色值";
+  rst.addEventListener("click", () => {
+    const def = DEFAULT_DESIGN.colors[key];
+    if (S.colors[key] === def) { toast(`配色 ${key} 已是默认值`); return; }
+    const prev = S.colors[key];
+    applyColor(def);
+    committedColor = def;
+    pushHistory({
+      label: `还原配色 ${key}`,
+      undo: () => { applyColor(prev); committedColor = prev; },
+      redo: () => { applyColor(def); committedColor = def; },
+    });
+  });
+  row.append(lab, text, pick, rst);
   body.appendChild(row);
 }
 
