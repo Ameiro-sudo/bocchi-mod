@@ -14,6 +14,9 @@ Java 改动了数值而 web 未同步 → 报 DRIFT。
 import os
 import re
 import sys
+import json
+import shutil
+import subprocess
 import argparse
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -390,8 +393,36 @@ def evaluate_file(text, prelude=None):
 
 
 # ---------------------------------------------------------------- facts 解析
-GROUP_RE = re.compile(r"^    (\w+): \{", re.M)
-FACT_RE = re.compile(r'^      (\w+):\s*\{\s*expr:\s*"([^"]+)"\s*,\s*java:\s*"([^"]+)"', re.M)
+# 缩进无关: 组行形如 "name: {" 且以 { 结尾, fact 行含 expr/java 字段
+# ({ 后有内容); 不锚定行尾会把长键名单空格的 fact 行误判成组头
+GROUP_RE = re.compile(r"^\s+(\w+): \{\s*$", re.M)
+FACT_RE = re.compile(r'^\s+(\w+):\s*\{\s*expr:\s*"([^"]+)"\s*,\s*java:\s*"([^"]+)"', re.M)
+
+
+def load_via_node():
+    """首选: 用 Node 直接导入 js/facts.js 求值 (单一权威求值源, 见 facts-dump.mjs)。
+    返回 (groups, vals); node 缺失/失败时返回 None 走内置解析回退。"""
+    node = shutil.which("node")
+    dump = os.path.join(ROOT, "facts-dump.mjs")
+    if not node or not os.path.exists(dump):
+        return None
+    try:
+        r = subprocess.run([node, dump, "--w", str(int(W)), "--h", str(int(H))], capture_output=True, text=True,
+                           timeout=30, encoding="utf-8", errors="replace")
+        if r.returncode != 0:
+            tail = (r.stderr.strip().splitlines() or ["<no stderr>"])[-1]
+            print("[warn] node 求值失败, 回退内置解析: %s" % tail, file=sys.stderr)
+            return None
+        data = json.loads(r.stdout)
+    except Exception as e:  # 环境差异兜底
+        print("[warn] node 不可用 (%s), 回退内置解析" % e, file=sys.stderr)
+        return None
+    groups, vals = {}, {}
+    for key, item in data.items():
+        g, name = key.split(".", 1)
+        groups.setdefault(g, {})[name] = {"expr": None, "java": item.get("java")}
+        vals[key] = float(item["value"])
+    return groups, vals
 
 
 def load_facts():
@@ -399,9 +430,9 @@ def load_facts():
     groups = {}
     # 按位置归组: fact 属于它前面的最后一个 group 头
     events = []
-    for m in re.finditer(r"^    (\w+): \{", src, re.M):
+    for m in re.finditer(r"^\s+(\w+): \{\s*$", src, re.M):
         events.append((m.start(), "group", m.group(1)))
-    for m in re.finditer(r'^      (\w+):\s*\{\s*expr:\s*"([^"]+)"\s*,\s*java:\s*"([^"]+)"', src, re.M):
+    for m in re.finditer(r'^\s+(\w+):\s*\{\s*expr:\s*"([^"]+)"\s*,\s*java:\s*"([^"]+)"', src, re.M):
         events.append((m.start(), "fact", m.group(1), m.group(2), m.group(3)))
     events.sort(key=lambda e: e[0])
     cur = None
@@ -456,8 +487,17 @@ def main():
     ap.add_argument("--tree", default="bocchi-1.21.5", choices=JAVA_BASE, help="检查哪个版本树 (默认 1.21.5)")
     args = ap.parse_args()
 
-    groups = load_facts()
-    vals = resolve_all(groups)
+    loaded = load_via_node()
+    if loaded:
+        groups, vals = loaded
+    else:
+        groups = load_facts()
+        vals = resolve_all(groups)
+    # 防静默通过: 解析结果为空视为检查器自身故障而非通过
+    total = sum(len(v) for v in groups.values())
+    if total == 0:
+        print("错误: 未从 facts.js 解析到任何布局常量 (文件为空或格式漂移)", file=sys.stderr)
+        sys.exit(2)
     base = os.path.join(SRC_DIR, args.tree, JAVA_SUB)
 
     # 预读: 帧上下文 (FrameContext/主菜单 frame) 里的布局绑定, 供各组件文件复用
