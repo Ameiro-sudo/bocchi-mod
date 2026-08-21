@@ -9,6 +9,10 @@ Desktop.ini
 release/
 __pycache__/
 *.pyc
+
+# bocchi-designer 开发验证产物
+tools/bocchi-designer/dev/dumps/
+tools/bocchi-designer/dev/shots*/
 .DS_Store
 *.log
 hs_err_pid*

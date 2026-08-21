@@ -1,0 +1,30 @@
+﻿# Bocchi Designer (web 工具) 校验: 单元测试 + 布局常量漂移检查
+name: web-tool
+
+on:
+  pull_request:
+    paths: ["tools/**"]
+  push:
+    branches: [main]
+    paths: ["tools/**"]
+
+jobs:
+  designer-check:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: tools/bocchi-designer
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - name: 单元测试 (node --test)
+        run: npm test
+      - name: 布局漂移检查 (双树)
+        run: |
+          python sync/check-layout.py --tree bocchi-1.21.5
+          python sync/check-layout.py --tree bocchi-1.21.1
