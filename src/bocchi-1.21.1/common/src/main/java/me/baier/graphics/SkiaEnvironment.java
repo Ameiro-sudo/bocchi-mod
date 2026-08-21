@@ -4,7 +4,6 @@ import io.github.humbleui.skija.BlendMode;
 import io.github.humbleui.skija.Canvas;
 import io.github.humbleui.skija.Paint;
 import java.util.ArrayList;
-import java.util.Stack;
 import java.util.function.Consumer;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -18,50 +17,22 @@ public class SkiaEnvironment implements AutoCloseable {
   @Getter private static SkiaEnvironment current = null;
 
   private final ArrayList<Paint> paintPool = new ArrayList<>();
-  private final Stack<Float> alphaStack = new Stack<>();
-  private final Stack<BlendMode> blendStack = new Stack<>();
 
   @Getter private final int width;
   @Getter private final int height;
 
   public SkiaEnvironment(SkiaContext context) {
     this.canvas = context.canvas();
-    this.alphaStack.push(1.0f);
-    this.blendStack.push(BlendMode.SRC_OVER);
     this.width = context.surface().getWidth();
     this.height = context.surface().getHeight();
   }
 
-  public float getCurrentAlpha() {
-    return alphaStack.peek();
-  }
-
+  /**
+   * 池化 paint reset 后默认即 SrcOver, 这里显式返回是 borrowPaint 的契约.
+   * (历史上这里有 alpha/blend 双栈覆盖机制, 因从未有任何调用方而于 1.0 前移除)
+   */
   public BlendMode getCurrentBlendMode() {
-    return blendStack.peek();
-  }
-
-  public void pushAlpha(float alpha) {
-    alphaStack.push(alphaStack.peek() * alpha);
-  }
-
-  public void popAlpha() {
-    if (alphaStack.size() > 1) {
-      alphaStack.pop();
-    } else {
-      throw new RuntimeException("Cannot pop initial alpha");
-    }
-  }
-
-  public void pushBlendMode(BlendMode mode) {
-    blendStack.push(mode);
-  }
-
-  public void popBlendMode() {
-    if (blendStack.size() > 1) {
-      blendStack.pop();
-    } else {
-      throw new RuntimeException("Cannot pop initial blend mode");
-    }
+    return BlendMode.SRC_OVER;
   }
 
   public Paint borrowPaint() {
@@ -91,18 +62,6 @@ public class SkiaEnvironment implements AutoCloseable {
     } finally {
       recyclePaint(paint);
     }
-  }
-
-  public void applyGlobalAlpha(Paint paint) {
-    SkiaEnvironment.applyGlobalAlpha(paint, 255, this);
-  }
-
-  public void applyGlobalAlpha(Paint paint, int origin) {
-    SkiaEnvironment.applyGlobalAlpha(paint, origin, this);
-  }
-
-  public static void applyGlobalAlpha(Paint paint, int origin, SkiaEnvironment env) {
-    paint.setAlpha((int) (origin * env.getCurrentAlpha()));
   }
 
   public static void run(Consumer<SkiaEnvironment> runnable) {
@@ -151,7 +110,5 @@ public class SkiaEnvironment implements AutoCloseable {
       paint.close();
     }
     paintPool.clear();
-    alphaStack.clear();
-    blendStack.clear();
   }
 }

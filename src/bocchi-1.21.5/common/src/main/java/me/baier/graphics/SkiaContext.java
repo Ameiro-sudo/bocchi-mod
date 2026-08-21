@@ -4,11 +4,8 @@ import com.mojang.blaze3d.opengl.GlStateManager;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.humbleui.skija.*;
-import io.github.humbleui.types.Rect;
 import lombok.Getter;
-import me.baier.graphics.util.OffScreenFrame;
 import me.baier.graphics.util.ScissorStack;
-import me.baier.utils.ColorUtil;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL14;
@@ -52,42 +49,6 @@ public class SkiaContext implements MinecraftRenderInstance {
     return instance;
   }
 
-  public void uninitStencilBuffer() {
-    // Clear the stencil surface
-    canvas.clear(ColorUtil.color(0, 0, 0, 0));
-  }
-
-  public void initStencilToWrite() {
-    canvas.clear(ColorUtil.color(0, 0, 0, 0));
-  }
-
-  public void writeToStencil(Runnable drawOperation) {
-    Canvas stencilCanvas = canvas;
-    stencilCanvas.save();
-    try (Paint paint = new Paint()) {
-      paint.setColor(-1); // Use white for the stencil
-      drawOperation.run();
-    }
-    stencilCanvas.restore();
-  }
-
-  public void readStencilBuffer(Runnable drawOperation) {
-    Canvas mainCanvas = canvas;
-    mainCanvas.save();
-    try (Paint paint = new Paint()) {
-      // Use the stencil surface as a mask
-      paint.setBlendMode(BlendMode.DST_IN);
-      drawOperation.run();
-      mainCanvas.drawImage(surface.makeImageSnapshot(), 0, 0, paint);
-    }
-    mainCanvas.restore();
-  }
-
-  public void endStencilBuffer() {
-    // In Skija, we don't need to explicitly end the stencil buffer
-    // This method can be used for any necessary cleanup
-  }
-
   public void push() {
     canvas.save();
   }
@@ -127,55 +88,6 @@ public class SkiaContext implements MinecraftRenderInstance {
   }
 
   public void stopRotate() {
-    pop();
-  }
-
-  public void pushAlpha(float x, float y, float width, float height, int alpha) {
-    try (Paint paint = new Paint()) {
-      paint.setAlpha(alpha);
-      canvas.saveLayer(Rect.makeXYWH(x, y, width, height), paint);
-    }
-  }
-
-  public void pushAlpha(float x, float y, float width, float height, float alpha) {
-    try (Paint paint = new Paint()) {
-      paint.setAlphaf(alpha);
-      canvas.saveLayer(Rect.makeXYWH(x, y, width, height), paint);
-    }
-  }
-
-  public void startScissor(float x, float y, float width, float height) {
-    Rect rect = Rect.makeXYWH(x, y, width, height);
-    canvas.save();
-    canvas.clipRect(rect, ClipMode.INTERSECT);
-  }
-
-  public void stopScissor() {
-    canvas.restore();
-  }
-
-  public void renderShadow(
-      float x, float y, float width, float height, float radius, int shadowRadius) {}
-
-  public void renderGlow(
-      float x, float y, float width, float height, float radius, int shadowRadius, int color) {}
-
-  public void renderGlow(
-      float x, float y, float width, float height, float radius, float offset, int color) {}
-
-  private int applyOpacity(int color, float opacity) {
-    int alpha = (int) (opacity * 255);
-    return (color & 0x00FFFFFF) | (alpha << 24);
-  }
-
-  public void pushAlpha(float alpha) {
-    try (Paint paint = new Paint()) {
-      paint.setAlphaf(alpha);
-      canvas.saveLayer(null, paint);
-    }
-  }
-
-  public void popAlpha() {
     pop();
   }
 
