@@ -11,7 +11,6 @@ import me.baier.design.Design;
 import me.baier.utils.ResPack;
 import net.minecraft.resources.ResourceLocation;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
@@ -41,11 +40,14 @@ public class SkiaFont {
             "/assets/minecraft/client/fonts/" + name.toLowerCase() + ".ttf")) {
 
       byte[] array = inputStream.readAllBytes();
-      Data data = Data.makeFromBytes(array, 0, array.length);
-      loaded = Typeface.makeFromData(data, 0);
-    } catch (IOException e) {
-      // 字体缺失不崩溃: 回退系统默认字体
-      log.warn("字体资源缺失, 使用系统默认字体: {}", name);
+      // Data 是 native 资源: makeFromData 后 Skia 侧已持有引用, Java 包装用完即还
+      try (Data data = Data.makeFromBytes(array, 0, array.length)) {
+        loaded = Typeface.makeFromData(data, 0);
+      }
+    } catch (Exception e) {
+      // 字体缺失**或损坏**都不崩溃 (损坏的 ttf 会抛非 IO 异常, 只捕 IOException 会炸掉
+      // FontSet 类初始化进而黑掉整个主菜单): 回退系统默认字体
+      log.warn("字体加载失败(缺失或损坏), 使用系统默认字体: {}", name, e);
       loaded = Typeface.makeDefault();
     }
     this.typeface = loaded;
