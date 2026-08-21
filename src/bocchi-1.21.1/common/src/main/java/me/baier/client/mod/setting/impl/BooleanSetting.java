@@ -28,7 +28,9 @@ public class BooleanSetting extends Setting<Boolean> {
     public static class Builder extends Setting.SettingBuilder<Builder, Boolean, BooleanSetting> {
         @Override
         public BooleanSetting build() {
-            return new BooleanSetting(name, value, defaultValue, parent);
+            // Setting 构造器参数顺序为 (label, defaultValue, value, parent)
+            // 旧代码把 value/defaultValue 传反: .value(true) 后真实值是 null
+            return new BooleanSetting(name, defaultValue, value, parent);
         }
     }
 }
