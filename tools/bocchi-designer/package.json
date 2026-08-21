@@ -1,0 +1,12 @@
+﻿{
+  "name": "bocchi-designer",
+  "private": true,
+  "type": "module",
+  "description": "Bocchi Client Design Editor - 零依赖 Web 工具 (无 npm 依赖, package.json 仅承载脚本)",
+  "scripts": {
+    "test": "node --test",
+    "check-layout": "python sync/check-layout.py",
+    "serve": "python -m http.server 8833 --bind 127.0.0.1"
+  }
+}
+
