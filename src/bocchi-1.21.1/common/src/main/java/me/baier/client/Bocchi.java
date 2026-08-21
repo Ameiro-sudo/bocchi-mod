@@ -29,7 +29,6 @@ public class Bocchi implements EventMonitor {
   }
 
   public void start() {
-    // TODO : implement a config system to handle these shits.
     modManager = Mods.INSTANCE.initialize();
     Cfgs.INSTANCE.initialize();
   }
