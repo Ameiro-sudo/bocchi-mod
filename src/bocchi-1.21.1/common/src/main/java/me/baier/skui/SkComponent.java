@@ -106,6 +106,12 @@ public class SkComponent {
   }
 
   public void attach() {
+    // CREATED 状态的组件先补初始化: 屏幕构造流程通常只对 root 显式 initialize(),
+    // addChild 挂入的子组件若停留在 CREATED, 会被下方守卫静默跳过而永远无法挂载渲染
+    // (v1.0 主菜单侧栏不可见即此因)
+    if (lifecycleState == LifecycleState.CREATED) {
+      initialize();
+    }
     if (lifecycleState != LifecycleState.INITIALIZED && lifecycleState != LifecycleState.DETACHED) {
       return;
     }
