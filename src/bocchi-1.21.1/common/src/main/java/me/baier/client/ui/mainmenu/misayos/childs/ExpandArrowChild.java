@@ -29,22 +29,23 @@ public class ExpandArrowChild extends SkComponent {
   protected void onRender(SkiaEnvironment env, int mouseX, int mouseY) {
     var canvas = env.getCanvas();
     var paint = env.borrowPaint();
-    var path = getArrowPath();
-    paint.setColor(0xFFFFFFFF);
-    paint.setMode(PaintMode.FILL);
-    paint.setAntiAlias(true);
+    // Path 是 native 资源, try-with-resources 用完即还; 原先末尾的 path.close() 是
+    // "闭合轮廓"绘图指令而非释放, 曾导致每帧泄漏一个 native Path (修法同 ButtonChild)
+    try (Path path = getArrowPath()) {
+      paint.setColor(0xFFFFFFFF);
+      paint.setMode(PaintMode.FILL);
+      paint.setAntiAlias(true);
 
-    canvas.drawPath(path, paint);
-    paint.setColor(0xFFEBEBEB);
-    canvas.drawCircle(this.getAbsoluteX() + 1.5f, this.getAbsoluteY(), 3.f, paint);
-    path.close();
+      canvas.drawPath(path, paint);
+      paint.setColor(0xFFEBEBEB);
+      canvas.drawCircle(this.getAbsoluteX() + 1.5f, this.getAbsoluteY(), 3.f, paint);
+    }
     env.recyclePaint(paint);
   }
 
   public boolean isHovered() {
-    Path currentArrowPath = getArrowPath();
-    boolean isInside = currentArrowPath.contains(this.getMouseX(), this.getMouseY());
-    currentArrowPath.close();
-    return isInside;
+    try (Path currentArrowPath = getArrowPath()) {
+      return currentArrowPath.contains(this.getMouseX(), this.getMouseY());
+    }
   }
 }
