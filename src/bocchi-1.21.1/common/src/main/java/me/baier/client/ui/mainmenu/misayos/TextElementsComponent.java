@@ -6,6 +6,7 @@ import io.github.humbleui.types.Rect;
 import me.baier.animation.BezierAnimation;
 import me.baier.client.ui.mainmenu.component.api.AbstractBaseComponent;
 import me.baier.client.ui.model.MainMenuMisayosFrameContext;
+import me.baier.design.Design;
 import me.baier.graphics.SkiaContext;
 import me.baier.graphics.SkiaRenderEngine;
 import me.baier.graphics.font.FontSet;
@@ -56,20 +57,24 @@ public class TextElementsComponent extends AbstractBaseComponent<MainMenuMisayos
     var infoCurrentColor =
         ColorUtil.replaceAlpha(
             0xFFFFFFFF, Math.round(Mth.lerp(infoTextAnim.getCurrentValue(), 0.f, 255.f)));
+    String infoLine1 = Design.value("texts.mInfoLine1", "Goto, nicknamed \"Little Solitude\", ");
+    String infoLine2 =
+        Design.value("texts.mInfoLine2", "is a girl who always starts her speech with \"Ah...\" ");
+    String infoLine3 = Design.value("texts.mInfoLine3", "and is extremely accepting and introverted");
     infoFont.drawString(
-        "Goto, nicknamed \"Little Solitude\", ",
+        infoLine1,
         blockPos1.getX() + blockSize * 0.15f,
         blockSize * 0.05f - infoFont.getHalfHeight() / 2,
         infoCurrentColor,
         infoCurrentSpacing);
     infoFont.drawString(
-        "is a girl who always starts her speech with \"Ah...\" ",
+        infoLine2,
         blockPos1.getX() + blockSize * 0.15f,
         blockSize * 0.05f - infoFont.getHalfHeight() / 2 + infoFont.getHeight() + 1.f,
         infoCurrentColor,
         Mth.lerp(infoTextAnim.getCurrentValue(), 0.5f, -0.15f));
     infoFont.drawString(
-        "and is extremely accepting and introverted",
+        infoLine3,
         blockPos1.getX() + blockSize * 0.15f,
         blockSize * 0.05f - infoFont.getHalfHeight() / 2 + infoFont.getHeight() * 2 + 2.f,
         infoCurrentColor,
@@ -100,41 +105,48 @@ public class TextElementsComponent extends AbstractBaseComponent<MainMenuMisayos
     var currentDecorateColor =
         ColorUtil.replaceAlpha(
             0XFFFFFFFF, Math.round(Mth.lerp(decorateAnim.getCurrentValue(), 0.f, 255.f)));
+    String decorateText = Design.value("texts.mPhobia", "SOCIAL  PHOBIA");
     decorateFont.drawString(
-        "SOCIAL  PHOBIA",
+        decorateText,
         blockPos1.getX() + blockSize * 0.04f,
         blockPos1.getY() + 0.5f,
         currentDecorateColor,
         currentDecorateSpacing);
 
-    float bocchiTextFinalX = blockPos1.getX() - mainTextFont.getStringWidth("B") * 1.2f;
-    float bocchiTextFinalY = blockPos1.getY() + mainTextFont.getHeight() - 5.f; // Baseline
-    float bocchiTextWidth = mainTextFont.getStringWidth("BOCCHI", -1.5f);
+    // 大标题组文案可配置 (design.json texts.*); 宽度锚点按实际文案测量
+    String bocchiText = Design.value("texts.mBocchi", "BOCCHI");
+    String theRockText = Design.value("texts.mRock", "THE ROCK!");
+    String gotohBoxText = Design.value("texts.mBoxGotoh", "Gotoh Hitori");
+    String reclusiveBoxText = Design.value("texts.mBoxGirl", "A reclusive girl");
 
-    float theRockFinalPosX = blockPos1.getX() - mainTextFont.getStringWidth("T") / 2f;
+    float bocchiTextFinalX = blockPos1.getX() - mainTextFont.getStringWidth(charAt(bocchiText, 0)) * 1.2f;
+    float bocchiTextFinalY = blockPos1.getY() + mainTextFont.getHeight() - 5.f; // Baseline
+    float bocchiTextWidth = mainTextFont.getStringWidth(bocchiText, -1.5f);
+
+    float theRockFinalPosX = blockPos1.getX() - mainTextFont.getStringWidth(charAt(theRockText, 0)) / 2f;
     float theRockFinalPosY = blockPos1.getY() + mainTextFont.getHeight() * 2.f; // Baseline
-    float theRockTextWidth = mainTextFont.getStringWidth("THE ROCK!", -1.5f);
+    float theRockTextWidth = mainTextFont.getStringWidth(theRockText, -1.5f);
 
     float gotohTextXArg =
         theRockFinalPosX
-            + (mainTextFont.getStringWidth("THE RO", -1.5f)
-                    + mainTextFont.getStringWidth("THE ROC", -1.5f))
+            + (mainTextFont.getStringWidth(prefix(theRockText, 6), -1.5f)
+                    + mainTextFont.getStringWidth(prefix(theRockText, 7), -1.5f))
                 / 2f
-            - mainTextFont.getStringWidth("O") / 2f;
+            - mainTextFont.getStringWidth(charAt(theRockText, 5)) / 2f;
     float gotohTextYArg = theRockFinalPosY + mainTextFont.getHeight() * 1.25f;
 
-    float reclusiveTextXArg = theRockFinalPosX + mainTextFont.getStringWidth("THE ROC", -1.5f);
+    float reclusiveTextXArg = theRockFinalPosX + mainTextFont.getStringWidth(prefix(theRockText, 7), -1.5f);
     float reclusiveTextYArg = theRockFinalPosY - mainTextFont.getHeight() / 4.f;
 
     float gotohContentWidth =
-        roundBoxFont.getStringWidth("Gotoh Hitori") + (-0.35f * "Gotoh Hitori".length());
+        roundBoxFont.getStringWidth(gotohBoxText) + (-0.35f * gotohBoxText.length());
     float gotohBoxRectX = gotohTextXArg - gotohContentWidth * (1.3f - 1) / 2.f;
     float gotohBoxRectY = gotohTextYArg - roundBoxFont.getHeight() * (1.4f - 1) / 2.f;
     float gotohBoxRectWidth = gotohContentWidth * 1.3f;
     float gotohBoxRectHeight = roundBoxFont.getHeight() * 1.4f;
 
     float reclusiveContentWidth =
-        textBoxFont.getStringWidth("A reclusive girl") + (-0.35f * "A reclusive girl".length());
+        textBoxFont.getStringWidth(reclusiveBoxText) + (-0.35f * reclusiveBoxText.length());
     float reclusiveBoxRectX = reclusiveTextXArg - reclusiveContentWidth * (1.1f - 1) / 2.f;
     float reclusiveBoxRectY = reclusiveTextYArg - textBoxFont.getHeight() * (1.8f - 1) / 2.f;
     float reclusiveBoxRectWidth = reclusiveContentWidth * 1.1f;
@@ -194,12 +206,12 @@ public class TextElementsComponent extends AbstractBaseComponent<MainMenuMisayos
     canvas.scale(currentScale, currentScale);
     canvas.translate(-scalePivotX, -scalePivotY);
 
-    mainTextFont.drawString("BOCCHI", bocchiTextFinalX, bocchiTextFinalY, 0XFFFFFFFF, -1.5f);
-    mainTextFont.drawString("THE ROCK!", theRockFinalPosX, theRockFinalPosY, 0XFFFFFFFF, -1.5f);
+    mainTextFont.drawString(bocchiText, bocchiTextFinalX, bocchiTextFinalY, 0XFFFFFFFF, -1.5f);
+    mainTextFont.drawString(theRockText, theRockFinalPosX, theRockFinalPosY, 0XFFFFFFFF, -1.5f);
     drawTextBox(
         canvas,
         roundBoxFont,
-        "Gotoh Hitori",
+        gotohBoxText,
         gotohTextXArg,
         gotohTextYArg,
         0XFFFFFFFF,
@@ -211,7 +223,7 @@ public class TextElementsComponent extends AbstractBaseComponent<MainMenuMisayos
     drawTextBox(
         canvas,
         textBoxFont,
-        "A reclusive girl",
+        reclusiveBoxText,
         reclusiveTextXArg,
         reclusiveTextYArg,
         0XFFFFFFFF,
@@ -223,5 +235,15 @@ public class TextElementsComponent extends AbstractBaseComponent<MainMenuMisayos
 
     canvas.restore();
     canvas.restore();
+  }
+
+  /** 截断到前 n 个字符 (自定义文案比默认短时保证不越界) */
+  private static String prefix(String s, int n) {
+    return s.substring(0, Math.min(n, s.length()));
+  }
+
+  /** 取第 i 个字符; 空串返回空串 */
+  private static String charAt(String s, int i) {
+    return s.isEmpty() ? "" : String.valueOf(s.charAt(Math.min(i, s.length() - 1)));
   }
 }

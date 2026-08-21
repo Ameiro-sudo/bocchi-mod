@@ -1,7 +1,6 @@
 package aka.bocchi.injection.mixins.transformers;
 
 import com.mojang.blaze3d.platform.Window;
-import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import me.baier.client.Bocchi;
 import me.baier.client.ui.theme.Theme;
@@ -23,8 +22,6 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.util.Objects;
-
 @Mixin(Minecraft.class)
 public abstract class MixinMinecraftClient {
 
@@ -37,7 +34,11 @@ public abstract class MixinMinecraftClient {
     Bocchi.INSTANCE.start();
   }
 
-  @Inject(method = "reloadResourcePacks", at = @At("TAIL"))
+  // 带描述符精确匹配无参重载 reloadResourcePacks(), 避免同时命中
+  // reloadResourcePacks(boolean, GameLoadCookie) 导致每次重载执行两遍
+  @Inject(
+      method = "reloadResourcePacks()Ljava/util/concurrent/CompletableFuture;",
+      at = @At("TAIL"))
   private void hookReloadResourcePacks(CallbackInfoReturnable<CompletableFuture<Void>> info) {
     info.getReturnValue()
         .thenRun(

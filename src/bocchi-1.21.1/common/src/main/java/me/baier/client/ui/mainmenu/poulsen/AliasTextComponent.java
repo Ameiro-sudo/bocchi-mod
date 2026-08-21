@@ -4,6 +4,7 @@ import io.github.humbleui.types.Point;
 import me.baier.animation.BezierAnimation;
 import me.baier.client.ui.mainmenu.component.api.AbstractBaseComponent;
 import me.baier.client.ui.model.MainMenuPoulsenFrameContext;
+import me.baier.design.Design;
 import me.baier.graphics.SkiaContext;
 import me.baier.graphics.font.FontSet;
 import me.baier.utils.ScreenUtils;
@@ -34,7 +35,7 @@ public class AliasTextComponent extends AbstractBaseComponent<MainMenuPoulsenFra
 
     var nameFont_alias = FontSet.MEIRYO_BOLD.getFont(bgFontSize * 0.221f);
     var quotationFont = FontSet.MEIRYO_BOLD.getFont((bgFontSize * 0.221f) * 1.25f);
-    String aliasText = "ギターヒーロー";
+    String aliasText = Design.value("texts.pAliasText", "ギターヒーロー");
     float aliasTextWidth = nameFont_alias.getStringWidth(aliasText);
     float aliasTextFinalX = (rect1PosX + rect1Width) - nameFont_alias.getHalfHeight();
     float aliasTextFinalY = screenHeight * 0.45f;

@@ -278,6 +278,8 @@
     for (const elId of Object.keys(DEFAULT_TEXTS)) {
       const v = state.TEXTS[elId] != null ? state.TEXTS[elId] : DEFAULT_TEXTS[elId];
       applyText(elId, v);
+      const rec = TEXT_INPUTS[elId];
+      if (rec && document.activeElement !== rec.input) rec.input.value = v;
     }
   }
 
@@ -331,8 +333,8 @@
     body.appendChild(hint);
 
     /* 文本内容 */
-    body = addSection("文本内容（仅预览，不导出 design.json）", "texts", {
-      badge: "游戏内文案为代码内置",
+    body = addSection("文本内容 texts（导出 design.json）", "texts", {
+      badge: "游戏内已接入 texts 段",
     });
     const t2 = document.createElement("div");
     t2.className = "grid";
@@ -348,6 +350,10 @@
     addTextRow(t2, "分支", "pBranch");
     addTextRow(t2, "版权行 1", "pCopy1");
     addTextRow(t2, "版权行 2", "pCopy2");
+    addTextRow(t2, "poulsen 姓 HITORI (上)", "pHitoriTop");
+    addTextRow(t2, "poulsen 姓 HITORI (下)", "pHitoriBottom");
+    addTextRow(t2, "poulsen 名 GOTO (上)", "pGoto1");
+    addTextRow(t2, "poulsen 名 GOTO (下)", "pGoto2");
     addTextRow(t2, "poulsen 姓名", "pJName");
     addTextRow(t2, "poulsen 假名", "pJKana");
     addTextRow(t2, "poulsen 别名", "pAliasText");
@@ -394,7 +400,7 @@
     themeLab.textContent = "theme";
     const themeSel = document.createElement("select");
     themeSel.id = "themeSel";
-    for (const [v, l] of [["misayos", "misayos（喜多郁代，默认）"], ["poulsen", "poulsen（后藤独）"]]) {
+    for (const [v, l] of [["misayos", "misayos（默认）"], ["poulsen", "poulsen"]]) {
       const o = document.createElement("option");
       o.value = v; o.textContent = l;
       themeSel.appendChild(o);

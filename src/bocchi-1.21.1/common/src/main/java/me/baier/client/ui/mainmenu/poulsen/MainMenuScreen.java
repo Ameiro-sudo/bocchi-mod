@@ -20,6 +20,8 @@ import net.minecraft.client.gui.screens.worldselection.SelectWorldScreen;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL33C;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,9 +29,10 @@ import java.util.List;
 import java.util.Map;
 
 public class MainMenuScreen extends Screen {
-  public static volatile MainMenuScreen INSTANCE;
+  public static MainMenuScreen INSTANCE;
   private static final Component TITLE = Component.literal("Main Menu");
   private static final int BUTTON_Z_INDEX = 14;
+  private static final Logger LOGGER = LoggerFactory.getLogger(MainMenuScreen.class);
   private final Map<Integer, IComponent<? super MainMenuPoulsenFrameContext>> components =
       new HashMap<>();
   private final List<ButtonControl> buttons = new ArrayList<>();
@@ -134,23 +137,34 @@ public class MainMenuScreen extends Screen {
     }
 
     var ctx = SkiaContext.get();
+    if (!ctx.canRender()) {
+      return; // 窗口最小化 (0 像素) 等场景, 跳过本帧渲染
+    }
     var canvas = ctx.canvas();
 
     ctx.begin();
 
-    Rect screenBounds = Rect.makeWH(frame.getScaledWidth(), frame.getScaledHeight());
-    int globalAlpha = Math.round(Math.clamp(alphaAnimation.getCurrentValue(), 0, 255));
-    canvas.saveLayerAlpha(screenBounds, globalAlpha);
+    // try/finally 保证 saveLayer/end 配对: 任一组件抛异常后不污染 GL 状态与 canvas 层栈
+    int saveCount = -1;
+    try {
+      Rect screenBounds = Rect.makeWH(frame.getScaledWidth(), frame.getScaledHeight());
+      int globalAlpha = Math.round(Math.clamp(alphaAnimation.getCurrentValue(), 0, 255));
+      saveCount = canvas.saveLayerAlpha(screenBounds, globalAlpha);
 
-    for (int i = 0; i < components.size(); i++) {
-      if (renderAsBackground && i >= BUTTON_Z_INDEX) {
-        continue;
+      for (int i = 0; i < components.size(); i++) {
+        if (renderAsBackground && i >= BUTTON_Z_INDEX) {
+          continue;
+        }
+        components.get(i).render(ctx, frame);
       }
-      components.get(i).render(ctx, frame);
+    } catch (Throwable t) {
+      LOGGER.error("bocchi: main menu render failed", t);
+    } finally {
+      if (saveCount >= 0) {
+        canvas.restoreToCount(saveCount);
+      }
+      ctx.end();
     }
-
-    canvas.restore();
-    ctx.end();
 
     if (renderAsBackground) {
 

@@ -39,9 +39,34 @@
     "vinyl_groove": "#1FFFFFFF",
     "vinyl_label": "#981A1A1A"
   },
+  "texts": {
+    "_comment": "界面文案. mInfoLine1~3 为 misayos 介绍三行; 其余键与 Bocchi Designer 文本面板一致",
+    "mBocchi": "BOCCHI",
+    "mRock": "THE ROCK!",
+    "mBoxGotoh": "Gotoh Hitori",
+    "mBoxGirl": "A reclusive girl",
+    "mPhobia": "SOCIAL  PHOBIA",
+    "mInfoLine1": "Goto, nicknamed \"Little Solitude\",",
+    "mInfoLine2": "is a girl who always starts her speech with \"Ah...\"",
+    "mInfoLine3": "and is extremely accepting and introverted",
+    "pTitle": "BOCCHI",
+    "pVer": "1.0",
+    "pBranch": "\"ALPHA\"",
+    "pCopy1": "Bocchi Client    Version - 1.0",
+    "pCopy2": "@COPYRIGHT MISAYO",
+    "pHitoriTop": "HITORI",
+    "pHitoriBottom": "HITORI",
+    "pGoto1": "GOTO",
+    "pGoto2": "GOTO",
+    "pJName": "後藤 ひとり",
+    "pJKana": "ご   とう",
+    "pAliasText": "ギターヒーロー",
+    "pAdd1": "FEBRUARY 21",
+    "pAdd2": "50 kg & 156 cm",
+    "pAdd3": "Aqua eye"
+  },
   "menu": {
-    "_comment": "主菜单主题: misayos (喜多郁代, 默认) / poulsen (后藤独). 材质包覆盖此项即可切换主题, 资源重载后生效",
+    "_comment": "主菜单主题: misayos (后藤独, 默认) / poulsen (后藤独·姓名版). 材质包覆盖此项即可切换主题, 资源重载后生效",
     "theme": "misayos"
-  }
   }
 }

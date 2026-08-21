@@ -4,6 +4,7 @@ import io.github.humbleui.types.Point;
 import me.baier.animation.BezierAnimation;
 import me.baier.client.ui.mainmenu.component.api.AbstractBaseComponent;
 import me.baier.client.ui.model.MainMenuPoulsenFrameContext;
+import me.baier.design.Design;
 import me.baier.graphics.SkiaContext;
 import me.baier.graphics.font.FontSet;
 import me.baier.utils.ColorUtil;
@@ -34,7 +35,7 @@ public class BottomLastNameComponent extends AbstractBaseComponent<MainMenuPouls
 
     var canvas = ctx.canvas();
     var sharedFontForGoto = FontSet.RADIKAL_BLACK.getFont(bgFontSize);
-    String bottomHitoriTextStr = "HITORI";
+    String bottomHitoriTextStr = Design.value("texts.pHitoriBottom", "HITORI");
     float bottomHitoriFinalX = rect1PosX - sharedFontForGoto.getHalfHeight() / 4.5f;
     float rect3PosY_val = screenHeight * 0.586f;
     float rect3Height_val_for_hitori = screenHeight * 0.086f;
@@ -54,7 +55,7 @@ public class BottomLastNameComponent extends AbstractBaseComponent<MainMenuPouls
 
     if (bottomHitoriTextAnim != null)
       sharedFontForGoto.drawString(
-          "HITORI",
+          bottomHitoriTextStr,
           Mth.lerp(
               bottomHitoriTextAnim.getCurrentValue(),
               bottomHitoriStartPos.getX(),

@@ -9,8 +9,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import me.baier.client.ClientInstance;
@@ -21,6 +23,8 @@ import net.minecraft.resources.ResourceLocation;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author AquaVase Created on 7/10/2024
@@ -31,11 +35,24 @@ public class SkiaRenderEngine implements ClientInstance {
   private static final int MAX_CACHE_ENTRIES = 256;
   private static final int TRIM_TO_ENTRIES = 128;
 
+  private static final Logger LOGGER = LoggerFactory.getLogger(SkiaRenderEngine.class);
+
   private final Map<String, Image> TEXTURE_MAP = new LinkedHashMap<>(64, 0.75f, true);
+
+  /** 加载失败的资源: 缓存失败态避免每帧重试 IO 与日志刷屏; 资源重载时随纹理缓存一并清空. */
+  private static final Set<String> FAILED_RESOURCES = new HashSet<>();
 
   public void clearTextureCache() {
     TEXTURE_MAP.values().forEach(Image::close);
     TEXTURE_MAP.clear();
+    FAILED_RESOURCES.clear();
+  }
+
+  /** 记录一次资源加载失败并缓存失败态, 本会话内不再重试该资源. */
+  private void markFailed(ResourceLocation res, IOException e) {
+    if (FAILED_RESOURCES.add(res.toString())) {
+      LOGGER.warn("bocchi: resource load failed, skipping for this session: {} ({})", res, e);
+    }
   }
 
   private void putCached(String key, Image image) {
@@ -279,6 +296,9 @@ public class SkiaRenderEngine implements ClientInstance {
   }
 
   public Image getImageFromResource(ResourceLocation res) {
+    if (FAILED_RESOURCES.contains(res.toString())) {
+      return null;
+    }
     if (!TEXTURE_MAP.containsKey(res.toString())) {
 
       try (InputStream inputStream =
@@ -290,6 +310,7 @@ public class SkiaRenderEngine implements ClientInstance {
         putCached(res.toString(), image);
         return image;
       } catch (IOException e) {
+        markFailed(res, e);
         return null;
       }
     }
@@ -380,6 +401,9 @@ public class SkiaRenderEngine implements ClientInstance {
       texture = TEXTURE_MAP.get(rawKey);
     }
     if (texture == null) {
+      if (FAILED_RESOURCES.contains(res.toString())) {
+        return;
+      }
       Image decoded;
       try (InputStream inputStream =
           ((IAccessorTextureManager) mc.getTextureManager())
@@ -387,6 +411,9 @@ public class SkiaRenderEngine implements ClientInstance {
               .getResourceOrThrow(res)
               .open()) {
         decoded = Image.makeDeferredFromEncodedBytes(inputStream.readAllBytes());
+      } catch (IOException e) {
+        markFailed(res, e);
+        return;
       }
       float scaleW = width * uiScale / decoded.getWidth();
       float scaleH = height * uiScale / decoded.getHeight();
@@ -485,6 +512,9 @@ public class SkiaRenderEngine implements ClientInstance {
     if (res == null) return;
 
     if (!TEXTURE_MAP.containsKey(res.toString())) {
+      if (FAILED_RESOURCES.contains(res.toString())) {
+        return;
+      }
 
       Image image;
       try (InputStream inputStream =
@@ -493,12 +523,18 @@ public class SkiaRenderEngine implements ClientInstance {
               .getResourceOrThrow(res)
               .open()) {
         image = Image.makeDeferredFromEncodedBytes(inputStream.readAllBytes());
+      } catch (IOException e) {
+        markFailed(res, e);
+        return;
       }
 
       putCached(res.toString(), image);
     }
 
     Image texture = TEXTURE_MAP.get(res.toString());
+    if (texture == null) {
+      return;
+    }
 
     try (Paint paint = new Paint()) {
       paint.setAntiAlias(true);

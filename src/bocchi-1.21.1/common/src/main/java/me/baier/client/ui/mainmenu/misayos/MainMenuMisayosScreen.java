@@ -99,6 +99,9 @@ public class MainMenuMisayosScreen extends Screen {
     guiComponent.update(frame); // 面板 UI 由 root 渲染, 动画仍需逐帧更新
 
     var ctx = SkiaContext.get();
+    if (!ctx.canRender()) {
+      return; // 窗口最小化 (0 像素) 等场景, 跳过本帧渲染
+    }
     var canvas = ctx.canvas();
 
     SkiaEnvironment.run(

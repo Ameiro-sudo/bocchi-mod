@@ -12,6 +12,7 @@ import me.baier.client.ui.mainmenu.misayos.childs.ExpandArrowChild;
 
 import me.baier.client.ui.mainmenu.misayos.childs.IconButtonChild;
 import me.baier.client.ui.model.MainMenuMisayosFrameContext;
+import me.baier.design.Design;
 
 import me.baier.graphics.SkiaContext;
 
@@ -239,11 +240,17 @@ public class GuiComponent extends SkComponent implements IComponent<MainMenuMisa
         this.getHeight(),
         0xFFF5F5F5);
     var titleFont = FontSet.SH_HEAVY.getFont(21);
-    var bocchiWidth = titleFont.getStringWidth("BOCCHI", -0.1f);
+    // 面板文案可配置 (design.json texts.*)
+    String panelTitle = Design.value("texts.pTitle", "BOCCHI");
+    String versionText = Design.value("texts.pVer", "1.0");
+    String branchText = Design.value("texts.pBranch", "\"ALPHA\"");
+    String copyright1 = Design.value("texts.pCopy1", "Bocchi Client    Version - 1.0");
+    String copyright2 = Design.value("texts.pCopy2", "@COPYRIGHT MISAYO");
+    var bocchiWidth = titleFont.getStringWidth(panelTitle, -0.1f);
     var titlePosX = this.getAbsoluteX() + bocchiWidth / 2;
     var titlePosY = this.getAbsoluteY() + titleFont.getHeight() + 3.f;
     var linePaint = env.borrowPaint().setStroke(true).setStrokeWidth(0.2f).setColor(0X66353535);
-    titleFont.drawString("BOCCHI", titlePosX, titlePosY, 0XFF353535, -0.1f);
+    titleFont.drawString(panelTitle, titlePosX, titlePosY, 0XFF353535, -0.1f);
     canvas.drawLine(
         titlePosX - 2.5f,
         titlePosY + titleFont.getHeight() + 2.5f,
@@ -254,7 +261,7 @@ public class GuiComponent extends SkComponent implements IComponent<MainMenuMisa
     drawTextStrokeBox(
         canvas,
         versionFont,
-        "1.0",
+        versionText,
         titlePosX + bocchiWidth + 5.f,
         titlePosY + titleFont.getHalfHeight() / 2 + versionFont.getHalfHeight() / 2,
         0xFF353535,
@@ -268,7 +275,7 @@ public class GuiComponent extends SkComponent implements IComponent<MainMenuMisa
     var branchTextPosX = titlePosX;
     var branchTextPosY =
         titlePosY + titleFont.getHeight() + branchFont.getHalfHeight() / 2 + 1.f + 3.f;
-    branchFont.drawString("\"ALPHA\"", branchTextPosX, branchTextPosY, 0XFF353535, -0.1f);
+    branchFont.drawString(branchText, branchTextPosX, branchTextPosY, 0XFF353535, -0.1f);
     float lineY = this.getAbsoluteY() + this.getHeight() * 0.85f;
     canvas.drawLine(
         this.getAbsoluteX() + borderWidth + 3.f,
@@ -278,15 +285,15 @@ public class GuiComponent extends SkComponent implements IComponent<MainMenuMisa
         linePaint);
     env.recyclePaint(linePaint);
     var copyRightFont = FontSet.SH_NORMAL.getFont(7);
-    var branchVersionWidth = copyRightFont.getStringWidth("Bocchi Client    Version - 1.0");
+    var branchVersionWidth = copyRightFont.getStringWidth(copyright1);
     copyRightFont.drawString(
-        "Bocchi Client    Version - 1.0",
+        copyright1,
         this.getAbsoluteX() + 5.f + (this.getWidth() - 5.f - branchVersionWidth) / 2,
         this.getAbsoluteY() + this.getHeight() - copyRightFont.getHeight() * 3 - 5.f,
         0xFF353535);
-    var copyRightWidth = copyRightFont.getStringWidth("@COPYRIGHT MISAYO");
+    var copyRightWidth = copyRightFont.getStringWidth(copyright2);
     copyRightFont.drawString(
-        "@COPYRIGHT MISAYO",
+        copyright2,
         this.getAbsoluteX() + 5.f + (this.getWidth() - 5.f - copyRightWidth) / 2,
         this.getAbsoluteY() + this.getHeight() - copyRightFont.getHeight() * 2 - 2.5f,
         0xFF353535);

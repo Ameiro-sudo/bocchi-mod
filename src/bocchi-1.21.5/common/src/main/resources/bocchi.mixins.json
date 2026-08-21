@@ -9,8 +9,6 @@
     "interfaces.IAccessorGlBuffer",
     "interfaces.IAccessorMinecraft",
     "interfaces.IAccessorTextureManager",
-    "transformers.MixinGameRenderer",
-    "transformers.MixinInGameHUD",
     "transformers.MixinLocalPlayer",
     "transformers.MixinMinecraftClient",
     "transformers.MixinMouseHandler",

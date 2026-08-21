@@ -116,6 +116,7 @@ release/
 | `svgs` | 主菜单按钮图标：`single` / `multi` / `option` / `quit` / `lang` / `theme` |
 | `fonts` | Skia 字体，键 = FontSet 字体名，值 = ttf 文件路径（更换需重启） |
 | `colors` | 唱片配色 `vinyl_*`，格式 `#RRGGBB` 或 `#AARRGGBB` |
+| `texts` | 界面文案：主菜单大标题/姓名框/介绍（`mInfoLine1~3`）、面板标题与版权行、poulsen 姓名假名别名、信息条等，键见 Bocchi Designer 文本面板 |
 | `menu` | `theme`: `"misayos"`（默认）/ `"poulsen"` |
 
 ### 加载动画规格

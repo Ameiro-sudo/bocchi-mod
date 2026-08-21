@@ -17,6 +17,7 @@ import me.baier.skui.layout.SkLayout;
 public class SkComponent {
 
   public enum LifecycleState {
+    CREATED,
     INITIALIZED,
     ATTACHED,
     RENDERED,
@@ -54,7 +55,7 @@ public class SkComponent {
 
   @Getter private boolean focused = false;
 
-  @Getter private LifecycleState lifecycleState = LifecycleState.INITIALIZED;
+  @Getter private LifecycleState lifecycleState = LifecycleState.CREATED;
 
   private final ConcurrentLinkedQueue<Consumer<SkComponent>> updateListeners =
       new ConcurrentLinkedQueue<>();
@@ -92,7 +93,7 @@ public class SkComponent {
 
   /* Lifecycle methods */
   public void initialize() {
-    if (lifecycleState == LifecycleState.INITIALIZED) {
+    if (lifecycleState != LifecycleState.CREATED) {
       return;
     }
 

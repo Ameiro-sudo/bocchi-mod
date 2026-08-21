@@ -22,8 +22,8 @@
     $("swPoulsen").classList.toggle("active", name === "poulsen");
     const names = {
       splash: "加载页（点击 TAP TO START）",
-      misayos: "主菜单 misayos（喜多郁代）",
-      poulsen: "主菜单 poulsen（后藤独）",
+      misayos: "主菜单 misayos",
+      poulsen: "主菜单 poulsen",
     };
     BD.panels.setStatus("<b>" + names[name] + "</b> · 1:1 预览 · 1280×720 设计分辨率" + (name === "misayos" ? " · 点击元素可选中拖拽" : ""));
     if (name === "splash") startSplashDemo();

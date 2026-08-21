@@ -4,6 +4,7 @@ import io.github.humbleui.types.Point;
 import me.baier.animation.BezierAnimation;
 import me.baier.client.ui.mainmenu.component.api.AbstractBaseComponent;
 import me.baier.client.ui.model.MainMenuPoulsenFrameContext;
+import me.baier.design.Design;
 import me.baier.graphics.SkiaContext;
 import me.baier.graphics.font.FontSet;
 import me.baier.utils.ColorUtil;
@@ -48,7 +49,7 @@ public class BigFirstNameComponent extends AbstractBaseComponent<MainMenuPoulsen
     if (hitoriTextAnim != null) {
       var hitoriFontToUse = FontSet.RADIKAL_BLACK.getFont(bgFontSize * 0.552f);
       hitoriFontToUse.drawString(
-          "HITORI",
+          getName(),
           Mth.lerp(
               hitoriTextAnim.getCurrentValue(),
               hitoriStartPos.getX(),
@@ -62,6 +63,6 @@ public class BigFirstNameComponent extends AbstractBaseComponent<MainMenuPoulsen
   }
 
   private static String getName() {
-    return "HITORI";
+    return Design.value("texts.pHitoriTop", "HITORI");
   }
 }

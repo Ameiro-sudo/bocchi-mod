@@ -37,7 +37,18 @@ public class NumberSetting<T extends Number> extends Setting<T> {
         if (json.has("value")) {
             try {
                 Number number = json.get("value").getAsNumber();
-                setValue((T) number);
+                // 按当前值的实际类型转换, 避免把 Double 塞进 Integer 字段造成堆污染/CCE
+                if (value instanceof Integer) {
+                    setValue((T) Integer.valueOf(number.intValue()));
+                } else if (value instanceof Double) {
+                    setValue((T) Double.valueOf(number.doubleValue()));
+                } else if (value instanceof Float) {
+                    setValue((T) Float.valueOf(number.floatValue()));
+                } else if (value instanceof Long) {
+                    setValue((T) Long.valueOf(number.longValue()));
+                } else {
+                    setValue((T) number);
+                }
             } catch (Exception e) {
                 // 保持默认值
             }

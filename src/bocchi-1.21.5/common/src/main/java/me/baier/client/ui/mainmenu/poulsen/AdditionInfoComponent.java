@@ -5,6 +5,7 @@ import me.baier.animation.BezierAnimation;
 import me.baier.client.ui.mainmenu.component.api.AbstractBaseComponent;
 import me.baier.client.ui.model.MainMenuMisayosFrameContext;
 import me.baier.client.ui.model.MainMenuPoulsenFrameContext;
+import me.baier.design.Design;
 import me.baier.graphics.SkiaContext;
 import me.baier.graphics.SkiaRenderEngine;
 import me.baier.graphics.font.FontSet;
@@ -35,8 +36,9 @@ public class AdditionInfoComponent extends AbstractBaseComponent<MainMenuPoulsen
 
     float additionalInfoFinalWidth = screenWidth * 0.1076f;
     float additionalInfoFinalHeight = screenHeight * 0.0322f;
+    String addTitleText = Design.value("texts.pAdd1", "FEBRUARY 21");
     var infoTitleFontForCalc = FontSet.RADIKAL_BLACK.getFont(additionalInfoFinalHeight / 0.8f);
-    float feb21TextWidth = infoTitleFontForCalc.getStringWidth("FEBRUARY 21");
+    float feb21TextWidth = infoTitleFontForCalc.getStringWidth(addTitleText);
     if (feb21TextWidth > additionalInfoFinalWidth) additionalInfoFinalWidth = feb21TextWidth;
     float finalFebInfoX = rect1PosX + rect1Width;
     float finalFebInfoY = screenHeight * 0.734f;
@@ -65,7 +67,7 @@ public class AdditionInfoComponent extends AbstractBaseComponent<MainMenuPoulsen
       float additionalInfoCurrentHeight = frame.getScaledHeight() * 0.0322f;
       var infoTitleFont = FontSet.RADIKAL_BLACK.getFont(additionalInfoCurrentHeight / 0.8f);
       var infoContentFont = FontSet.RADIKAL_REGULAR.getFont(additionalInfoCurrentHeight / 0.8f);
-      float feb21TextWidthForRender = infoTitleFont.getStringWidth("FEBRUARY 21");
+      float feb21TextWidthForRender = infoTitleFont.getStringWidth(addTitleText);
       if (feb21TextWidthForRender > additionalInfoCurrentWidth)
         additionalInfoCurrentWidth = feb21TextWidthForRender;
 
@@ -83,14 +85,14 @@ public class AdditionInfoComponent extends AbstractBaseComponent<MainMenuPoulsen
       float infoFontDrawPosY =
           (finalFebInfoY_orig + additionalInfoCurrentHeight / 2)
               - infoTitleFont.getHalfHeight() / 2;
-      infoTitleFont.drawString("FEBRUARY 21", infoFontDrawPosX, infoFontDrawPosY, 0XFFFFFFFF);
+      infoTitleFont.drawString(addTitleText, infoFontDrawPosX, infoFontDrawPosY, 0XFFFFFFFF);
       infoContentFont.drawString(
-          "50 kg & 156 cm",
+          Design.value("texts.pAdd2", "50 kg & 156 cm"),
           infoFontDrawPosX,
           infoFontDrawPosY + additionalInfoCurrentHeight,
           0XFF424242);
       infoContentFont.drawString(
-          "Aqua eye",
+          Design.value("texts.pAdd3", "Aqua eye"),
           infoFontDrawPosX,
           infoFontDrawPosY + additionalInfoCurrentHeight * 2,
           0XFF424242);

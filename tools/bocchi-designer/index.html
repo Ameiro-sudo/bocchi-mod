@@ -9,20 +9,28 @@
 </head>
 <body>
 <header>
-  <div class="brand"><span class="brand-mark"></span><h1>Bocchi Designer</h1></div>
-  <span class="sub">材质包制作 · 布局常量与 Java 端同步 (sync/check-layout.py)</span>
-  <div class="actions">
-    <button class="btn-sec" id="btnImport" title="导入材质包 zip 或 design.json (也支持直接拖拽)">导入</button>
-    <button class="tab active" id="swMisayos">主菜单 · 喜多郁代</button>
-    <button class="tab" id="swPoulsen">主菜单 · 后藤独</button>
-    <button class="tab" id="swSplash">加载页</button>
-    <button class="btn-ghost" id="btnReplay">重播动画</button>
-    <span class="seg" title="预览缩放: 适应窗口 / 100% / 200%">
-      <button data-zoom="0" class="on">适应</button>
-      <button data-zoom="1">100%</button>
-      <button data-zoom="2">200%</button>
-    </span>
+  <div class="brand">
+    <span class="brand-mark"></span>
+    <div class="brand-text">
+      <h1>Bocchi <em>Designer</em></h1>
+      <span class="sub">材质包制作 · 布局常量与 Java 端同步 (sync/check-layout.py)</span>
+    </div>
   </div>
+  <span class="h-sep"></span>
+  <nav class="tabs">
+    <button class="tab active" id="swMisayos">主菜单 · misayos</button>
+    <button class="tab" id="swPoulsen">主菜单 · poulsen</button>
+    <button class="tab" id="swSplash">加载页</button>
+  </nav>
+  <span class="sp"></span>
+  <button class="btn-ghost" id="btnReplay">重播动画</button>
+  <span class="seg" title="预览缩放: 适应窗口 / 100% / 200%">
+    <button data-zoom="0" class="on">适应</button>
+    <button data-zoom="1">100%</button>
+    <button data-zoom="2">200%</button>
+  </span>
+  <span class="h-sep"></span>
+  <button class="btn-pri" id="btnImport" title="导入材质包 zip 或 design.json (也支持直接拖拽)">导入</button>
 </header>
 <div class="layout">
   <div class="preview-wrap">

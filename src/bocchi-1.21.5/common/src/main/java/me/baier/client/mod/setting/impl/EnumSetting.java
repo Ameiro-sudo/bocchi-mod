@@ -94,7 +94,8 @@ public class EnumSetting <T extends Enum<T>> extends Setting<T> {
 
         @Override
         public EnumSetting<T> build() {
-            return new EnumSetting<>(name, value, defaultValue, parent);
+            // Setting 构造器参数顺序为 (label, defaultValue, value, parent)
+            return new EnumSetting<>(name, defaultValue, value, parent);
         }
     }
 }

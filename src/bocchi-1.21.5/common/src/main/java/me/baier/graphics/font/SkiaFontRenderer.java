@@ -152,6 +152,10 @@ public class SkiaFontRenderer implements IFontRenderer, ClientInstance {
         float alpha = (float) (color >> 24 & 255) / 255f;
         for (int i = 1; i < strings.length; i++) {
           String str = strings[i];
+          // 连续 "§§" 会切出空段, 跳过以避免 charAt(0) 越界
+          if (str.isEmpty()) {
+            continue;
+          }
           char code = str.charAt(0);
           ChatFormatting formatting = ChatFormatting.getByCode(code);
           if (formatting != null) {

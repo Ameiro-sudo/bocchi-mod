@@ -59,6 +59,9 @@ public class MixinNeoForgeLoadingOverlay {
     }
 
     var ctx = SkiaContext.get();
+    if (!ctx.canRender()) {
+      return; // 窗口最小化 (0 像素): 跳过本帧, 避免以非法尺寸重建 surface
+    }
     ctx.begin();
 
     float f = this.fadeOutStart > -1L ? (float) (l - this.fadeOutStart) / 1000.0F : -1.0F;

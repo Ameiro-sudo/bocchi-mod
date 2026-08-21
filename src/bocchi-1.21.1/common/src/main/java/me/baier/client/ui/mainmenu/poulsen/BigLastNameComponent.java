@@ -4,6 +4,7 @@ import io.github.humbleui.types.Point;
 import me.baier.animation.BezierAnimation;
 import me.baier.client.ui.mainmenu.component.api.AbstractBaseComponent;
 import me.baier.client.ui.model.MainMenuPoulsenFrameContext;
+import me.baier.design.Design;
 import me.baier.graphics.SkiaContext;
 import me.baier.graphics.font.FontSet;
 import me.baier.utils.ColorUtil;
@@ -36,7 +37,9 @@ public class BigLastNameComponent extends AbstractBaseComponent<MainMenuPoulsenF
     float bgFontSize = screenHeight * 0.205f / 0.305f;
 
     var sharedFontForGoto = FontSet.RADIKAL_BLACK.getFont(bgFontSize);
-    float gotoTextWidth = sharedFontForGoto.getStringWidth("GOTO");
+    String gotoText1 = Design.value("texts.pGoto1", "GOTO");
+    String gotoText2 = Design.value("texts.pGoto2", "GOTO");
+    float gotoTextWidth = Math.max(sharedFontForGoto.getStringWidth(gotoText1), sharedFontForGoto.getStringWidth(gotoText2));
     float gotoTextHeight = sharedFontForGoto.getHeight();
     float spacingForGoto = screenHeight * 0.045f;
     float finalGoto1X = rect1PosX - sharedFontForGoto.getHalfHeight() / 15f;
@@ -65,14 +68,14 @@ public class BigLastNameComponent extends AbstractBaseComponent<MainMenuPoulsenF
 
     if (gotoText1Anim != null)
       sharedFontForGoto.drawString(
-          "GOTO",
+          gotoText1,
           Mth.lerp(gotoText1Anim.getCurrentValue(), goto1StartPos.getX(), finalGoto1X),
           Mth.lerp(
               gotoText1Anim.getCurrentValue(), goto1StartPos.getY() + gotoTextHeight, finalGoto1Y),
           ColorUtil.replaceAlpha(0XFFFF86C0, Math.round(gotoText1Anim.getCurrentValue() * 255.f)));
     if (gotoText2Anim != null)
       sharedFontForGoto.drawString(
-          "GOTO",
+          gotoText2,
           Mth.lerp(gotoText2Anim.getCurrentValue(), goto2StartPos.getX(), finalGoto1X),
           Mth.lerp(
               gotoText2Anim.getCurrentValue(), goto2StartPos.getY() + gotoTextHeight, finalGoto2Y),

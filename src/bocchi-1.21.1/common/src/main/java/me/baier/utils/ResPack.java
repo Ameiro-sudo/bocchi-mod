@@ -26,7 +26,7 @@ public final class ResPack {
 
   public static InputStream open(ResourceLocation res, String classpathFallback) throws IOException {
     ResourceManager manager = getManager();
-    if (manager != null) {
+    if (manager != null && res != null) {
       Optional<Resource> optional = manager.getResource(res);
       if (optional.isPresent()) {
         return optional.get().open();

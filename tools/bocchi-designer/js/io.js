@@ -5,7 +5,7 @@
   "use strict";
   const BD = (window.BD = window.BD || {});
   const { $, toast, download, zipWrite, zipRead } = BD.core;
-  const { S, buildDesignJSON, usedPath, localAsset, zipEntry } = BD.design;
+  const { S, buildDesignJSON, usedPath, localAsset, zipEntry, UNSAFE_KEYS, cleanCopy } = BD.design;
 
   const README_TEXT = [
     "bocchi design pack - exported by Bocchi Designer",
@@ -16,7 +16,7 @@
     "3. 想微调: 直接编辑 assets/minecraft/client/design.json, 改哪项覆盖哪项",
     "   所有以 _ 开头的键是注释, 会被游戏忽略",
     "",
-    "主题切换: design.json 的 menu.theme = \"misayos\" (喜多郁代) 或 \"poulsen\" (后藤独), 保存后重载资源即可",
+    "主题切换: design.json 的 menu.theme = \"misayos\" 或 \"poulsen\", 保存后重载资源即可",
     "换字体: 替换 client/fonts/ 下的 ttf 并重进游戏 (字体不支持热重载)",
   ].join("\r\n");
 
@@ -31,7 +31,6 @@
         { name: "README.txt", data: enc.encode(README_TEXT) },
         { name: "assets/minecraft/client/design.json", data: enc.encode(JSON.stringify(buildDesignJSON(), null, 2)) },
       ];
-      const missing = [];
       const skipped = [];
       for (const sec of ["textures", "svgs", "fonts"]) {
         for (const [k, v] of Object.entries(S[sec])) {
@@ -52,9 +51,8 @@
         }
       }
       download(new Blob([zipWrite(files)]), "bocchi-design-pack.zip");
-      const warn = missing.length ? `；缺失 ${missing.length} 个资源: ${missing.join(", ")}` : "";
       const skip = skipped.length ? `；${skipped.length} 个内置资源未分发, 游戏端回退默认: ${skipped.join(", ")}` : "";
-      toast(`导出成功！${files.length - 3} 个资源已打包${warn}${skip}`);
+      toast(`导出成功！${files.length - 3} 个资源已打包${skip}`);
     } catch (err) {
       toast("导出失败: " + err.message, true);
     }
@@ -74,12 +72,13 @@
       () => toast("复制失败: 剪贴板不可用", true));
   }
 
-  /** 从已解析的 design.json 对象载入编辑态 (导入 zip 与单文件共用) */
+  /** 从已解析的 design.json 对象载入编辑态 (导入 zip 与单文件共用)
+   * H3: root 是外部输入 — section/键名先过危险键黑名单, extras 一律 null 原型容器 */
   function applyDesignJSON(root, entries) {
     let count = 0;
-    const KNOWN = new Set(["textures", "svgs", "fonts", "colors", "menu"]);
+    const KNOWN = new Set(["textures", "svgs", "fonts", "colors", "menu", "texts"]);
     for (const [sec, obj] of Object.entries(root)) {
-      if (sec.startsWith("_")) continue;
+      if (sec.startsWith("_") || UNSAFE_KEYS.has(sec)) continue;
       if (!obj || typeof obj !== "object" || Array.isArray(obj)) {
         // 非对象 section 值: 原样保留
         S.extra[sec] = obj;
@@ -87,28 +86,50 @@
       }
       if (!KNOWN.has(sec)) {
         // H2: 未知 section 原样保留 (Java 端纯累加覆盖, 不丢弃)
-        S.extra[sec] = { ...obj };
+        S.extra[sec] = cleanCopy(obj);
         continue;
       }
       if (sec === "menu") {
         for (const [k, v] of Object.entries(obj)) {
-          if (k.startsWith("_")) continue;
+          if (k.startsWith("_") || UNSAFE_KEYS.has(k)) continue;
           if (k === "theme" && typeof v === "string" && ["misayos", "poulsen"].includes(v)) {
             S.menu.theme = v;
             const sel = BD.panels.getThemeSel();
             if (sel) sel.value = v;
           } else {
-            if (!S.extra.menu) S.extra.menu = {};
+            if (!Object.hasOwn(S.extra, "menu") || !S.extra.menu || typeof S.extra.menu !== "object")
+              S.extra.menu = Object.create(null);
             S.extra.menu[k] = v;
           }
         }
         continue;
       }
+      if (sec === "texts") {
+        // 文案段: 字符串值应用到已知键 (mInfoLine1~3 组合回 mInfo 预览字段); 其余一律入 extras
+        const infoLines = [null, null, null];
+        let sawMInfo = false;
+        for (const [k, val] of Object.entries(obj)) {
+          if (k.startsWith("_") || UNSAFE_KEYS.has(k)) continue;
+          if (k === "mInfo" && typeof val === "string") { S.texts.mInfo = val; sawMInfo = true; }
+          else if (/^mInfoLine[1-3]$/.test(k) && typeof val === "string") infoLines[+k.slice(-1) - 1] = val;
+          else if (Object.hasOwn(S.texts, k) && typeof val === "string") S.texts[k] = val;
+          else {
+            if (!Object.hasOwn(S.extra, "texts") || !S.extra.texts || typeof S.extra.texts !== "object")
+              S.extra.texts = Object.create(null);
+            S.extra.texts[k] = val;
+          }
+        }
+        if (!sawMInfo && infoLines.some((x) => x != null))
+          S.texts.mInfo = infoLines.map((x) => (x == null ? "" : x)).join("<br>");
+        BD.panels.applyAllTexts();
+        continue;
+      }
       for (const [k, val] of Object.entries(obj)) {
-        if (k.startsWith("_")) continue;
-        if (!(k in S[sec])) {
+        if (k.startsWith("_") || UNSAFE_KEYS.has(k)) continue;
+        if (!Object.hasOwn(S[sec], k)) {
           // H2: 已知 section 中的未知键原样保留
-          if (!S.extra[sec]) S.extra[sec] = {};
+          if (!Object.hasOwn(S.extra, sec) || !S.extra[sec] || typeof S.extra[sec] !== "object")
+            S.extra[sec] = Object.create(null);
           S.extra[sec][k] = val;
           continue;
         }
@@ -118,7 +139,8 @@
         }
         if (typeof val !== "string") {
           // 路径字段必须为字符串, 否则保留原值并入 extras
-          if (!S.extra[sec]) S.extra[sec] = {};
+          if (!Object.hasOwn(S.extra, sec) || !S.extra[sec] || typeof S.extra[sec] !== "object")
+            S.extra[sec] = Object.create(null);
           S.extra[sec][k] = val;
           continue;
         }

@@ -17,7 +17,7 @@
       "--bg-top": "#07021C", "--bg-bottom": "#492F49",
       "--splash-bg": "#1F1F1F", "--btn-bg": "#353535",
     },
-    openSections: [],       // 展开的面板 section id
+    openSections: ["layout-misayos", "res-textures", "export"],       // 展开的面板 section id
     zoom: 0,                // 0=适应窗口 1=100% 2=200%
   };
 
@@ -47,14 +47,14 @@
   }
   /* rAF 节流: 合并同帧多次调用为一次 */
   function rafThrottle(fn) {
-    let pending = false, lastArgs = null;
+    let pending = false, rafId = 0, lastArgs = null;
     const g = function (...args) {
       lastArgs = args;
       if (pending) return;
       pending = true;
-      requestAnimationFrame(() => { pending = false; fn.apply(this, lastArgs); });
+      rafId = requestAnimationFrame(() => { pending = false; fn.apply(this, lastArgs); });
     };
-    g.flush = function () { if (pending) { cancelAnimationFrame(0); pending = false; fn.apply(this, lastArgs); } };
+    g.flush = function () { if (pending) { cancelAnimationFrame(rafId); pending = false; fn.apply(this, lastArgs); } };
     return g;
   }
 

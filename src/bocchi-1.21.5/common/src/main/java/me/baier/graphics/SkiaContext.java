@@ -224,8 +224,23 @@ public class SkiaContext implements MinecraftRenderInstance {
     }
   }
 
+  /** 窗口尺寸有效 (非最小化); 首帧 surface 尚未初始化时也可为 true, 用于渲染入口的跳帧判断. */
+  public boolean canRender() {
+    return mc.getWindow().getWidth() > 0 && mc.getWindow().getHeight() > 0;
+  }
+
+  /** 窗口尺寸有效且 Skia surface 可用; 窗口最小化 (0 像素) 时为 false, 本帧应跳过渲染. */
+  public boolean isReady() {
+    return canRender() && canvas != null && surface != null;
+  }
+
   public void begin() {
     //        RenderSystem.assertOnRenderThread();
+
+    // 窗口最小化时宽高为 0: 无法创建合法的 BackendRenderTarget/Surface, 且后续缩放会除零, 直接跳过本帧
+    if (mc.getWindow().getWidth() <= 0 || mc.getWindow().getHeight() <= 0) {
+      return;
+    }
 
     if (lastWidth != mc.getWindow().getWidth() || lastHeight != mc.getWindow().getHeight()) {
       init((float) mc.getWindow().getGuiScale());
@@ -245,6 +260,11 @@ public class SkiaContext implements MinecraftRenderInstance {
 
   public void end() {
     //        RenderSystem.assertOnRenderThread();
+
+    // begin() 因 0 尺寸跳过时, 这里同样跳过, 避免除零与对失效 surface 的操作
+    if (!isReady()) {
+      return;
+    }
 
     canvas.scale(480f / mc.getWindow().getWidth(), 270f / mc.getWindow().getHeight());
     surface.flush();
@@ -300,8 +320,8 @@ public class SkiaContext implements MinecraftRenderInstance {
 
   public void close() {
     RenderSystem.assertOnRenderThread();
+    // canvas 由 surface 持有, 关闭 surface 即随之释放; 再显式 close canvas 会 double-free
     closeRenderTarget();
-    canvas.close();
     context.close();
   }
 

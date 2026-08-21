@@ -480,6 +480,7 @@ def main():
 
     results = []  # (group, name, status, detail)
     drift = 0
+    missing = 0
     for group, facts in groups.items():
         for name, f in facts.items():
             java = f["java"]
@@ -492,6 +493,7 @@ def main():
             expected = round(vals[group + "." + name], 6)
             if not os.path.exists(jfile):
                 results.append((group, name, "MISSING", "Java 文件不存在: " + path))
+                missing += 1
                 continue
             text = open(jfile, encoding="utf-8").read()
             found, literals, found_loose, unverified, _ = evaluate_file(text, prelude)
@@ -520,8 +522,9 @@ def main():
             mark = {"OK": "  ✓", "OK~": "  ◐", "OK?": "  ◕", "SKIP": "  -", "MISSING": "  ✗", "DRIFT": "  ✗"}[s]
             print("%s %-16s %s" % (mark, n, d))
         ok = sum(1 for r in results if r[2] in ("OK", "OK~", "OK?"))
-        print("\n%s / %s 通过; DRIFT %s; SKIP %s" % (ok, len(results), drift, sum(1 for r in results if r[2] in ("SKIP", "MISSING"))))
-    sys.exit(1 if drift else 0)
+        print("\n%s / %s 通过; DRIFT %s; MISSING %s; SKIP %s" % (ok, len(results), drift, missing, sum(1 for r in results if r[2] == "SKIP")))
+    # Java 文件缺失与布局漂移同等视为失败, 避免重命名后检查器静默通过
+    sys.exit(1 if (drift or missing) else 0)
 
 
 def fmt(v):

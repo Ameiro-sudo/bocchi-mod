@@ -9,3 +9,7 @@ Desktop.ini
 release/
 __pycache__/
 *.pyc
+.DS_Store
+*.log
+hs_err_pid*
+replay_pid*

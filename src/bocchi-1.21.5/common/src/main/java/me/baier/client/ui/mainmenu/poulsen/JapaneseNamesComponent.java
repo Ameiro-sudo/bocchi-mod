@@ -4,6 +4,7 @@ import io.github.humbleui.types.Point;
 import me.baier.animation.BezierAnimation;
 import me.baier.client.ui.mainmenu.component.api.AbstractBaseComponent;
 import me.baier.client.ui.model.MainMenuPoulsenFrameContext;
+import me.baier.design.Design;
 import me.baier.graphics.SkiaContext;
 import me.baier.graphics.font.FontSet;
 import me.baier.utils.ScreenUtils;
@@ -34,8 +35,8 @@ public class JapaneseNamesComponent extends AbstractBaseComponent<MainMenuPoulse
 
     var nameFont_val = FontSet.MEIRYO_BOLD.getFont(bgFontSize * 0.221f);
     var kanaFont_val = FontSet.MEIRYO_BOLD.getFont((bgFontSize * 0.221f) * 0.375f);
-    String nameText_val = "後藤 ひとり";
-    String kanaText_val = "ご   とう";
+    String nameText_val = Design.value("texts.pJName", "後藤 ひとり");
+    String kanaText_val = Design.value("texts.pJKana", "ご   とう");
     float nameTextWidth_val = nameFont_val.getStringWidth(nameText_val);
     float kanaTextWidth_val = kanaFont_val.getStringWidth(kanaText_val);
     float nameTextFinalDrawX = (rect1PosX * 0.5f) - nameTextWidth_val / 2;
@@ -62,8 +63,8 @@ public class JapaneseNamesComponent extends AbstractBaseComponent<MainMenuPoulse
     if (gotohNameAnim != null) {
       var nameFont_render = FontSet.MEIRYO_BOLD.getFont(bgFontSize * 0.221f);
       var kanaFont_render = FontSet.MEIRYO_BOLD.getFont((bgFontSize * 0.221f) * 0.375f);
-      String nameText_render = "後藤 ひとり";
-      String kanaText_render = "ご   とう";
+      String nameText_render = nameText_val;
+      String kanaText_render = kanaText_val;
       float nameTextWidth_render = nameFont_render.getStringWidth(nameText_render);
       float groupCurrentX =
           Mth.lerp(gotohNameAnim.getCurrentValue(), nameBlockStartPos.getX(), nameBlockMinX);

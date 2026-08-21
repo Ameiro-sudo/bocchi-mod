@@ -14,6 +14,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: build-release
+  cancel-in-progress: false
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -27,11 +31,14 @@ jobs:
           java-version: '21'
           cache: gradle
 
-      - name: Resolve version
+      # 两棵树的 mod_version 分别解析, 避免一侧升版后另一侧发布 glob 落空
+      - name: Resolve versions
         id: version
         run: |
-          V=$(grep '^mod_version=' src/bocchi-1.21.5/gradle.properties | cut -d= -f2)
-          echo "mod_version=$V" >> "$GITHUB_OUTPUT"
+          V15=$(grep '^mod_version=' src/bocchi-1.21.5/gradle.properties | cut -d= -f2)
+          V11=$(grep '^mod_version=' src/bocchi-1.21.1/gradle.properties | cut -d= -f2)
+          echo "mod_version_1215=$V15" >> "$GITHUB_OUTPUT"
+          echo "mod_version_1211=$V11" >> "$GITHUB_OUTPUT"
 
       - name: Build 1.21.5
         if: ${{ inputs.version != '1.21.1' }}
@@ -47,12 +54,12 @@ jobs:
           chmod +x gradlew
           ./gradlew :fabric:build :neoforge:build --no-daemon
 
-      # M6/L12: 发布失败时也保留构建产物
+      # 发布失败时也保留构建产物
       - name: Upload build artifacts
         if: ${{ always() }}
         uses: actions/upload-artifact@v5
         with:
-          name: bocchi-jars-${{ steps.version.outputs.mod_version }}
+          name: bocchi-jars-${{ github.run_id }}
           if-no-files-found: warn
           path: |
             src/bocchi-1.21.5/fabric/build/libs/*.jar
@@ -60,35 +67,37 @@ jobs:
             src/bocchi-1.21.1/fabric/build/libs/*.jar
             src/bocchi-1.21.1/neoforge/build/libs/*-all.jar
 
+      # 推送 v* tag 触发时发布到 <tag>-<mcver> (如 v0.1.0-1.21.5);
+      # 手动触发时发布到滚动 tag 1.21.x
       - name: Publish release 1.21.5
         if: ${{ inputs.version != '1.21.1' }}
         uses: softprops/action-gh-release@v3
         with:
-          tag_name: '1.21.5'
+          tag_name: ${{ github.ref_type == 'tag' && format('{0}-1.21.5', github.ref_name) || '1.21.5' }}
           name: 'Bocchi Client 1.21.5'
           body: |
             **Bocchi Client** - Minecraft 1.21.5
 
-            - Fabric: `bocchi-fabric-1.21.5-${{ steps.version.outputs.mod_version }}.jar`（需要 fabric-api）
-            - NeoForge: `bocchi-neoforge-1.21.5-${{ steps.version.outputs.mod_version }}-all.jar`
+            - Fabric: `bocchi-fabric-1.21.5-${{ steps.version.outputs.mod_version_1215 }}.jar`（需要 fabric-api）
+            - NeoForge: `bocchi-neoforge-1.21.5-${{ steps.version.outputs.mod_version_1215 }}-all.jar`
 
           files: |
-            src/bocchi-1.21.5/fabric/build/libs/bocchi-fabric-1.21.5-${{ steps.version.outputs.mod_version }}.jar
-            src/bocchi-1.21.5/neoforge/build/libs/bocchi-neoforge-1.21.5-${{ steps.version.outputs.mod_version }}-all.jar
+            src/bocchi-1.21.5/fabric/build/libs/bocchi-fabric-1.21.5-${{ steps.version.outputs.mod_version_1215 }}.jar
+            src/bocchi-1.21.5/neoforge/build/libs/bocchi-neoforge-1.21.5-${{ steps.version.outputs.mod_version_1215 }}-all.jar
           fail_on_unmatched_files: true
 
       - name: Publish release 1.21.1
         if: ${{ inputs.version != '1.21.5' }}
         uses: softprops/action-gh-release@v3
         with:
-          tag_name: '1.21.1'
+          tag_name: ${{ github.ref_type == 'tag' && format('{0}-1.21.1', github.ref_name) || '1.21.1' }}
           name: 'Bocchi Client 1.21.1'
           body: |
             **Bocchi Client** - Minecraft 1.21.1
 
-            - Fabric: `bocchi-fabric-1.21.1-${{ steps.version.outputs.mod_version }}.jar`
-            - NeoForge: `bocchi-neoforge-1.21.1-${{ steps.version.outputs.mod_version }}-all.jar`
+            - Fabric: `bocchi-fabric-1.21.1-${{ steps.version.outputs.mod_version_1211 }}.jar`
+            - NeoForge: `bocchi-neoforge-1.21.1-${{ steps.version.outputs.mod_version_1211 }}-all.jar`
           files: |
-            src/bocchi-1.21.1/fabric/build/libs/bocchi-fabric-1.21.1-${{ steps.version.outputs.mod_version }}.jar
-            src/bocchi-1.21.1/neoforge/build/libs/bocchi-neoforge-1.21.1-${{ steps.version.outputs.mod_version }}-all.jar
+            src/bocchi-1.21.1/fabric/build/libs/bocchi-fabric-1.21.1-${{ steps.version.outputs.mod_version_1211 }}.jar
+            src/bocchi-1.21.1/neoforge/build/libs/bocchi-neoforge-1.21.1-${{ steps.version.outputs.mod_version_1211 }}-all.jar
           fail_on_unmatched_files: true

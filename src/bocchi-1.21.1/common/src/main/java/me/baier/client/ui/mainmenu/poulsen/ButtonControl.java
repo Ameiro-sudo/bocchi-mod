@@ -62,10 +62,12 @@ public class ButtonControl extends AbstractBaseComponent<MainMenuPoulsenFrameCon
   }
 
   public boolean contains(int mouseX, int mouseY) {
+    // posY 为文字基线位置, 字形主体在其上方: 命中框需覆盖整个字形高度,
+    // 与 render() 中的可视高亮矩形保持一致
     return mouseX >= posX - HITBOX_PAD_X
         && mouseX <= posX + hitboxW + HITBOX_PAD_X
         && mouseY >= posY - HITBOX_PAD_TOP
-        && mouseY <= posY + HITBOX_PAD_BOTTOM;
+        && mouseY <= posY + hitboxH + HITBOX_PAD_BOTTOM;
   }
 
   public void press() {
