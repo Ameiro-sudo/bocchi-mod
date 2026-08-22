@@ -65,9 +65,9 @@ python tools/build-all.py
 release/
 ├── 1.21.5/
 │   ├── fabric/
-│   │   └── vanilla/  bocchi-fabric-1.21.5-0.1.0.jar
+│   │   └── vanilla/  bocchi-fabric-1.21.5-1.0.0.jar
 │   └── neoforge/
-│       └── vanilla/  bocchi-neoforge-1.21.5-0.1.0-all.jar
+│       └── vanilla/  bocchi-neoforge-1.21.5-1.0.0-all.jar
 ├── 1.21.1/
 │   └── ...
 ```
@@ -135,12 +135,12 @@ bocchi-mod/
 │   │   │   ├── java/me/baier/
 │   │   │   │   ├── design/Design.java       # 设计资源管理器
 │   │   │   │   ├── client/                  # 主菜单 / 启动页 UI
-│   │   │   │   ├── graphics/                # Skia 渲染 / 视频 / 字体 / Shader
+│   │   │   │   ├── graphics/                # Skia 渲染 / 字体 / Shader
 │   │   │   │   ├── skui/                    # 自研 UI 组件库
 │   │   │   │   └── utils/ResPack.java       # 资源读取工具
 │   │   │   └── resources/assets/minecraft/client/
 │   │   │       ├── design.json              # 设计模板
-│   │   │       ├── textures/ svgs/ fonts/ media/
+│   │   │       └── textures/ svgs/ fonts/
 │   │   ├── fabric/                          # Fabric 入口 + 构建
 │   │   └── neoforge/                        # NeoForge 入口 + 构建
 │   └── bocchi-1.21.1/              # 同上结构
