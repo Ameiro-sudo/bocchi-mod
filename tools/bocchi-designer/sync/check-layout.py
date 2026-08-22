@@ -179,6 +179,10 @@ def java_substitutions(text):
     text = text.replace("Mth.clamp", "clamp")
     text = text.replace("getScaledWidth()", "SCALED_WIDTH")
     text = text.replace("getScaledHeight()", "SCALED_HEIGHT")
+    # SplashFrameContext getter -> 预读绑定名 (见 main() 的 prelude 文件列表)
+    text = text.replace("frame.getMidX()", "midX")
+    text = text.replace("frame.getMidY()", "midY")
+    text = text.replace("frame.getSpacing()", "spacing")
     # 帧上下文 getter → 加 frame 前缀, 避免与组件内同名局部变量冲突
     text = text.replace("getBlock1Pos()", "frameBlock1Pos")
     text = text.replace("getBlock3Pos()", "frameBlock3Pos")
@@ -216,11 +220,14 @@ def strip_keywords(s):
 
 
 def split_chunks(line):
-    """把一行切成可求值的表达式片段 (按 ; {} [] <> ! & | ? : 和字符串边界)"""
+    """把一行切成可求值的表达式片段 (按 ; {} [] <> ! & | ? : 和字符串边界)
+    含数字的片段照常保留; 无数字但形如 name = ... 的赋值也保留
+    (如 iLogoY = midY - fontHeight - spacing 整行无字面量, 否则绑定与求值全部丢失)"""
     line = line.strip()
     line = re.sub(r'"[^"]*"', '""', line)
     parts = re.split(r"[;{}\[\]]|&&|\|\||[<>!?:]", line)
-    return [p.strip() for p in parts if p.strip() and re.search(r"\d", p)]
+    return [p.strip() for p in parts if p.strip()
+            and (re.search(r"\d", p) or re.match(r"^[\w$.]+\s*=", p))]
 
 
 def strip_wrappers(chunk):
@@ -502,7 +509,7 @@ def main():
 
     # 预读: 帧上下文 (FrameContext/主菜单 frame) 里的布局绑定, 供各组件文件复用
     prelude = {}
-    for pf in ("ui/model/FrameContext.java", "ui/model/MainMenuMisayosFrameContext.java", "ui/model/MainMenuPoulsenFrameContext.java"):
+    for pf in ("ui/model/FrameContext.java", "ui/model/MainMenuMisayosFrameContext.java", "ui/model/MainMenuPoulsenFrameContext.java", "ui/model/SplashFrameContext.java"):
         p = os.path.join(base, pf)
         if os.path.exists(p):
             _, _, _, _, binds = evaluate_file(open(p, encoding="utf-8").read())

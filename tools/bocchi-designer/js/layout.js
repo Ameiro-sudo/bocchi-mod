@@ -1,4 +1,4 @@
-﻿/* ============================================================================
+/* ============================================================================
  * layout.js - 三个舞台的布局计算
  *
  * 所有"魔法数字"均取自 js/facts.js (factValue("组.名")), 修改 Java 端布局后运行
@@ -18,20 +18,21 @@ const FM = { heavy: "SH Heavy", light: "SH Light", regular: "SH Regular", normal
 /* ================= 加载页 (SplashUI.java) ================= */
 export function splash() {
   const W = facts.W, H = facts.H;
-  const spacing = Math.min(W * 0.75, H) * 0.125;         // webOnly: 居中推导
-  const barW = factValue("splash.barW"), barH = 9.4;      // SplashUI.java:146 / 宽度 9.4 webOnly
-  const barX = factValue("splash.barX");                  // SplashUI.java:144
-  const logoW = factValue("splash.logoW"), logoH = factValue("splash.logoH"); // SplashUI.java:102 / :66
-  const logoX = factValue("splash.logoX");                // SplashUI.java:100
+  const spacing = factValue("splash.spacing");            // SplashFrameContext.java:18
+  const barW = factValue("splash.barW"), barH = factValue("splash.barFontH"); // :162 / SplashUI.java:58
+  const barX = factValue("splash.barX");                  // SplashUI.java:160
+  // 加载页常驻显示的是 LOGO 初始态 (居中, 进度条上方); tLogo 左上角小标是淡出过渡终态
+  const logoW = factValue("splash.iLogoW"), logoH = factValue("splash.iLogoH");
+  const logoX = factValue("splash.iLogoX"), logoY = factValue("splash.iLogoY");
 
-  set($("splashLogo"), `left:${logoX}px;top:${H * 0.1}px;width:${logoW}px;height:${logoH}px;`);
+  set($("splashLogo"), `left:${logoX}px;top:${logoY}px;width:${logoW}px;height:${logoH}px;`);
   set($("progressTrack"), `left:${barX}px;top:${H / 2 + spacing + barH / 2}px;width:${barW}px;`);
   set($("loadingIcon"),
     `left:${barX + barW - barH * 1.5}px;top:${H / 2 + spacing + barH / 2 - barH * 1.5}px;` +
     `width:${barH * 2.5}px;height:${barH * 2.5}px;background-size:${barH * 2.5 * 20}px ${barH * 2.5}px;`);
   set($("tapText"),
-    `left:${W / 2 - tw("TAP TO START", 7.5, "Radikal Regular") / 2}px;` +
-    `top:${H / 2 + spacing + barH + 12}px;font-size:7.5px;`);
+    `left:${W / 2 - tw("TAP TO START", factValue("splash.tapFont") / 2, "Radikal Regular") / 2}px;` +
+    `top:${H / 2 + spacing + barH + 12}px;font-size:${factValue("splash.tapFont") / 2}px;`);
 }
 
 /* ================= misayos ================= */

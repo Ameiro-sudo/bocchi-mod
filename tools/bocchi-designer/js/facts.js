@@ -1,4 +1,4 @@
-﻿/* ============================================================================
+/* ============================================================================
  * facts.js - 布局常量单一数据源 (纯模块, 浏览器/Node 双端可导入)
  *
  * 这里的每一项都是游戏端 Java 布局代码中"魔法数字"的唯一记录点:
@@ -160,12 +160,23 @@ const G = {
     btnGap:       { expr: "bgFontSize * 0.221 * 0.3 * 2.6",               java: "ui/mainmenu/poulsen/MainMenuScreen.java:87", note: "index * fontSize * 2.6" },
   },
   splash: {
-    logoW:        { expr: "60",                                           java: "ui/splash/SplashUI.java:102" },
-    logoH:        { expr: "60 * 0.317",                                   java: "ui/splash/SplashUI.java:66" },
-    logoX:        { expr: "rect1X * 0.3",                                 java: "ui/splash/SplashUI.java:100", note: "rect1X = (W - W*0.412)/2 (poulsen rect1)" },
-    logoY:        { expr: "scaledHeight * 0.1",                           java: "ui/splash/SplashUI.java:101" },
-    barX:         { expr: "scaledWidth * 0.2",                            java: "ui/splash/SplashUI.java:144" },
-    barW:         { expr: "scaledWidth * 0.6",                            java: "ui/splash/SplashUI.java:162" },
+    // 帧上下文 (SplashFrameContext.java)
+    spacing:      { expr: "min(scaledWidth * 0.75, scaledHeight) * 0.125", java: "ui/model/SplashFrameContext.java:18", note: "d=min(W*0.75,H)*0.25, spacing=d/2" },
+    barFontH:     { expr: "9.4",                                           java: "ui/splash/SplashUI.java:58", note: "SplashUI.fontHeight = 进度条高度/图标基准" },
+    // LOGO 初始态 (加载页常驻显示): 水平居中, 位于进度条上方
+    iLogoW:       { expr: "94",                                            java: "ui/splash/SplashUI.java:78" },
+    iLogoH:       { expr: "iLogoW * 0.317",                                java: "ui/splash/SplashUI.java:79" },
+    iLogoX:       { expr: "(scaledWidth - iLogoW) / 2",                    java: "ui/splash/SplashUI.java:80" },
+    iLogoY:       { expr: "scaledHeight / 2 - barFontH - spacing",         java: "ui/splash/SplashUI.java:81" },
+    // 进度条 (renderProgress)
+    barX:         { expr: "scaledWidth * 0.2",                             java: "ui/splash/SplashUI.java:160" },
+    barW:         { expr: "scaledWidth * 0.6",                             java: "ui/splash/SplashUI.java:162" },
+    tapFont:      { expr: "15",                                            java: "ui/splash/SplashUI.java:210", note: "TAP TO START 字号 (Java px)" },
+    // LOGO 目标态 (tLogo): 点击后飞向左上角, 主菜单 LogoComponent 在同位接管小标
+    logoW:        { expr: "60",                                            java: "ui/mainmenu/common/LogoComponent.java:30" },
+    logoH:        { expr: "logoW * 0.317",                                 java: "ui/mainmenu/common/LogoComponent.java:31" },
+    logoX:        { expr: "rect1X * 0.3",                                  java: "ui/mainmenu/common/LogoComponent.java:28", note: "rect1X = (W - W*0.412)/2 (poulsen rect1); SplashUI.java:114 过渡终态同值" },
+    logoY:        { expr: "scaledHeight * 0.1",                            java: "ui/mainmenu/common/LogoComponent.java:29" },
     loadingFrameW:{ expr: "23.5", note: "webOnly: 预览帧宽 = 图标宽度/20 (雪碧图 1800×90, 20 帧), Java 端见 LoadingAnimateRenderer" },
   },
 };
