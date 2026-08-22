@@ -13,7 +13,11 @@
 
 /* ===== 加载页 ===== */
 .splash-bg { position: absolute; inset: 0; background: var(--splash-bg); }
-.splash-logo img { filter: brightness(0) invert(1); image-rendering: pixelated; }
+/* LOGO 容器必须绝对定位: layout.js 写入的 left/top/width/height 才能生效
+   (此前无任何规则, 容器落在静态流左上角, 定位样式全部被忽略) */
+.splash-logo, .menu-logo { position: absolute; }
+/* img 约束在容器内: LogoRenderer.drawImageRect 将纹理整图拉伸进目标矩形 */
+.splash-logo img { width: 100%; height: 100%; filter: brightness(0) invert(1); image-rendering: pixelated; }
 .progress-track { position: absolute; height: 9.4px; border-radius: 15px; background: rgba(255,255,255,.15); }
 .progress-fill { height: 100%; border-radius: 15px; background: #fff; }
 .loading-icon { position: absolute; background-image: url("../assets/textures/bocchi_loading.png"); background-repeat: no-repeat; image-rendering: pixelated; }
@@ -47,7 +51,8 @@
 .box-tag { position: absolute; background: #000; color: #fff; border-radius: 4px; white-space: nowrap; }
 .info-text { position: absolute; font-family: "SH Light"; color: #fff; white-space: nowrap; line-height: 1; }
 .social-phobia { position: absolute; font-family: "SH Regular"; color: #fff; white-space: nowrap; line-height: 1; }
-.menu-logo img { filter: brightness(0) invert(1); image-rendering: pixelated; }
+.menu-logo { position: absolute; }
+.menu-logo img { width: 100%; height: 100%; filter: brightness(0) invert(1); image-rendering: pixelated; }
 
 /* ===== misayos 侧栏面板 ===== */
 .menu-panel { position: absolute; background: #F5F5F5; box-shadow: 0 0 20px rgba(0,0,0,.25); }
