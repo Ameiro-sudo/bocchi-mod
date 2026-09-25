@@ -65,9 +65,9 @@ python tools/build-all.py
 release/
 ├── 1.21.5/
 │   ├── fabric/
-│   │   └── vanilla/  bocchi-fabric-1.21.5-1.0.0.jar
+│   │   └── vanilla/  bocchi-fabric-1.21.5-1.0.1.jar
 │   └── neoforge/
-│       └── vanilla/  bocchi-neoforge-1.21.5-1.0.0-all.jar
+│       └── vanilla/  bocchi-neoforge-1.21.5-1.0.1-all.jar
 ├── 1.21.1/
 │   └── ...
 ```
