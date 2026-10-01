@@ -1,12 +1,34 @@
+# 构建 + 发布。
+#   触发: 推 v* tag (发到 <tag>-<mc版本>), 或手动 dispatch (发到滚动 tag 1.21.5 / 1.21.1)
+#   preflight: 发布前先跑版本一致性 + 双树同步, 不通过就不浪费 60 分钟构建
+#   release:   每个 MC 版本一个独立 job, 内部完成 构建 -> 校验 -> 发布
+#
+# 两个设计决定, 都是为了消除"绿灯假象":
+#
+# 1. 每个版本的触发条件用"包含式"判断(显式列出何时为真), 不用
+#    `inputs.version != '1.21.x'` 这种排除式 —— 后者在输入拼错时会静默退化成全量,
+#    而且它对 tag 触发的正确行为依赖于"null 恰好不等于任何字符串"这条隐式事实。
+#
+# 2. 两个 MC 版本是两个独立 job 而不是同一 job 的两个 step。原来 step 的自定义
+#    if 不含状态函数(隐式 success()), 1.21.5 发布失败会连带跳过 1.21.1 的发布;
+#    拆成独立 job 后互不牵连, 且仍然并行。
+#
+# 构建与发布放在同一个 job 内, 是因为发布要用 build/libs 里的 jar —— 跨 job
+# 需要 artifact 下载再对路径, 徒增一层出错面。
 name: Build & Release
 
 on:
   workflow_dispatch:
     inputs:
       version:
-        description: '构建哪些版本 (all / 1.21.1 / 1.21.5)'
+        description: '构建哪些版本'
         required: false
+        type: choice
         default: 'all'
+        options:
+          - all
+          - 1.21.1
+          - 1.21.5
   push:
     tags:
       - 'v*'
@@ -19,7 +41,41 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  build:
+  # ---- 发布前置: 版本割裂 / 双树漂移在构建前就拦下 ----
+  preflight:
+    name: 版本 / 双树同步一致性
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      mod_version_1215: ${{ steps.v.outputs.v1215 }}
+      mod_version_1211: ${{ steps.v.outputs.v1211 }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      # 两棵树 mod_version 分别解析(避免一侧升版后另一侧 glob 落空)…
+      - name: Resolve versions
+        id: v
+        run: |
+          V15=$(grep '^mod_version=' src/bocchi-1.21.5/gradle.properties | cut -d= -f2)
+          V11=$(grep '^mod_version=' src/bocchi-1.21.1/gradle.properties | cut -d= -f2)
+          echo "v1215=$V15" >> "$GITHUB_OUTPUT"
+          echo "v1211=$V11" >> "$GITHUB_OUTPUT"
+
+      # …但仅"路径能命中"不够: 两侧各自用自己的版本号拼 jar 名时, 割裂发版会一路
+      # 绿灯直到用户下载。这里才是真正的一致性断言(两树版本必须相同 + 文档无残留)。
+      - name: 版本号一致性
+        run: python tools/check-version.py
+
+      - name: 双树源码同步
+        run: python tools/check-sync.py
+
+  release-1215:
+    name: 构建并发布 1.21.5
+    needs: preflight
+    if: ${{ github.ref_type == 'tag' || inputs.version == 'all' || inputs.version == '1.21.5' }}
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
@@ -31,46 +87,26 @@ jobs:
           java-version: '21'
           cache: gradle
 
-      # 两棵树的 mod_version 分别解析, 避免一侧升版后另一侧发布 glob 落空
-      - name: Resolve versions
-        id: version
-        run: |
-          V15=$(grep '^mod_version=' src/bocchi-1.21.5/gradle.properties | cut -d= -f2)
-          V11=$(grep '^mod_version=' src/bocchi-1.21.1/gradle.properties | cut -d= -f2)
-          echo "mod_version_1215=$V15" >> "$GITHUB_OUTPUT"
-          echo "mod_version_1211=$V11" >> "$GITHUB_OUTPUT"
-
-      - name: Build 1.21.5
-        if: ${{ inputs.version != '1.21.1' }}
+      # :common:test 不会被 :fabric:build 传递触发(见 build-pr.yml 注释), 必须显式点名
+      - name: 单测 + 构建
         working-directory: src/bocchi-1.21.5
         run: |
           chmod +x gradlew
-          ./gradlew :fabric:build :neoforge:build --no-daemon
-
-      - name: Build 1.21.1
-        if: ${{ inputs.version != '1.21.5' }}
-        working-directory: src/bocchi-1.21.1
-        run: |
-          chmod +x gradlew
-          ./gradlew :fabric:build :neoforge:build --no-daemon
+          ./gradlew :common:test :fabric:build :neoforge:build --no-daemon
 
       # 发布失败时也保留构建产物
       - name: Upload build artifacts
-        if: ${{ always() }}
+        if: always()
         uses: actions/upload-artifact@v5
         with:
-          name: bocchi-jars-${{ github.run_id }}
+          name: bocchi-jars-1.21.5-${{ github.run_id }}
           if-no-files-found: warn
           path: |
-            src/bocchi-1.21.5/fabric/build/libs/*.jar
+            src/bocchi-1.21.5/fabric/build/libs/bocchi-fabric-1.21.5-*.jar
             src/bocchi-1.21.5/neoforge/build/libs/*-all.jar
-            src/bocchi-1.21.1/fabric/build/libs/*.jar
-            src/bocchi-1.21.1/neoforge/build/libs/*-all.jar
 
-      # 推送 v* tag 触发时发布到 <tag>-<mcver> (如 v0.1.0-1.21.5);
-      # 手动触发时发布到滚动 tag 1.21.x
-      - name: Publish release 1.21.5
-        if: ${{ inputs.version != '1.21.1' }}
+      # tag 触发 -> <tag>-<mc版本> (如 v0.1.0-1.21.5); 手动触发 -> 滚动 tag 1.21.5
+      - name: Publish release
         uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ github.ref_type == 'tag' && format('{0}-1.21.5', github.ref_name) || '1.21.5' }}
@@ -78,16 +114,46 @@ jobs:
           body: |
             **Bocchi Client** - Minecraft 1.21.5
 
-            - Fabric: `bocchi-fabric-1.21.5-${{ steps.version.outputs.mod_version_1215 }}.jar`（需要 fabric-api）
-            - NeoForge: `bocchi-neoforge-1.21.5-${{ steps.version.outputs.mod_version_1215 }}-all.jar`
+            - Fabric: `bocchi-fabric-1.21.5-${{ needs.preflight.outputs.mod_version_1215 }}.jar`（需要 fabric-api）
+            - NeoForge: `bocchi-neoforge-1.21.5-${{ needs.preflight.outputs.mod_version_1215 }}-all.jar`
 
           files: |
-            src/bocchi-1.21.5/fabric/build/libs/bocchi-fabric-1.21.5-${{ steps.version.outputs.mod_version_1215 }}.jar
-            src/bocchi-1.21.5/neoforge/build/libs/bocchi-neoforge-1.21.5-${{ steps.version.outputs.mod_version_1215 }}-all.jar
+            src/bocchi-1.21.5/fabric/build/libs/bocchi-fabric-1.21.5-${{ needs.preflight.outputs.mod_version_1215 }}.jar
+            src/bocchi-1.21.5/neoforge/build/libs/bocchi-neoforge-1.21.5-${{ needs.preflight.outputs.mod_version_1215 }}-all.jar
           fail_on_unmatched_files: true
 
-      - name: Publish release 1.21.1
-        if: ${{ inputs.version != '1.21.5' }}
+  release-1211:
+    name: 构建并发布 1.21.1
+    needs: preflight
+    if: ${{ github.ref_type == 'tag' || inputs.version == 'all' || inputs.version == '1.21.1' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: gradle
+
+      - name: 单测 + 构建
+        working-directory: src/bocchi-1.21.1
+        run: |
+          chmod +x gradlew
+          ./gradlew :common:test :fabric:build :neoforge:build --no-daemon
+
+      - name: Upload build artifacts
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: bocchi-jars-1.21.1-${{ github.run_id }}
+          if-no-files-found: warn
+          path: |
+            src/bocchi-1.21.1/fabric/build/libs/bocchi-fabric-1.21.1-*.jar
+            src/bocchi-1.21.1/neoforge/build/libs/*-all.jar
+
+      - name: Publish release
         uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ github.ref_type == 'tag' && format('{0}-1.21.1', github.ref_name) || '1.21.1' }}
@@ -95,9 +161,10 @@ jobs:
           body: |
             **Bocchi Client** - Minecraft 1.21.1
 
-            - Fabric: `bocchi-fabric-1.21.1-${{ steps.version.outputs.mod_version_1211 }}.jar`
-            - NeoForge: `bocchi-neoforge-1.21.1-${{ steps.version.outputs.mod_version_1211 }}-all.jar`
+            - Fabric: `bocchi-fabric-1.21.1-${{ needs.preflight.outputs.mod_version_1211 }}.jar`（需要 fabric-api）
+            - NeoForge: `bocchi-neoforge-1.21.1-${{ needs.preflight.outputs.mod_version_1211 }}-all.jar`
+
           files: |
-            src/bocchi-1.21.1/fabric/build/libs/bocchi-fabric-1.21.1-${{ steps.version.outputs.mod_version_1211 }}.jar
-            src/bocchi-1.21.1/neoforge/build/libs/bocchi-neoforge-1.21.1-${{ steps.version.outputs.mod_version_1211 }}-all.jar
+            src/bocchi-1.21.1/fabric/build/libs/bocchi-fabric-1.21.1-${{ needs.preflight.outputs.mod_version_1211 }}.jar
+            src/bocchi-1.21.1/neoforge/build/libs/bocchi-neoforge-1.21.1-${{ needs.preflight.outputs.mod_version_1211 }}-all.jar
           fail_on_unmatched_files: true
