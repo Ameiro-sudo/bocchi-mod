@@ -341,8 +341,8 @@ public class BezierAnimation<T> {
     long elapsed = currentTime - startTime - totalPausedTime;
     this.progress = Math.max(0.0f, Math.min(1.0f, (float) elapsed / this.duration));
 
-    float t = getTForX(this.progress); // 鏍规嵁鏃堕棿杩涘害x鑾峰彇鏇茬嚎鍙傛暟t
-    float bezierProgressY = calcBezier(t, ay, by, cy); // 浣跨敤t璁＄畻缂撳姩鍚庣殑杩涘害y
+    float t = getTForX(this.progress); // 根据时间进度x获取曲线参数t
+    float bezierProgressY = calcBezier(t, ay, by, cy); // 使用t计算缓动后的进度y
     currentValue = interpolate.interpolate(startValue, targetValue, bezierProgressY);
 
     if (onUpdate != null) {
