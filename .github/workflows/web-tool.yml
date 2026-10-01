@@ -1,12 +1,15 @@
-﻿# Bocchi Designer (web 工具) 校验: 单元测试 + 布局常量漂移检查
+# Bocchi Designer (web 工具) 校验: 单元测试 + 布局常量漂移检查
+#
+# 触发范围包含 src/**: 因为 check-layout.py 校验的正是 facts.js 记录与 Java 源码
+# 的对应关系 —— 改了 Java 布局而不跑它, 这个工具就失去了存在意义。
 name: web-tool
 
 on:
   pull_request:
-    paths: ["tools/**"]
+    paths: ["tools/**", "src/**"]
   push:
     branches: [main]
-    paths: ["tools/**"]
+    paths: ["tools/**", "src/**"]
 
 jobs:
   designer-check:
@@ -22,8 +25,14 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.x"
+
       - name: 单元测试 (node --test)
         run: npm test
+
+      # 行号参与判定(±2 行容差, --line-tol 可调)。此前该字段只出现在提示文案里,
+      # 匹配走整文件全文扫描, 导致 facts.js 里 18 条陈旧行号长期无人察觉。
+      # --strict 可选: 当前有 2 条因求值器无法解析 Java 方法调用标识符而落在
+      # 宽松档(OK?), 需人工确认后才能开启。
       - name: 布局漂移检查 (双树)
         run: |
           python sync/check-layout.py --tree bocchi-1.21.5

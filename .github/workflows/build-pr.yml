@@ -1,4 +1,6 @@
-# PR 构建门禁: src/** 变更在合并前必须双树构建通过 (不发布, 只验证)
+# PR 构建门禁: 合并前必须通过
+#   1) 版本一致性 + 双树同步(快, 秒级, 覆盖 src/README/docs/校验脚本)
+#   2) 双树 :common:test + :fabric:build + :neoforge:build(慢, 只在 src/** 变动时跑)
 # 发布链路见 build-release.yml (仅 tag/dispatch 触发)
 name: build-pr
 
@@ -6,12 +8,24 @@ on:
   pull_request:
     paths:
       - "src/**"
+      - "README.md"
+      - "docs/**"
+      - "tools/check-version.py"
+      - "tools/check-sync.py"
+      - "tools/sync-allowlist.txt"
       - ".github/workflows/build-pr.yml"
+      - ".github/workflows/build-release.yml"
   push:
     branches: [main]
     paths:
       - "src/**"
+      - "README.md"
+      - "docs/**"
+      - "tools/check-version.py"
+      - "tools/check-sync.py"
+      - "tools/sync-allowlist.txt"
       - ".github/workflows/build-pr.yml"
+      - ".github/workflows/build-release.yml"
 
 permissions:
   contents: read
@@ -21,9 +35,37 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # ---- 快门禁: 抓的是"绿灯假象", 几秒就能出结论 ----
+  consistency:
+    name: 版本 / 双树同步一致性
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      # 两棵树 mod_version 必须相同, 且文档不能残留旧产物版本。
+      # 前者防"割裂发版"(两个 Publish step 各自用本树版本号拼路径, 都会绿);
+      # 后者防 README 漂移 —— 305b658 升版漏改 README, 33 天后才由 ba93c8a 补上。
+      - name: 版本号一致性
+        run: python tools/check-version.py
+
+      # 共享区域必须逐字节一致, 例外须登记在 tools/sync-allowlist.txt。
+      # 双树同步过去一直靠人工纪律(提交信息写「— 双树」), 漏改无人能发现。
+      - name: 双树源码同步
+        run: python tools/check-sync.py
+
+  # ---- 慢门禁: 只在真的动了 Java 源码时才付出编译代价 ----
   build:
+    name: 双树构建 (${{ matrix.tree }})
     runs-on: ubuntu-latest
     timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        tree: [bocchi-1.21.5, bocchi-1.21.1]
     steps:
       - uses: actions/checkout@v5
 
@@ -33,14 +75,19 @@ jobs:
           java-version: '21'
           cache: gradle
 
-      - name: Build 1.21.5
-        working-directory: src/bocchi-1.21.5
+      # :common:test 不会被 :fabric:build 传递触发 —— fabric/neoforge 经
+      # commonJava/commonResources artifact 依赖 common, 而那两个 artifact 只
+      # builtBy(compileJava)/builtBy(processResources); common 的 jar 又是禁用的。
+      # 所以必须显式点名, 否则单测在 CI 里一次都不会跑。
+      - name: 单测 + 构建
+        working-directory: src/${{ matrix.tree }}
         run: |
           chmod +x gradlew
-          ./gradlew :fabric:build :neoforge:build --no-daemon
+          ./gradlew :common:test :fabric:build :neoforge:build --no-daemon
 
-      - name: Build 1.21.1
-        working-directory: src/bocchi-1.21.1
-        run: |
-          chmod +x gradlew
-          ./gradlew :fabric:build :neoforge:build --no-daemon
+      - uses: actions/upload-artifact@v5
+        if: always()
+        with:
+          name: test-reports-${{ matrix.tree }}
+          if-no-files-found: ignore
+          path: src/${{ matrix.tree }}/common/build/reports/tests/

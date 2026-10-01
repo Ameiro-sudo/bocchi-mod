@@ -72,6 +72,20 @@ release/
 │   └── ...
 ```
 
+> 上面 jar 名里的 `1.0.1` 是当前 `mod_version`。改版本后请同步更新此处 ——
+> `tools/check-version.py` 会拦截遗漏（历史上因此漏改过两次）。
+
+直接用 `./gradlew` 构建时产物落在 `src/<版本>/<加载器>/build/libs/`，CI 发布用的就是这个位置。
+
+### 提交前自检
+
+```bash
+python tools/check-version.py     # 两树 mod_version 一致 + 文档无旧版本残留
+python tools/check-sync.py        # 双树共享区域逐字节一致（例外须登记）
+```
+
+两条都是秒级的，CI 的 `build-pr.yml` 也会跑。完整清单见 [`docs/VERIFY.md`](docs/VERIFY.md)。
+
 ---
 
 ## 安装
@@ -146,20 +160,54 @@ bocchi-mod/
 │   └── bocchi-1.21.1/              # 同上结构
 ├── tools/
 │   ├── build-all.py                        # 全变体一键构建
+│   ├── check-version.py                    # 版本一致性(两树 mod_version + 文档无旧版本)
+│   ├── check-sync.py                       # 双树源码同步(fail-closed)
+│   ├── sync-allowlist.txt                  #   └ 双树差异例外登记处
 │   └── bocchi-designer/                     # Design Editor (Web UI)
+├── docs/
+│   ├── VERIFY.md                           # 改代码前该跑什么(验证清单)
+│   └── UNATTENDED_LOG.md                   # 无人值守任务登记
 ├── release/
-│   └── 1.21.x/{fabric,neoforge}/            # 预构建 jar（build-all.py 生成）
-└── .github/workflows/build-release.yml      # CI: 构建 + Release 发布
+│   └── 1.21.x/{fabric,neoforge}/vanilla/   # 预构建 jar（build-all.py 生成）
+└── .github/workflows/
+    ├── build-pr.yml                        # PR 门禁: 版本/同步一致性 + 双树单测与构建
+    ├── build-release.yml                   # CI: 构建 + Release 发布
+    └── web-tool.yml                        # 门禁: designer 单测 + 布局漂移检查
 ```
 
 ---
 
 ## CI / CD
 
-GitHub Actions workflow (`build-release.yml`) 支持手动触发：
+三条 workflow，职责不重叠：
 
-- 输入 `all` / `1.21.1` / `1.21.5` 选择构建版本
-- 自动构建并发布到 GitHub Releases
+| workflow | 触发 | 做什么 |
+|---|---|---|
+| `build-pr.yml` | `src/**`、`README.md`、`docs/**`、校验脚本 | 快门禁：版本一致性 + 双树同步；改动 Java 源码时追加双树 `:common:test` 与构建 |
+| `web-tool.yml` | `src/**`、`tools/**` | Designer 单测（`npm test`）+ 布局漂移检查（`check-layout.py` 双树） |
+| `build-release.yml` | 推 `v*` tag / 手动 dispatch | preflight 校验 → 双树构建与发布 |
+
+### 发布
+
+```bash
+git tag v1.0.2 && git push origin v1.0.2
+```
+
+> 推 tag 后产生的 Release 名是 **`v1.0.2-1.21.5`** 与 **`v1.0.2-1.21.1`**，不是 `v1.0.2`。
+> 手动触发（Actions → Build & Release → Run workflow）则发到滚动 tag `1.21.5` / `1.21.1`，
+> 每次触发都会用最新产物覆盖这两个 Release 的附件。
+
+发布前的 preflight 会拦下两类问题，不通过就不会开始构建：
+
+- **版本割裂**：两棵树 `mod_version` 不一致。只升一棵树时，两个发布步骤各自用本树的版本号
+  拼 jar 路径，都会命中、都会绿，于是发出「1.21.5=1.0.2 / 1.21.1=1.0.1」而两个 Release
+  同名的割裂组合 —— 只有这里能拦住。
+- **双树漂移**：共享区域出现未登记的差异。
+
+### 改代码前该跑什么
+
+见 [`docs/VERIFY.md`](docs/VERIFY.md)。本地校验项比 CI 多（双树哈希核对、截图人眼验收），
+以那份清单为准。
 
 ---
 
