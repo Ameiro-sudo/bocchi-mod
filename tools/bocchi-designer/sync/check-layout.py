@@ -7,9 +7,11 @@
 Java 改动了数值而 web 未同步 → 报 DRIFT。
 
 用法:
-  python3 check-layout.py [--json] [--tree <1.21.5|1.21.1>]
+  python3 check-layout.py [--json] [--tree <1.21.5|1.21.1>] [--strict]
+                          [--line-tol N] [--no-line-check] [--min-facts N] [--facts PATH]
 
-退出码: 0 = 全部通过; 1 = 存在 DRIFT。
+退出码: 0 = 全部通过; 1 = 存在 DRIFT (含行号失配 / 严格模式下的宽松兜底);
+      2 = 检查器自身故障 (facts 解析条数不足下限, 或严格模式下双解析路径条数不一致)。
 """
 import os
 import re
@@ -24,6 +26,13 @@ FACTS_JS = os.path.join(ROOT, "..", "js", "facts.js")
 SRC_DIR = os.path.join(ROOT, "..", "..", "..", "src")
 JAVA_BASE = ("bocchi-1.21.5", "bocchi-1.21.1")
 JAVA_SUB = os.path.join("common", "src", "main", "java", "me", "baier", "client")
+
+# 行号容差窗 (--line-tol): Java 表达式常跨行书写, 命中行允许落在 facts.js 记录行 ±N 内。
+# 默认 2 行: 既能容忍 google-java-format 的换行重排, 又足以拦住"整段代码位移"造成的假绿。
+LINE_TOL = 2
+# facts.js 解析条数下限 (--min-facts): 正则回退解析器会静默丢条目 (如 java 字段缺失的 webOnly 常量),
+# 只判 ==0 挡不住"只剩 2 条"这类半解析。当前 facts.js 共 75 条, 50 留足增减余量。
+MIN_FACTS = 50
 
 # ---------------------------------------------------------------- 表达式求值
 TOKEN_RE = re.compile(r"""
@@ -403,15 +412,24 @@ def evaluate_file(text, prelude=None):
 # 缩进无关: 组行形如 "name: {" 且以 { 结尾, fact 行含 expr/java 字段
 # ({ 后有内容); 不锚定行尾会把长键名单空格的 fact 行误判成组头
 GROUP_RE = re.compile(r"^\s+(\w+): \{\s*$", re.M)
-FACT_RE = re.compile(r'^\s+(\w+):\s*\{\s*expr:\s*"([^"]+)"\s*,\s*java:\s*"([^"]+)"', re.M)
+# java 字段可缺省: webOnly 常量 (如 splash.loadingFrameW) 只有 expr + note。
+# 早先这里强制要求 java:, 导致正则回退路径静默丢掉这类 fact (node 路径 75 条 / 正则 74 条)。
+FACT_RE = re.compile(
+    r'^\s+(\w+):\s*\{\s*expr:\s*"([^"]+)"'        # fact 名 + expr (必填)
+    r'(?:\s*,\s*java:\s*"([^"]+)")?'              # java 字段 (可缺省 → None)
+    r'(?:\s*,|\s*\})',                            # expr/java 之后必须是 , 或 } 收尾
+    re.M)
 
 
-def load_via_node():
+def load_via_node(path=None):
     """首选: 用 Node 直接导入 js/facts.js 求值 (单一权威求值源, 见 facts-dump.mjs)。
     返回 (groups, vals); node 缺失/失败时返回 None 走内置解析回退。"""
     node = shutil.which("node")
     dump = os.path.join(ROOT, "facts-dump.mjs")
     if not node or not os.path.exists(dump):
+        return None
+    # facts-dump.mjs 以固定相对路径 import ../js/facts.js, 只认默认 facts 文件
+    if path and os.path.normcase(os.path.abspath(path)) != os.path.normcase(os.path.abspath(FACTS_JS)):
         return None
     try:
         r = subprocess.run([node, dump, "--w", str(int(W)), "--h", str(int(H))], capture_output=True, text=True,
@@ -432,14 +450,14 @@ def load_via_node():
     return groups, vals
 
 
-def load_facts():
-    src = open(FACTS_JS, encoding="utf-8").read()
+def load_facts(path=None):
+    src = open(path or FACTS_JS, encoding="utf-8").read()
     groups = {}
     # 按位置归组: fact 属于它前面的最后一个 group 头
     events = []
-    for m in re.finditer(r"^\s+(\w+): \{\s*$", src, re.M):
+    for m in re.finditer(GROUP_RE.pattern, src, re.M):
         events.append((m.start(), "group", m.group(1)))
-    for m in re.finditer(r'^\s+(\w+):\s*\{\s*expr:\s*"([^"]+)"\s*,\s*java:\s*"([^"]+)"', src, re.M):
+    for m in re.finditer(FACT_RE.pattern, src, re.M):
         events.append((m.start(), "fact", m.group(1), m.group(2), m.group(3)))
     events.sort(key=lambda e: e[0])
     cur = None
@@ -475,7 +493,7 @@ def resolve_one(groups, vals, group, name, seen):
             continue
         if ref in groups[group]:
             bind[ref] = resolve_one(groups, vals, group, ref, seen)
-        elif ref in groups["poulsen"]:
+        elif ref in groups.get("poulsen", {}):   # 退化 facts 文件 (只剩部分组) 不应 KeyError
             bind[ref] = resolve_one(groups, vals, "poulsen", ref, seen)
         else:
             raise ExprError("未知引用 %s (fact %s)" % (ref, key))
@@ -484,27 +502,78 @@ def resolve_one(groups, vals, group, name, seen):
     return v
 
 
+# ---------------------------------------------------------------- 行号判定
+def judge_line(hits, rec, tol, enabled=True):
+    """行号判定: 返回 (显示用命中行列表, 失配说明或 None)
+
+    hits —— 该数值在 Java 文件中命中的行号列表 (evaluate_file 收集)
+    rec  —— facts.js 里 java 字段记录的行号 (None = 未记录)
+    规则: 命中行集合里存在落在 rec ±tol 内的行才算通过; 否则视为 facts.js 行号失配。
+    未记录行号或 --no-line-check 时不参与判定 (只比数值)。
+    """
+    uniq = sorted(set(hits))
+    if not enabled or rec is None:
+        return uniq, None
+    near = [h for h in uniq if abs(h - rec) <= tol]
+    if near:
+        return near, None
+    return uniq, "记录行 %d ±%d 容差窗内无命中 (最近命中行: %s)" % (
+        rec, tol, ",".join(str(h) for h in uniq[:6]) or "无")
+
+
 # ---------------------------------------------------------------- 主流程
 def main():
     # Windows GBK 控制台无法打印 ✓/中文: 统一按 UTF-8 输出, 异常字符以 ? 代替而非崩溃
-    if hasattr(sys.stdout, "reconfigure"):
-        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    for _s in (sys.stdout, sys.stderr):
+        if hasattr(_s, "reconfigure"):
+            _s.reconfigure(encoding="utf-8", errors="replace")
     ap = argparse.ArgumentParser()
     ap.add_argument("--json", action="store_true", help="JSON 输出 (便于 CI)")
     ap.add_argument("--tree", default="bocchi-1.21.5", choices=JAVA_BASE, help="检查哪个版本树 (默认 1.21.5)")
+    ap.add_argument("--strict", action="store_true",
+                    help="严格模式: 宽松兜底命中 (OK?) 判为失败, 字面量命中 (OK~) 判为警告级并在 summary 显著列出")
+    ap.add_argument("--line-tol", type=int, default=LINE_TOL, metavar="N",
+                    help="行号容差窗 ±N (默认 %d, 0 = 必须精确命中记录行)" % LINE_TOL)
+    ap.add_argument("--no-line-check", action="store_true",
+                    help="关闭行号判定, 只比数值 (facts.js 行号大面积失配时的临时逃生口)")
+    ap.add_argument("--min-facts", type=int, default=MIN_FACTS, metavar="N",
+                    help="facts.js 解析条数下限 (默认 %d); 低于此值视为解析器故障而非通过" % MIN_FACTS)
+    ap.add_argument("--facts", default=FACTS_JS, metavar="PATH", help="facts.js 路径 (默认 js/facts.js)")
     args = ap.parse_args()
+    tol = max(0, args.line_tol)
+    line_check_on = not args.no_line_check
 
-    loaded = load_via_node()
+    facts_path = os.path.abspath(args.facts)
+    if not os.path.exists(facts_path):
+        print("错误: facts 文件不存在: %s" % facts_path, file=sys.stderr)
+        sys.exit(2)
+    # 两条解析路径都跑: node 权威求值 + 内置正则回退, 条数必须一致 (回退路径会静默丢 fact)
+    groups_re = load_facts(facts_path)
+    total_re = sum(len(v) for v in groups_re.values())
+    loaded = load_via_node(facts_path)
     if loaded:
         groups, vals = loaded
+        total = sum(len(v) for v in groups.values())
+        how = "node 路径 %d 条 / 正则回退路径 %d 条" % (total, total_re)
     else:
-        groups = load_facts()
-        vals = resolve_all(groups)
-    # 防静默通过: 解析结果为空视为检查器自身故障而非通过
-    total = sum(len(v) for v in groups.values())
-    if total == 0:
-        print("错误: 未从 facts.js 解析到任何布局常量 (文件为空或格式漂移)", file=sys.stderr)
+        if os.path.normcase(facts_path) != os.path.normcase(os.path.abspath(FACTS_JS)):
+            print("[info] 非默认 facts 文件, 跳过 node 权威求值 (facts-dump.mjs 固定 import js/facts.js), 改用正则回退解析",
+                  file=sys.stderr)
+        groups, vals = groups_re, None
+        total = total_re
+        how = "正则回退路径 %d 条" % total_re
+    # 防静默通过: 解析条数低于下限即视为检查器自身故障 (半解析的 facts.js 曾报出 "2 / 2 通过" 绿灯)
+    if total < args.min_facts or total_re < args.min_facts:
+        print("错误: 仅从 facts 解析到 %s, 低于下限 %d。文件为空、格式漂移或解析器静默丢条目"
+              % (how, args.min_facts), file=sys.stderr)
         sys.exit(2)
+    # 双解析路径条数一致才算健康: 不一致说明其中一条在静默丢 fact
+    parser_gap = loaded is not None and total != total_re
+    if parser_gap:
+        print("[警告] 两条解析路径条数不一致: node %d 条 / 正则回退 %d 条 —— 回退路径正在静默丢 fact"
+              % (total, total_re), file=sys.stderr)
+    if vals is None:
+        vals = resolve_all(groups)
     base = os.path.join(SRC_DIR, args.tree, JAVA_SUB)
 
     # 预读: 帧上下文 (FrameContext/主菜单 frame) 里的布局绑定, 供各组件文件复用
@@ -528,6 +597,11 @@ def main():
     results = []  # (group, name, status, detail)
     drift = 0
     missing = 0
+    literal_n = 0   # OK~ 字面量兜底 (严格模式下为警告级)
+    loose_n = 0     # OK? 未知标识符按 1 估 (严格模式下为失败)
+    TIER_NOTE = {"OK": "",
+                 "OK~": " (字面量存在, 上下文含未解析变量)",
+                 "OK?": " (未知标识符按 1 估得, 建议人工复核)"}
     for group, facts in groups.items():
         for name, f in facts.items():
             java = f["java"]
@@ -544,16 +618,39 @@ def main():
                 continue
             text = open(jfile, encoding="utf-8").read()
             found, literals, found_loose, unverified, _ = evaluate_file(text, prelude)
-            if expected in found:
-                lines = ",".join(str(x) for x in found[expected])
-                results.append((group, name, "OK", "%s:%s → %s" % (path, lines, fmt(expected))))
-            elif expected in literals:
-                results.append((group, name, "OK~", "%s:%s → %s (字面量存在, 上下文含未解析变量)" % (path, ",".join(str(x) for x in literals[expected]), fmt(expected))))
-            elif expected in found_loose:
-                results.append((group, name, "OK?", "%s:%s → %s (未知标识符按 1 估得, 建议人工复核)" % (path, ",".join(str(x) for x in found_loose[expected]), fmt(expected))))
+            # 三档兜底按可信度从高到低; 行号判定看所有档的命中行并集 ——
+            # "这条常量还在记录行上吗" 与 "值有多可信" 是两个正交问题:
+            # 例如 0.18 在 BgImageComponent 记录行 62 只有宽松档算得出 (含未知调用),
+            # 而精确档在 102 行有个巧合的 0.18f 字面量, 只看精确档会误报行号失配。
+            tiers = (("OK", found), ("OK~", literals), ("OK?", found_loose))
+            in_tiers = [(s, d[expected]) for s, d in tiers if expected in d]
+            rec = line if line is not None else "无"
+            if in_tiers:
+                hits, miss = judge_line(sorted({h for _s, hs in in_tiers for h in hs}),
+                                       line, tol, line_check_on)
+                hit_txt = ",".join(str(h) for h in hits) or "无"
+                if miss:
+                    # 附上各档实际命中行, 便于人工判断该把 facts.js 行号改成哪一行
+                    where = " / ".join("%s:%s" % (s, ",".join(str(h) for h in sorted(set(hs))[:4]))
+                                       for s, hs in in_tiers)
+                    results.append((group, name, "DRIFT",
+                                    "%s: 值 %s 确实算得出 (%s), 但 %s —— facts.js 记录行号已失配"
+                                    % (path, fmt(expected), where, miss)))
+                    drift += 1
+                else:
+                    # 标签取"在容差窗内命中的最高可信档"; 未启用行号判定时退回原优先级
+                    status = (next((s for s, hs in in_tiers if any(abs(h - line) <= tol for h in hs)),
+                                   in_tiers[0][0]) if (line is not None and line_check_on) else in_tiers[0][0])
+                    results.append((group, name, status,
+                                    "%s 记录行 %s, 命中行 %s → %s%s"
+                                    % (path, rec, hit_txt, fmt(expected), TIER_NOTE[status])))
+                    if status == "OK~":
+                        literal_n += 1
+                    elif status == "OK?":
+                        loose_n += 1
             else:
                 ctx = "; ".join(u[1] for u in unverified[:3])
-                results.append((group, name, "DRIFT", "%s:%s 期望 %s, 文件中未找到。疑似 Java 已改动或表达式已重构。未解析片段: %s" % (path, line, fmt(expected), ctx or "无")))
+                results.append((group, name, "DRIFT", "%s:%s 期望 %s, 文件中未找到。疑似 Java 已改动或表达式已重构。未解析片段: %s" % (path, rec, fmt(expected), ctx or "无")))
                 drift += 1
 
     # 输出
@@ -570,8 +667,24 @@ def main():
             print("%s %-16s %s" % (mark, n, d))
         ok = sum(1 for r in results if r[2] in ("OK", "OK~", "OK?"))
         print("\n%s / %s 通过; DRIFT %s; MISSING %s; SKIP %s" % (ok, len(results), drift, missing, sum(1 for r in results if r[2] == "SKIP")))
+        if not line_check_on:
+            print("注意: 已用 --no-line-check 关闭行号判定, facts.js 的 java:行号 未参与判定 (仅比数值)")
+        # 兜底命中必须显著列出: OK~ 是警告级, OK? 在 --strict 下按失败计
+        if literal_n or loose_n:
+            print("兜底命中 (非精确求值): 字面量 OK~ %s 条; 宽松 OK? %s 条%s"
+                  % (literal_n, loose_n, " ← 严格模式下按失败计" if args.strict else ""))
+            for g, n, s, d in results:
+                if s in ("OK~", "OK?"):
+                    print("  %s %s.%s  %s" % ("!" if s == "OK?" else "*", g, n, d))
+            print("  ( *= 警告级: 字面量存在但上下文含未解析变量;  ! = 失败级: 未知标识符按 1 估得, 需人工复核)")
     # Java 文件缺失与布局漂移同等视为失败, 避免重命名后检查器静默通过
-    sys.exit(1 if (drift or missing) else 0)
+    strict_fail = args.strict and loose_n > 0
+    if strict_fail:
+        print("错误: 严格模式下 %s 条宽松兜底命中 (OK?) 按失败计" % loose_n, file=sys.stderr)
+    if parser_gap and args.strict:
+        print("错误: 严格模式下两条解析路径条数不一致, 视为解析器故障", file=sys.stderr)
+        sys.exit(2)
+    sys.exit(1 if (drift or missing or strict_fail) else 0)
 
 
 def fmt(v):
