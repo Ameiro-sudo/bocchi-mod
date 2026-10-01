@@ -1,0 +1,33 @@
+# 本仓库吃过三次编码亏, 所以把 UTF-8 钉死在这里:
+#   1. v1.0 发布 jar 的 NeoForge 模组描述乱码 (gradle.properties 按 ISO-8859-1 解码)
+#   2. .gitattributes 的中文注释退化成字面 '?'
+#   3. Windows 控制台打印中文触发 UnicodeEncodeError (build-all.py 已做防护)
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 4
+
+[*.{js,mjs,json,html,css}]
+indent_size = 2
+
+[*.py]
+indent_size = 4
+
+[*.md]
+trim_trailing_whitespace = false
+
+[*.bat]
+end_of_line = crlf
+
+[gradle.properties]
+# Gradle 按 ISO-8859-1 读该文件, 中文值必须靠 build.gradle.kts 里显式按 UTF-8 重读
+# (见 src/*/build.gradle.kts 顶部的 utf8Description), 这里保持 UTF-8 供人阅读
+charset = utf-8
+
+[gradlew.bat]
+end_of_line = crlf
