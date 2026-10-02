@@ -1,7 +1,7 @@
 # bocchi-mod 无人值守任务认领日志
 
 > 惯例对齐 IReckon `docs/UNATTENDED_LOG.md`: 动手前先登记, 完成后回填结果。
-> 共享黑板(D:\project\AGENT_HANDOFF.md 八½节)同步登记; 多 clone 布局下以黑板为准。
+> 共享黑板为 `D:\project\AGENT.md`（原 `AGENT_HANDOFF.md` 已删除,无人值守登记/回填链路曾因此断开,见 `PROCESS_AUDIT.md` §五); 多 clone 布局下以黑板为准。
 
 ## 任务 1: 设置面板 + Mods/Cfgs 持久化(2026-08-22 认领)
 
