@@ -55,6 +55,7 @@ body {
     var(--ui-bg);
   color: var(--ui-ink);
   height: 100vh; overflow: hidden;
+  display: flex; flex-direction: column;
 }
 /* 巨型唱片弧线 (右下角, 穿过面板底层) */
 body::before {
@@ -159,8 +160,12 @@ header .sub {
 .seg button:hover { color: var(--ui-ink); }
 .seg button.on { background: var(--ui-primary-soft); color: var(--ui-pink-hover); }
 
-/* ===== 主布局 ===== */
-.layout { display: flex; height: calc(100vh - 63px); position: relative; z-index: 1; }
+/* ===== 主布局 =====
+ * 高度用 flex 分配而不是 calc(100vh - 63px): 那个 63 是「顶栏 62 + 1px 边框」的
+ * 手抄值, 顶栏一旦在窄屏下换行就与实际高度对不上, 底部会被 body 的 overflow:hidden
+ * 静默切掉一截。min-height:0 是必需的 —— 默认的 min-height:auto 不让 flex 子项缩到
+ * 内容高度以下, 于是内层滚动条永远等不到高度。 */
+.layout { display: flex; flex: 1; min-height: 0; position: relative; z-index: 1; }
 .preview-wrap {
   flex: 1.4; min-width: 420px; padding: 20px; overflow: auto;
   display: flex; flex-direction: column; align-items: safe center; justify-content: safe center; gap: 12px;
@@ -483,4 +488,27 @@ select:focus { outline: none; border-color: var(--ui-pink); box-shadow: 0 0 0 3p
     animation-iteration-count: 1 !important;
     transition-duration: .01ms !important;
   }
+}
+
+/* ===== 窄屏 =====
+ * .layout 的两个子项各自带 min-width (420 / 360), 且 body 是 overflow:hidden。
+ * 于是窗口窄于二者之和时 flex 不肯压缩、又没有地方可滚 —— 右侧面板被整块切掉,
+ * 而这正是「窗口拉小一点顺手改两个值」时立刻撞上的情况。
+ * 断点取 1000px: 低于它时把面板挪到舞台下方, 各给一个确定高度 (预览 48vh,
+ * 面板占剩余), 这样 fitStage 拿到的 clientHeight 仍是真实可用高度, 适应缩放照常成立。
+ * 必须给确定高度而不是 min-height: 内容高会让 clientHeight 随舞台一起长,
+ * fitStage 于是量到一个跟着内容走的盒子, 算出接近 1 的缩放, 「适应」名存实亡。 */
+@media (max-width: 1000px) {
+  header { height: auto; min-height: 62px; flex-wrap: wrap; padding: 8px 16px; row-gap: 8px; }
+  .layout { flex-direction: column; }
+  .preview-wrap { flex: none; min-width: 0; width: 100%; height: 48vh; padding: 12px; }
+  .controls { flex: 1; min-width: 0; width: 100%; border-left: none; border-top: 1px solid var(--ui-hair); }
+  .res-row .r-label { width: 116px; }
+  .text-row .t-label { width: 116px; }
+}
+/* 极窄: 两列网格必须塌成一列。.grid 是 1fr 1fr, 窄面板下每列只剩 150px,
+   输入框被压到连值都显示不全 —— 这不是好看不好看, 是没法用。 */
+@media (max-width: 640px) {
+  .grid { grid-template-columns: 1fr; }
+  .res-row .r-label, .text-row .t-label { width: 92px; }
 }

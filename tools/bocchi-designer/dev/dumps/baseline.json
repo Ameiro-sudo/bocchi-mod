@@ -1960,24 +1960,24 @@
  "console": [],
  "assetProbe": {
   "checked": {
+   "textures/gotoh": true,
    "textures/gotoh_image_1": true,
    "textures/gotoh_image_2": true,
    "textures/logo": true,
    "textures/bocchi_loading": true,
    "textures/bocchi": true,
-   "textures/gotoh": true,
    "svgs/single": true,
    "svgs/multi": true,
    "svgs/option": true,
    "svgs/lang": true,
-   "svgs/quit": true,
    "svgs/theme": true,
-   "fonts/Radikal-Black": true,
-   "fonts/Radikal-Regular": true,
+   "svgs/quit": true,
    "fonts/meiryo-bold": false,
+   "fonts/Radikal-Black": true,
    "fonts/SourceHanSansSC-Light": true,
-   "fonts/SourceHanSansSC-Regular": true,
+   "fonts/Radikal-Regular": true,
    "fonts/SourceHanSansSC-Heavy": true,
+   "fonts/SourceHanSansSC-Regular": true,
    "fonts/SourceHanSansSC-Normal": true,
    "fonts/SourceHanSansSC-Bold": true
   },
@@ -2202,7 +2202,7 @@
     "x": 949.422,
     "y": 62,
     "w": 650.578,
-    "h": 837
+    "h": 838
    },
    "nodes": [
     {
@@ -5018,7 +5018,7 @@
   "ovTachieXAfterNudge": 9
  },
  "sliderProbe": {
-  "before": 181.74,
-  "after": 229.575
+  "before": 176.519,
+  "after": 222.98
  }
 }

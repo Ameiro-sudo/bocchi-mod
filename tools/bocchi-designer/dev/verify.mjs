@@ -819,6 +819,61 @@ function dumpChrome(EXCLUDE) {
       throw new Error("撤销栈探针未通过");
     }
 
+    /* ---- 窄屏探针 (行为门禁) ----
+     * 快照只采 1600×900 一个视口, 于是「窗口拉小后右侧面板被切掉」这类问题在门禁上
+     * 是彻底失明的 —— 布局塌掉的那一段代码, 基线一行都不会变。这里压到 900/640 两个
+     * 宽度断言: 没有横向溢出 (body 是 overflow:hidden, 溢出等于内容被静默切掉)、
+     * 面板仍在视口内、fitStage 真的把舞台塞进了可视区 (而不是留个滚动条说适应过了)。
+     * 跑在快照与所有探针之后 —— 它改视口, 不能污染 dump。 */
+    const responsiveProbe = await (async () => {
+      const fails = [];
+      const vw = page.viewport();
+      try {
+        for (const w of [1000, 640]) {
+          await page.setViewport({ width: w, height: 800, deviceScaleFactor: 1 });
+          // 先按「适应」: 上一轮烟测把缩放停在 200% 上, 而溢出断言说的是「适应」这个
+          // 承诺 —— 不切回适应去测它, 等于测一个用户没选的状态。
+          await page.click('.seg button[data-zoom="0"]');
+          await new Promise(r => setTimeout(r, 260));
+          const m = await page.evaluate(() => {
+            const doc = document.documentElement;
+            const wrap = document.querySelector(".preview-wrap");
+            const ctl = document.querySelector(".controls");
+            const frame = document.getElementById("stageFrame");
+            const fr = frame.getBoundingClientRect();
+            const cr = ctl.getBoundingClientRect();
+            return {
+              hOverflow: Math.max(doc.scrollWidth, document.body.scrollWidth) - window.innerWidth,
+              ctlRight: Math.round(cr.right),
+              ctlBottom: Math.round(cr.bottom),
+              ctlWidth: Math.round(cr.width),
+              stageFitsX: Math.round(fr.right) <= Math.round(window.innerWidth) + 1,
+              stageFitsWrap: fr.bottom <= wrap.getBoundingClientRect().bottom + 1,
+              wrapScrollX: wrap.scrollWidth - wrap.clientWidth,
+              wrapScrollY: wrap.scrollHeight - wrap.clientHeight,
+            };
+          });
+          if (m.hOverflow > 1) fails.push(`${w}px: 页面横向溢出 ${m.hOverflow}px (body overflow:hidden, 等于内容被切掉)`);
+          if (m.ctlRight > w + 1) fails.push(`${w}px: 控制面板右缘 ${m.ctlRight} 超出视口 ${w}`);
+          if (m.ctlWidth < 200) fails.push(`${w}px: 控制面板只剩 ${m.ctlWidth}px 宽`);
+          if (!m.stageFitsX) fails.push(`${w}px: 舞台横向超出视口`);
+          if (m.wrapScrollX > 1) fails.push(`${w}px: 预览区出现横向滚动 ${m.wrapScrollX}px ——「适应」没做到`);
+          if (m.wrapScrollY > 1) fails.push(`${w}px: 预览区出现纵向滚动 ${m.wrapScrollY}px ——「适应」没做到`);
+          if (!m.stageFitsWrap) fails.push(`${w}px: 舞台底部超出预览区`);
+        }
+      } catch (e) {
+        fails.push("窄屏探针异常: " + e.message);
+      } finally {
+        await page.setViewport(vw);
+      }
+      return { ok: fails.length === 0, fails };
+    })();
+    if (!responsiveProbe.ok) {
+      console.error("\n窄屏探针失败:");
+      for (const f of responsiveProbe.fails) console.error("  - " + f);
+      throw new Error("窄屏探针未通过");
+    }
+
     dump.console = consoleFiltered.map(m => `[${m.type}] ${m.text}`);
     fs.mkdirSync(path.dirname(OUT), { recursive: true });
     fs.writeFileSync(OUT, JSON.stringify(dump, null, 1));
@@ -828,6 +883,7 @@ function dumpChrome(EXCLUDE) {
     console.log("uiProbe: ok");
     console.log("sliderProbe:", JSON.stringify(sliderProbe));
     console.log("historyProbe: ok");
+    console.log("responsiveProbe: ok");
   } finally {
     if (browser) await browser.close();
     if (srv) srv.server.close();
