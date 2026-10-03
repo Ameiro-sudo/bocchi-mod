@@ -567,9 +567,15 @@ function dumpChrome(EXCLUDE) {
     // 内置资源可达性探针是异步的 (HEAD 请求)。不等它落定就采快照, 差异会随机
     // 出现又随机消失 —— 那是最坏的一种门禁故障: 它只在别人机器上红。
     dump.assetProbe = await page.evaluate(() => globalThis.__bocchi.assetsReady);
-    // 按 URL 精确剔除探针自己造成的 404 (见 consoleMsgs 处的注释)
-    const probedUrls = new Set(dump.assetProbe.probed || []);
-    const consoleFiltered = consoleMsgs.filter(m => !(m.url && probedUrls.has(m.url)));
+    // 按路径精确剔除探针自己造成的 404 (见 consoleMsgs 处的注释)。
+    // 比对的是 pathname 而非完整 URL: 服务跑在随机端口上, 拿完整 URL 比对会让
+    // 每条 console 记录的过滤都落空。
+    const probedPaths = new Set(dump.assetProbe.probed || []);
+    const consoleFiltered = consoleMsgs.filter(m => {
+      if (!m.url || !probedPaths.size) return true;
+      try { return !probedPaths.has(new URL(m.url).pathname.replace(/^\//, "")); }
+      catch { return true; }
+    });
     dump.chrome = await page.evaluate(dumpChrome, EXCLUDE);
 
     /* 交互烟测: 选中立绘 -> 方向键微调 -> Esc 取消; 导出按钮存在。

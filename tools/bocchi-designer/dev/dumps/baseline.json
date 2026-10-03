@@ -812,7 +812,9 @@
      "pAliasText": "ギターヒーロー",
      "pAdd1": "FEBRUARY 21",
      "pAdd2": "50 kg & 156 cm",
-     "pAdd3": "Aqua eye"
+     "pAdd3": "Aqua eye",
+     "sTitle": "CFGS",
+     "sDone": "DONE"
     },
     "menu": {
      "_comment": "主菜单主题: misayos (默认) / poulsen. 材质包覆盖此项即可切换主题, 资源重载后生效",
@@ -1716,7 +1718,9 @@
      "pAliasText": "ギターヒーロー",
      "pAdd1": "FEBRUARY 21",
      "pAdd2": "50 kg & 156 cm",
-     "pAdd3": "Aqua eye"
+     "pAdd3": "Aqua eye",
+     "sTitle": "CFGS",
+     "sDone": "DONE"
     },
     "menu": {
      "_comment": "主菜单主题: misayos (默认) / poulsen. 材质包覆盖此项即可切换主题, 资源重载后生效",
@@ -1902,7 +1906,9 @@
      "pAliasText": "ギターヒーロー",
      "pAdd1": "FEBRUARY 21",
      "pAdd2": "50 kg & 156 cm",
-     "pAdd3": "Aqua eye"
+     "pAdd3": "Aqua eye",
+     "sTitle": "CFGS",
+     "sDone": "DONE"
     },
     "menu": {
      "_comment": "主菜单主题: misayos (默认) / poulsen. 材质包覆盖此项即可切换主题, 资源重载后生效",
@@ -1937,26 +1943,26 @@
    "fonts/SourceHanSansSC-Bold": true
   },
   "probed": [
-   "http://127.0.0.1:3721/assets/textures/bocchi.png",
-   "http://127.0.0.1:3721/assets/textures/gotoh.png",
-   "http://127.0.0.1:3721/assets/textures/gotoh_image_1.png",
-   "http://127.0.0.1:3721/assets/textures/gotoh_image_2.png",
-   "http://127.0.0.1:3721/assets/textures/bocchi_loading.png",
-   "http://127.0.0.1:3721/assets/textures/logo.png",
-   "http://127.0.0.1:3721/assets/svgs/single.svg",
-   "http://127.0.0.1:3721/assets/svgs/multi.svg",
-   "http://127.0.0.1:3721/assets/svgs/option.svg",
-   "http://127.0.0.1:3721/assets/svgs/lang.svg",
-   "http://127.0.0.1:3721/assets/svgs/quit.svg",
-   "http://127.0.0.1:3721/assets/svgs/theme.svg",
-   "http://127.0.0.1:3721/assets/fonts/radikal-black.ttf",
-   "http://127.0.0.1:3721/assets/fonts/radikal-regular.ttf",
-   "http://127.0.0.1:3721/assets/fonts/meiryo-bold.ttf",
-   "http://127.0.0.1:3721/assets/fonts/sourcehansanssc-light.ttf",
-   "http://127.0.0.1:3721/assets/fonts/sourcehansanssc-regular.ttf",
-   "http://127.0.0.1:3721/assets/fonts/sourcehansanssc-heavy.ttf",
-   "http://127.0.0.1:3721/assets/fonts/sourcehansanssc-normal.ttf",
-   "http://127.0.0.1:3721/assets/fonts/sourcehansanssc-bold.ttf"
+   "assets/textures/bocchi.png",
+   "assets/textures/gotoh.png",
+   "assets/textures/gotoh_image_1.png",
+   "assets/textures/gotoh_image_2.png",
+   "assets/textures/bocchi_loading.png",
+   "assets/textures/logo.png",
+   "assets/svgs/single.svg",
+   "assets/svgs/multi.svg",
+   "assets/svgs/option.svg",
+   "assets/svgs/lang.svg",
+   "assets/svgs/quit.svg",
+   "assets/svgs/theme.svg",
+   "assets/fonts/radikal-black.ttf",
+   "assets/fonts/radikal-regular.ttf",
+   "assets/fonts/meiryo-bold.ttf",
+   "assets/fonts/sourcehansanssc-light.ttf",
+   "assets/fonts/sourcehansanssc-regular.ttf",
+   "assets/fonts/sourcehansanssc-heavy.ttf",
+   "assets/fonts/sourcehansanssc-normal.ttf",
+   "assets/fonts/sourcehansanssc-bold.ttf"
   ]
  },
  "chrome": {
@@ -3315,6 +3321,62 @@
      "attrs": {
       "type": "text",
       "value": "Aqua eye"
+     }
+    },
+    {
+     "path": "2.1.0.21",
+     "tag": "DIV",
+     "class": "grid-group",
+     "text": "设置界面 (游戏内 CFGS 面板, 舞台上无对应元素, 不预览)"
+    },
+    {
+     "path": "2.1.0.22",
+     "tag": "DIV",
+     "class": "text-row"
+    },
+    {
+     "path": "2.1.0.22.0",
+     "tag": "SPAN",
+     "class": "t-dot",
+     "hidden": true
+    },
+    {
+     "path": "2.1.0.22.1",
+     "tag": "DIV",
+     "class": "t-label",
+     "text": "设置面板标题"
+    },
+    {
+     "path": "2.1.0.22.2",
+     "tag": "INPUT",
+     "attrs": {
+      "type": "text",
+      "value": "CFGS"
+     }
+    },
+    {
+     "path": "2.1.0.23",
+     "tag": "DIV",
+     "class": "text-row"
+    },
+    {
+     "path": "2.1.0.23.0",
+     "tag": "SPAN",
+     "class": "t-dot",
+     "hidden": true
+    },
+    {
+     "path": "2.1.0.23.1",
+     "tag": "DIV",
+     "class": "t-label",
+     "text": "完成按钮"
+    },
+    {
+     "path": "2.1.0.23.2",
+     "tag": "INPUT",
+     "attrs": {
+      "type": "text",
+      "value": "DONE"
      }
     },
     {
@@ -4806,7 +4868,7 @@
      "path": "8.1.0",
      "tag": "PRE",
      "id": "jsonPreview",
-     "text": "<designJSON len=2577>"
+     "text": "<designJSON len=2612>"
     },
     {
      "path": "9",

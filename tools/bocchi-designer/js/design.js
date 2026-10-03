@@ -104,6 +104,8 @@ export const DEFAULT_TEXTS = {
   pJName: "後藤 ひとり", pJKana: "ご\u00A0\u00A0\u00A0とう",
   pAliasText: "ギターヒーロー",
   pAdd1: "FEBRUARY 21", pAdd2: "50 kg & 156 cm", pAdd3: "Aqua eye",
+  // 设置界面 (SettingsPanel.java:135 / :277) 消费, 但舞台上没有对应元素 —— 无法预览
+  sTitle: "CFGS", sDone: "DONE",
 };
 // 单一数据源: state.TEXTS 与导出用的 S.texts 指向同一对象
 S.texts = { ...DEFAULT_TEXTS };

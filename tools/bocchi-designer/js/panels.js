@@ -218,15 +218,17 @@ function addResRow(body, label, sec, key) {
 const assetProbe = new Map(); // "sec/key" -> 内置文件是否可达
 export async function probeBundledAssets() {
   const jobs = [];
-  const probed = [];   // 探过的绝对 URL: 门禁据此剔除自己造成的 404 噪声
+  // 记相对路径而不是绝对 URL: 门禁跑在随机端口上, 绝对 URL 每次都不一样,
+  // 快照基线就永远对不上 —— 门禁自己变成永久红灯。
+  const probed = [];   // 探过的相对路径: 门禁据此剔除自己造成的 404 噪声
   for (const sec of ["textures", "svgs", "fonts"]) {
     for (const key of Object.keys(S[sec])) {
       if (S[sec][key].blob) continue;   // 用的是上传件, 内置在不在都无所谓
       const id = sec + "/" + key;
-      const url = new URL(localAsset(S[sec][key].path), location.href).href;
-      probed.push(url);
+      const path = localAsset(S[sec][key].path);
+      probed.push(path);
       jobs.push(
-        fetch(url, { method: "HEAD" })
+        fetch(new URL(path, location.href).href, { method: "HEAD" })
           .then(r => { assetProbe.set(id, r.ok); })
           .catch(() => { assetProbe.set(id, false); })
       );
@@ -336,6 +338,13 @@ function setTextModel(elId, v, input) {
   relayout();
   saveState();
 }
+/** 网格内的分组小标题 (占满一行, 把不同界面的字段隔开) */
+function addGroupLabel(body, text) {
+  const d = document.createElement("div");
+  d.className = "grid-group";
+  d.textContent = text;
+  body.appendChild(d);
+}
 function addTextRow(body, label, elId) {
   const row = document.createElement("div");
   row.className = "text-row";
@@ -343,6 +352,9 @@ function addTextRow(body, label, elId) {
   lab.className = "t-label"; lab.textContent = label;
   const dot = document.createElement("span");
   dot.className = "t-dot"; dot.title = "在舞台上双击对应元素可定位到此处";
+  // 舞台上没有对应元素的键 (如设置界面的 sTitle/sDone) 不显示定位点 ——
+  // 画一个点却永远双击不到, 比不画更让人以为是自己没找对
+  if (!$(elId)) dot.style.display = "none";
   const input = document.createElement("input");
   input.type = "text";
   input.value = state.TEXTS[elId] != null ? state.TEXTS[elId] : DEFAULT_TEXTS[elId];
@@ -472,6 +484,9 @@ export function build() {
   addTextRow(t2, "信息条 1", "pAdd1");
   addTextRow(t2, "信息条 2", "pAdd2");
   addTextRow(t2, "信息条 3", "pAdd3");
+  addGroupLabel(t2, "设置界面 (游戏内 CFGS 面板, 舞台上无对应元素, 不预览)");
+  addTextRow(t2, "设置面板标题", "sTitle");
+  addTextRow(t2, "完成按钮", "sDone");
 
   /* 纹理 */
   body = addSection("纹理 textures（上传即预览，导出时打包）", "res-textures");

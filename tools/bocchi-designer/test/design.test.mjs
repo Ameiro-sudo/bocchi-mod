@@ -1,10 +1,57 @@
 /* design.js 单测: 防护工具 / 颜色转换 / 文案导出 / design.json 组装 */
 import test from "node:test";
 import assert from "node:assert/strict";
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import {
   S, DEFAULT_DESIGN, DEFAULT_TEXTS, UNSAFE_KEYS, cleanCopy, hexToCss,
   buildDesignJSON, textsForExport, uploadedCount,
 } from "../js/design.js";
+
+/* ---------- 契约测试: 工具的建模面必须覆盖 mod 内置 design.json ----------
+ *
+ * sTitle/sDone 被 SettingsPanel.java 真实消费, 却在工具里缺席了很久: 面板上没有这两行,
+ * 用户改完文案导出的 design.json 也不含这两个键, 游戏端只能回退硬编码默认值。
+ * 单测逐个 case 去看根本防不住 —— 新加一个键时不会有人记得补断言。
+ * 这里改成拿 mod 的内置模板当事实来源反向校验: 模板里有的键, 工具必须能表示。
+ */
+const MOD_DESIGN = path.resolve(
+  path.dirname(fileURLToPath(import.meta.url)),
+  "..", "..", "..",
+  "src", "bocchi-1.21.5", "common", "src", "main", "resources",
+  "assets", "minecraft", "client", "design.json",
+);
+
+test("契约: 工具建模面覆盖 mod 内置 design.json 的每个键", (t) => {
+  if (!fs.existsSync(MOD_DESIGN)) {
+    t.skip("mod 内置 design.json 不在 (工具被单独分发时属预期)");
+    return;
+  }
+  const mod = JSON.parse(fs.readFileSync(MOD_DESIGN, "utf8"));
+  const known = (o) => Object.keys(o).filter((k) => !k.startsWith("_"));
+
+  // texts: 工具的编辑面是 DEFAULT_TEXTS, 导出时才把 mInfo 一行摊成
+  // mInfoLine1~3 (io.js 导入时再合回去)。所以拿 DEFAULT_TEXTS 比, 别拿导出结果比 ——
+  // 导出结果里根本没有 mInfo 这个键, 拿它比会把三个 mInfoLine 全判成缺失。
+  const toToolKey = (k) => k.replace(/^mInfoLine[123]$/, "mInfo");
+  const toolTextKeys = new Set(Object.keys(DEFAULT_TEXTS));
+  const missingTexts = known(mod.texts).filter((k) => !toolTextKeys.has(toToolKey(k)));
+  assert.deepEqual(missingTexts, [], "mod 消费但工具无法编辑的文案键");
+
+  for (const sec of ["textures", "svgs", "fonts", "colors"]) {
+    const missing = known(mod[sec]).filter((k) => !Object.hasOwn(DEFAULT_DESIGN[sec], k));
+    assert.deepEqual(missing, [], `mod 声明但工具缺失的 ${sec} 键`);
+  }
+
+  assert.equal(buildDesignJSON().menu.theme, mod.menu.theme, "默认主题与 mod 内置不一致");
+
+  // 模板里有而工具没有的整个 section: 不失败, 但必须显式列出来让人看见。
+  // shaders 段是 PassTest 这个开发期测试入口用的, 刻意不做 UI。
+  const toolSections = new Set(["_readme", "textures", "svgs", "fonts", "colors", "texts", "menu"]);
+  const extraSections = Object.keys(mod).filter((k) => !k.startsWith("_") && !toolSections.has(k));
+  assert.deepEqual(extraSections, [], "mod 有工具完全未建模的 section (如需建模请一并补 UI)");
+});
 
 test("cleanCopy 过滤危险键并返回 null 原型对象", () => {
   const evil = JSON.parse('{"__proto__": {"x": 1}, "constructor": 1, "ok": 2}');
