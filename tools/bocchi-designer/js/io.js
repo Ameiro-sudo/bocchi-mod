@@ -4,7 +4,8 @@
  * 与旧版差异: applyDesignJSON 只做模型变更 (纯数据 + blob 接线), 不再直接调用
  * 面板/预览 UI; UI 同步由 bind(onImported) 注册的回调在组装层完成, 消除 io<->panels 环。
  * ==========================================================================*/
-import { $, toast, download, zipWrite, zipRead } from "./core.js";
+import { $, toast, download } from "./core.js";
+import { zipWrite, zipRead } from "./zip.js";
 import {
   S, buildDesignJSON, usedPath, localAsset, zipEntry,
   UNSAFE_KEYS, cleanCopy, setBlob, splitPath, uploadedCount,

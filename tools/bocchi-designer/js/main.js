@@ -2,10 +2,13 @@
  * main.js - 组装根: 模块接线 + 启动序列
  *
  * 依赖注入点 (替代旧 window.BD 全局定位器):
- *   - interactions.hooks.focusText <- panels.focusTextInput
- *   - render.setAfterRelayout      <- interactions.updateSelBox
- *   - io.onModelImported           <- 导入后的 UI 全量同步 (本文件定义)
+ *   - select-drag.hooks.focusText     <- panels.focusTextInput
+ *   - render.setAfterRelayout          <- select-drag.updateSelBox
+ *   - io.onModelImported               <- 导入后的 UI 全量同步 (本文件定义)
  * type=module 天然 defer, 执行到这里时 DOM 已就绪。
+ * 舞台交互拆成 js/interactions/ 五个模块 (stage-state / animation / zoom / select-drag /
+ * stage-view), 各自导出 bind*() 而不是靠 import 副作用挂监听 —— 「import 这个模块」
+ * 此前隐含着一个「DOM 已就绪」的前提, 任何在 head 里提前 import 它的模块都会炸。
  * ==========================================================================*/
 import { $, state, toast } from "./core.js";
 import { loadState } from "./design.js";
@@ -15,7 +18,11 @@ import { relayout } from "./render.js";
 import { setAfterRelayout } from "./render.js";
 import { build, applyAllTexts, updateResNames, focusTextInput, resyncBaselines, probeBundledAssets, refreshDirtyMarks } from "./panels.js";
 import { bind as bindIO, onModelImported } from "./io.js";
-import { showStage, replay, currentStage, fitStage, updateSelBox, hooks } from "./interactions.js";
+import { showStage } from "./interactions/stage-view.js";
+import { currentStage } from "./interactions/stage-state.js";
+import { replay } from "./interactions/animation.js";
+import { fitStage, bindZoom } from "./interactions/zoom.js";
+import { hooks, updateSelBox, bindSelectDrag } from "./interactions/select-drag.js";
 import { FONT_SET_NAME, loadUploadedFonts } from "./fonts.js";
 import { S } from "./design.js";
 import { undo as undoHistory, redo as redoHistory, stats as historyStats, push as pushHistory, onStackChange, canUndo, canRedo } from "./history.js";
@@ -74,6 +81,8 @@ function boot() {
   // 接线 (消除旧 BD 全局与模块环)
   hooks.focusText = focusTextInput;
   setAfterRelayout(updateSelBox);
+  bindZoom();
+  bindSelectDrag();
 
   // 舞台切换
   $("swSplash").addEventListener("click", () => showStage("splash"));

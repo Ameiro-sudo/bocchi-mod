@@ -30,7 +30,8 @@ python -m http.server 8833 --bind 127.0.0.1   # 或: npm run serve
 
 ```
 main.js (组装根 + 启动)
-├─ core.js        应用状态 / DOM 助手 / toast / ZIP 读写(零依赖) / 节流
+├─ core.js        应用状态 / DOM 助手 / toast / 下载 / 节流 (零依赖)
+├─ zip.js         zip32 读写 (纯计算、零 DOM, 可脱离浏览器单测)
 ├─ facts.js       布局常量单一数据源 (纯模块, 浏览器+Node 双端可导入)
 ├─ sliders.js     16 组滑杆值域与默认值 (纯数据, 不碰 DOM, 可直接单测)
 ├─ design.js      design.json 数据模型 + layout 段换算 + localStorage 持久化
@@ -56,18 +57,37 @@ main.js (组装根 + 启动)
 │       ├─ exportbar.js     design.json 预览 + 导出区
 │       ├─ dirty.js         「已改 N 项」标记
 │       └─ baseline.js      撤销基准登记 (导入后一次全量对齐)
-├─ interactions.js 舞台切换 / 入场动画 / 选中拖拽 / 键盘微调 / 缩放
+├─ interactions/   舞台交互, 拆成五块 (拆的理由见下)
+│   ├─ stage-state.js  当前舞台/选中键/拖拽态 —— 三个模块共享、零依赖
+│   ├─ animation.js    三组定时动画: 入场重播 / 加载页演示 / 常驻呼吸
+│   ├─ zoom.js         适应窗口 / 100% / 200% (从 DOM 实测可用空间)
+│   ├─ select-drag.js  选中 / 拖拽 / 手柄缩放 / 方向键微调 / 双击定位
+│   └─ stage-view.js   舞台切换 (只做这一个决定, 连带四处联动)
 └─ io.js          材质包导入导出 (applyDesignJSON 为纯模型变更; 导入清空历史)
 ```
 
-模块间无环 (25 个模块 / 94 条依赖边)。跨层协作通过 **main.js 组装期依赖注入**
+模块间无环 (31 个模块 / 112 条依赖边)。跨层协作通过 **main.js 组装期依赖注入**
 (替代全局服务定位器):
 
 | 注入点 | 说明 |
 | --- | --- |
-| `interactions.hooks.focusText` | 双击舞台文本 -> 面板输入框定位 |
+| `select-drag.hooks.focusText` | 双击舞台文本 -> 面板输入框定位 |
 | `render.setAfterRelayout()` | 重排后选中框跟随 |
 | `io.onModelImported()` | 导入 zip/design.json 后的 UI 全量同步 |
+
+> **`interactions.js` 为什么被拆开**：它一度是 345 行、同时管五件事的模块 ——
+> 舞台切换、入场重播、加载页演示、定时缩放、选中拖拽。它最贵的地方不是行数，而是
+> **互相要用对方的状态**：`showStage` 要清掉选中态，`Esc` 取消选中要写回舞台的状态栏
+> 基线文案，于是两者只能住在同一个词法作用域里 —— 拆开必然成环，不拆就得继续挤着。
+> 解法是把共享的三个变量 (`current` / `selKey` / `drag`) 抽进零依赖的 `stage-state.js`，
+> 两个上层模块都单向依赖它，环就断在数据层而不是靠 import 顺序糊着。
+>
+> 附带解掉一个隐式前提：这些模块此前靠 **import 副作用** 挂 DOM 监听，
+> 于是「import 这个模块」就等于「DOM 必须已就绪」。现在 `zoom` / `select-drag`
+> 各自导出 `bind*()` 由 `main.js` 在 boot 里显式调用，import 一行不再有前置条件。
+>
+> `zip.js` 同理从 `core.js` 拆出：它是全工程唯一「纯计算 + 零 DOM」的子系统，
+> 和 DOM 助手/状态/toast 混在一起时，想单测它就得先 import 一个会摸 `document` 的模块。
 
 > **`panels.js` 为什么被拆开**：它一度是 630 行的上帝模块 —— 分区骨架、滑杆、预览
 > 配色、资源上传、colors 段、文本行、主题下拉、json 预览、导出按钮，八类关注点挤在

@@ -1,7 +1,8 @@
 /* core.js 纯函数单测: crc32 / zip 往返 / 转义 / debounce */
 import test from "node:test";
 import assert from "node:assert/strict";
-import { crc32, zipWrite, zipRead, debounce, escapeHtml, download } from "../js/core.js";
+import { debounce, escapeHtml, download } from "../js/core.js";
+import { crc32, zipWrite, zipRead } from "../js/zip.js";
 
 // Node 下补 rAF (rafThrottle 用), 16ms 定时器近似
 if (typeof globalThis.requestAnimationFrame === "undefined") {
