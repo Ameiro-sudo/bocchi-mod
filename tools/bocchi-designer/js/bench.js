@@ -73,8 +73,9 @@ export function bindBench() {
     if (!r.width || !r.height) return;
     const x = (e.clientX - r.left) / (r.width / W);
     const y = (e.clientY - r.top) / (r.height / H);
-    setCursor(x >= 0 && x <= W && y >= 0 && y <= H ? x : null,
-              x >= 0 && x <= W && y >= 0 && y <= H ? y : null);
+    /* 指针压在标尺轨上时坐标会跑出 0..W / 0..H, 那里读数没有意义 */
+    const inside = x >= 0 && x <= W && y >= 0 && y <= H;
+    setCursor(inside ? x : null, inside ? y : null);
   });
   frame.addEventListener("mouseleave", clearCursor);
 }
