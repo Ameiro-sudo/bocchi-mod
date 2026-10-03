@@ -13,7 +13,7 @@ import { syncSlidersFromModel } from "./ov.js";
 import { initPreview, refreshPreviews } from "./preview.js";
 import { relayout } from "./render.js";
 import { setAfterRelayout } from "./render.js";
-import { build, applyAllTexts, updateResNames, focusTextInput, resyncBaselines, probeBundledAssets } from "./panels.js";
+import { build, applyAllTexts, updateResNames, focusTextInput, resyncBaselines, probeBundledAssets, refreshDirtyMarks } from "./panels.js";
 import { bind as bindIO, onModelImported } from "./io.js";
 import { showStage, replay, currentStage, fitStage, updateSelBox, hooks } from "./interactions.js";
 import { FONT_SET_NAME, loadUploadedFonts } from "./fonts.js";
@@ -46,6 +46,7 @@ function syncAllFromModel() {
   updateResNames();
   resyncBaselines();
   syncSlidersFromModel();
+  refreshDirtyMarks();
   const sel = $("themeSel");
   if (sel) sel.value = S.menu.theme;
   refreshPreviews();

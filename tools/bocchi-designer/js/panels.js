@@ -3,7 +3,7 @@
  *
  * OV 滑杆的值域逻辑在 ov.js (注册表/设值/复位); 本模块只负责行 DOM 的创建与文案。
  * ==========================================================================*/
-import { $, toast } from "./core.js";
+import { $, toast, rafThrottle } from "./core.js";
 import { state } from "./core.js";
 import { escapeHtml } from "./core.js";
 import {
@@ -141,6 +141,7 @@ function applyRes(sec, key, blob, path) {
   updateResName(sec, key);
   refreshPreviews();
   relayout();
+  scheduleDirty();
 }
 
 function addResRow(body, label, sec, key) {
@@ -208,6 +209,10 @@ function addResRow(body, label, sec, key) {
   });
   row.append(lab, name, rst, btn, input);
   body.appendChild(row);
+  markDirty(row, () => {
+    const e = S[sec][key];
+    return !!e.blob || e.path !== DEFAULT_DESIGN[sec][key];
+  });
 }
 
 /* ---------- 内置资源缺失标记 ----------
@@ -259,6 +264,29 @@ export function updateResNames() {
     for (const key of Object.keys(S[sec])) updateResName(sec, key);
 }
 
+/* ---------- 「已改」标记 ----------
+ * 面板有 60 多个可编辑项, 而「我到底改了什么、还差什么」这件事此前只能靠逐行肉眼比对
+ * 默认值 —— 于是最常见的两种结局: 漏改一项没发现, 或者改回默认了还留在产物里。
+ * 每一项注册一个比较函数, 统一刷成行上的 is-modified 标记 + 顶栏计数。
+ * 只覆盖模型字段 (配色/文案/资源路径); 布局滑杆另有数值读数与「全部复位」, 不重复标记。
+ */
+const DIRTY = [];
+function markDirty(row, isModified) { DIRTY.push({ row, isModified }); }
+export function refreshDirtyMarks() {
+  let n = 0;
+  for (const d of DIRTY) {
+    const on = !!d.isModified();
+    d.row.classList.toggle("is-modified", on);
+    if (on) n++;
+  }
+  const chip = $("dirtyChip");
+  if (!chip) return;
+  chip.hidden = n === 0;
+  const c = $("dirtyCount");
+  if (c) c.textContent = String(n);
+}
+const scheduleDirty = rafThrottle(refreshDirtyMarks);
+
 /* ---------- design.json colors 段编辑 ---------- */
 function addColorRow(body, label, key) {
   const row = document.createElement("div");
@@ -280,6 +308,7 @@ function addColorRow(body, label, key) {
     refreshVinyl();
     relayout();
     saveState();
+    scheduleDirty();
   };
   let committedColor = S.colors[key];   // 最近一次入栈的值 (时间窗合并的基准)
   /** 值变化后调用: 与 committedColor 比对入栈; 同键连续拖取色器自动合并 */
@@ -324,6 +353,7 @@ function addColorRow(body, label, key) {
   });
   row.append(lab, text, pick, rst);
   body.appendChild(row);
+  markDirty(row, () => S.colors[key] !== DEFAULT_DESIGN.colors[key]);
 }
 
 /* ---------- 文本编辑 (仅预览) ----------
@@ -337,6 +367,7 @@ function setTextModel(elId, v, input) {
   applyText(elId, v);
   relayout();
   saveState();
+  scheduleDirty();
 }
 /** 网格内的分组小标题 (占满一行, 把不同界面的字段隔开) */
 function addGroupLabel(body, text) {
@@ -376,11 +407,13 @@ function addTextRow(body, label, elId) {
     applyText(elId, input.value);
     relayout();
     saveState();
+    scheduleDirty();
   });
   row.append(dot, lab, input);
   body.appendChild(row);
   TEXT_INPUTS[elId] = rec;
   BASELINES.add(() => { rec.committed = state.TEXTS[elId]; });
+  markDirty(row, () => (state.TEXTS[elId] != null ? state.TEXTS[elId] : DEFAULT_TEXTS[elId]) !== DEFAULT_TEXTS[elId]);
 }
 const INNER_HTML_IDS = new Set(["mPhobia", "mInfo", "pJKana", "pCopy1", "pCopy2"]);
 // L7: 仅放行 <br>, 其余标签/脚本转义 (escapeHtml 见 core.js), 消除自我 XSS 面
@@ -539,6 +572,7 @@ export function build() {
     themeSel.value = v;
     relayout();
     saveState();
+    scheduleDirty();
     toast("主题已改为 " + v + "（design.json menu.theme）");
   };
   themeSel.addEventListener("change", () => {
@@ -552,6 +586,7 @@ export function build() {
     });
   });
   themeRow.append(themeLab, themeSel);
+  markDirty(themeRow, () => S.menu.theme !== DEFAULT_DESIGN.menu.theme);
   body.appendChild(themeRow);
   const th = document.createElement("div");
   th.className = "hint";
@@ -596,5 +631,7 @@ export function build() {
 
   // 滑块建完才知道哪些持久化值被夹过, 此时一次性落盘 (见 ov.flushClamped)
   flushClamped();
+  // 所有行都建完了才能数「已改 N 项」—— 注册期只有行元素, 比较要等状态就位
+  refreshDirtyMarks();
 }
 

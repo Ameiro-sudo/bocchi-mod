@@ -1960,21 +1960,21 @@
  "console": [],
  "assetProbe": {
   "checked": {
-   "textures/bocchi": true,
-   "textures/gotoh": true,
    "textures/gotoh_image_1": true,
    "textures/gotoh_image_2": true,
-   "textures/bocchi_loading": true,
    "textures/logo": true,
+   "textures/bocchi_loading": true,
+   "textures/bocchi": true,
+   "textures/gotoh": true,
    "svgs/single": true,
    "svgs/multi": true,
    "svgs/option": true,
    "svgs/lang": true,
    "svgs/quit": true,
    "svgs/theme": true,
-   "fonts/meiryo-bold": false,
    "fonts/Radikal-Black": true,
    "fonts/Radikal-Regular": true,
+   "fonts/meiryo-bold": false,
    "fonts/SourceHanSansSC-Light": true,
    "fonts/SourceHanSansSC-Regular": true,
    "fonts/SourceHanSansSC-Heavy": true,
@@ -2095,6 +2095,20 @@
     },
     {
      "path": "4",
+     "tag": "SPAN",
+     "id": "dirtyChip",
+     "class": "dirty-chip",
+     "text": "已改 项",
+     "hidden": true
+    },
+    {
+     "path": "4.0",
+     "tag": "B",
+     "id": "dirtyCount",
+     "text": "0"
+    },
+    {
+     "path": "5",
      "tag": "BUTTON",
      "id": "btnUndo",
      "class": "btn-ghost",
@@ -2105,7 +2119,7 @@
      }
     },
     {
-     "path": "5",
+     "path": "6",
      "tag": "BUTTON",
      "id": "btnRedo",
      "class": "btn-ghost",
@@ -2116,12 +2130,12 @@
      }
     },
     {
-     "path": "6",
+     "path": "7",
      "tag": "SPAN",
      "class": "h-sep"
     },
     {
-     "path": "7",
+     "path": "8",
      "tag": "BUTTON",
      "id": "btnReplay",
      "class": "btn-ghost",
@@ -2132,12 +2146,12 @@
      }
     },
     {
-     "path": "8",
+     "path": "9",
      "tag": "SPAN",
      "class": "seg"
     },
     {
-     "path": "8.0",
+     "path": "9.0",
      "tag": "BUTTON",
      "class": "on",
      "text": "适应",
@@ -2148,7 +2162,7 @@
      "state": "on"
     },
     {
-     "path": "8.1",
+     "path": "9.1",
      "tag": "BUTTON",
      "text": "100%",
      "attrs": {
@@ -2157,7 +2171,7 @@
      }
     },
     {
-     "path": "8.2",
+     "path": "9.2",
      "tag": "BUTTON",
      "text": "200%",
      "attrs": {
@@ -2166,12 +2180,12 @@
      }
     },
     {
-     "path": "9",
+     "path": "10",
      "tag": "SPAN",
      "class": "h-sep"
     },
     {
-     "path": "10",
+     "path": "11",
      "tag": "BUTTON",
      "id": "btnImport",
      "class": "btn-pri",

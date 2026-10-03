@@ -685,7 +685,7 @@ function dumpChrome(EXCLUDE) {
      * 这里走用户真实路径 (派发 input/change), 只读 __bocchi 做断言, 因此它不是
      * 「把当前行为拍下来」而是「要求行为正确」—— 坏掉就 exit 1, 与基线无关。
      * 跑在所有快照采集之后: 它会改模型, 不能污染外壳快照。 */
-    const historyProbe = await page.evaluate(() => {
+    const historyProbe = await page.evaluate(async () => { 
       const B = globalThis.__bocchi;
       const fails = [];
       const ok = (cond, msg) => { if (!cond) fails.push(msg); };
@@ -769,7 +769,39 @@ function dumpChrome(EXCLUDE) {
         }
       }
 
-      /* 4) 撤到底: 必须能撤空, 且撤空后三个模型都回到初始值 */
+      /* 4) 「已改」标记: 改了要亮, 撤回来必须灭 —— 标记不跟撤销走是最容易漏的一处,
+       *  因为它只改了 class, 模型和数值都对了, 快照也不会红 */
+      const chip = document.getElementById("dirtyChip");
+      const count = document.getElementById("dirtyCount");
+      const marked = () => document.querySelectorAll(".is-modified").length;
+      const nMarked = () => (count ? Number(count.textContent) : -1);
+      if (!chip || !count) fails.push("「已改」标记: 顶栏 #dirtyChip/#dirtyCount 不存在");
+      else {
+        ok(nMarked() === marked(), `「已改」计数 ${nMarked()} 与实际标记行数 ${marked()} 不一致`);
+        ok(nMarked() >= 0, "「已改」计数不可读");
+        const dInput = document.querySelector("#sec-res-colors .color-row input[type=text]");
+        const dOrig = dInput ? dInput.value : null;
+        if (!dInput) fails.push("「已改」标记: #sec-res-colors 下找不到配色输入框");
+        else {
+          const rows = dInput.closest(".color-row");
+          const wasMarked = rows.classList.contains("is-modified");
+          setVal(dInput, dOrig === "#123456" ? "#654321" : "#123456");
+          blur(dInput);
+          // 标记是 rafThrottle 的, 必须等两帧再断言 —— 否则读到的是提交前的状态,
+          // 断言会为一个不存在的问题报红。
+          await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+          ok(rows.classList.contains("is-modified") !== wasMarked,
+            `「已改」标记: 改配色后该行标记没有跟着翻转 (was=${wasMarked})`);
+          ok(marked() >= 1, "「已改」标记: 改了却一行都没标");
+          B.undo();
+          await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+          ok(!chip.hidden || marked() === 0, "「已改」标记: 撤销后计数未回落");
+          B.redo();
+          B.undo();
+        }
+      }
+
+      /* 5) 撤到底: 必须能撤空, 且撤空后三个模型都回到初始值 */
       let guard = 200;
       while (B.historyStats().undo > 0 && guard-- > 0) B.undo();
       ok(depth() === 0, `撤销栈: 撤到底后仍有 ${depth()} 条`);

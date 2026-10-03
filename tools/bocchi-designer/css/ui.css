@@ -385,6 +385,30 @@ header .sub {
 }
 .text-row .t-dot.linked { background: var(--ui-pink); box-shadow: 0 0 0 3px rgba(252, 103, 167, .22); }
 
+/* ===== 「已改」标记 =====
+ * 左缘一道竖线 + 整行轻微底色。与该行自身的控件状态色 (uploaded/missing/linked)
+ * 分开走: 那些说的是「这一项现在是什么状态」, 这条说的是「这一项跟默认值不一样」。
+ * 用 ::before 而不是改布局, 所以标记出现/消失都不会让整列抖一下。 */
+.res-row.is-modified::before,
+.color-row.is-modified::before,
+.text-row.is-modified::before,
+.slider-row.is-modified::before {
+  content: ""; flex: none; align-self: stretch; width: 2px; margin: -2px 0;
+  border-radius: 2px; background: var(--ui-pink);
+}
+.res-row.is-modified,
+.color-row.is-modified,
+.text-row.is-modified,
+.slider-row.is-modified { background: rgba(252, 103, 167, .045); border-radius: 6px; }
+
+.dirty-chip {
+  flex: none; font-size: 11.5px; color: var(--ui-ink-tertiary);
+  padding: 4px 9px; border-radius: 999px;
+  border: 1px solid var(--ui-hair); background: var(--ui-s1);
+  white-space: nowrap;
+}
+.dirty-chip b { color: var(--ui-pink); font-weight: 600; }
+
 select {
   background: var(--ui-s1); border: 1px solid var(--ui-hair2); color: var(--ui-ink);
   border-radius: 9px; font-size: 13px; padding: 7px 11px; font-family: inherit;
