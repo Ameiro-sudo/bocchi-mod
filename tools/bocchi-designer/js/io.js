@@ -81,6 +81,11 @@ export function copyJson() {
 /** 把已解析的 design.json 对象合并进编辑态 (导入 zip 与单文件共用), 返回载入的资源数。
  * H3: root 是外部输入 — section/键名先过危险键黑名单, extras 一律 null 原型容器 */
 export function applyDesignJSON(root, entries) {
+  // 清栈必须先于任何写入。此前它挂在 importFileByExt 的成功分支里, 排在
+  // applyDesignJSON 之后 —— 那段窗口里用户还能拖动滑杆收尾, 于是会压进一条
+  // 「从已经被覆盖掉的旧值回到新值」的撤销条目, 撤销一次等于什么都没发生。
+  // 清栈是「整体替换模型」的固有后果, 所以归它管, 而不是归文件对话框管。
+  clearHistory();
   let count = 0;
   const KNOWN = new Set(["textures", "svgs", "fonts", "colors", "menu", "texts"]);
   /** 确保 extras 下存在对象容器 (null 原型) */
@@ -191,10 +196,8 @@ function hasFiles(e) {
 }
 async function importFileByExt(f) {
   const ok = /\.json$/i.test(f.name) ? await importJsonFile(f) : await importPack(f);
-  if (ok && onImported) {
-    clearHistory();   // 导入整体替换模型, 旧历史不再适用
-    onImported();
-  }
+  // 历史已在 applyDesignJSON 开头清过, 这里只负责把 UI 拉齐新模型
+  if (ok && onImported) onImported();
 }
 let onImported = null;
 

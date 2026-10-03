@@ -114,9 +114,22 @@ export function resetAll() {
   toast("misayos 布局已全部复位");
 }
 
-/** 载入时把持久化值收敛回滑块范围 (L8), 由 panels.addSlider 使用 */
+/** 载入时把持久化值收敛回滑块范围 (L8), 由 panels.addSlider 使用。
+ *  收敛是改写了 state.OV 的 —— 旧实现改完就搁着, 既不入栈也不落盘, 于是
+ *  localStorage 里一直躺着一个越界值, 每次打开页面都被静默夹一次, 而磁盘态与
+ *  内存态从此长期不一致。改完要落盘, 让下次启动不再重复夹。载入收敛不是用户
+ *  的编辑, 所以不入撤销栈。 */
+let clampedAny = false;
 export function clampSaved(key, min, max, def) {
   const saved = OV[key] != null ? Math.min(Math.max(+OV[key], +min), +max) : +def;
-  if (OV[key] != null && +OV[key] !== saved) OV[key] = saved;
+  if (OV[key] != null && +OV[key] !== saved) { OV[key] = saved; clampedAny = true; }
   return saved;
+}
+
+/** 面板构建完成后调用: 若期间发生过收敛, 把结果写回 localStorage */
+export function flushClamped() {
+  if (!clampedAny) return false;
+  clampedAny = false;
+  saveState();
+  return true;
 }

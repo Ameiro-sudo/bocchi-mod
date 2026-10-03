@@ -204,6 +204,10 @@ window.addEventListener("mouseup", () => {
   drag = null;
   updateSelBox();
 });
+/* 兜底: 按下后在窗口外松开 (切到别的程序、拖到别的窗口上), mouseup 收不到,
+   手势就永远开着 —— 而静音区是全局开关, 一旦泄漏, 之后整页再不入撤销栈, 表面
+   上毫无征兆。所以再加一道: 窗口失焦即视为手势结束。 */
+window.addEventListener("blur", () => { if (drag) { drag = null; endGesture(); updateSelBox(); } });
 
 // 双击文本元素 -> 定位到编辑框
 $("stage").addEventListener("dblclick", e => {

@@ -41,7 +41,10 @@ function arg(name, def) {
 }
 /* null = 未指定, 主流程会自起静态服务 */
 let URL_BASE = arg("url", null);
-const OUT = arg("out", path.join(ROOT, "dev", "dumps", "baseline.json"));
+/* 默认写到 head.json 而不是 baseline.json: 裸跑一次就把基线覆盖掉, 于是「改坏
+   了」和「重新定义了基线」变成同一个动作, 门禁就再也拦不住任何东西。重建基线
+   必须是显式动作, 只有 npm run verify:baseline 才干这件事。 */
+const OUT = arg("out", path.join(ROOT, "dev", "dumps", "head.json"));
 const SHOTS = arg("shots", null);
 
 /* 快照结构版本: 变更采集内容时 +1。compare 会拿它判「基线是不是同一代产物」,
@@ -556,11 +559,15 @@ function dumpChrome(EXCLUDE) {
     await new Promise(r => setTimeout(r, 900));
     dump.chrome = await page.evaluate(dumpChrome, EXCLUDE);
 
-    /* 交互烟测: 选中立绘 -> 方向键微调 -> Esc 取消; 导出按钮存在 */
+    /* 交互烟测: 选中立绘 -> 方向键微调 -> Esc 取消; 导出按钮存在。
+     * mousedown 之后必须补一发 mouseup: 真实用户一定会松手, 而拖拽手势靠
+     * beginGesture/endGesture 成对开关一个全局静音区 —— 只按不松, 静音区就漏了,
+     * 之后整个撤销栈静默失效, 后面所有行为门禁都会跟着失真。 */
     const smoke = await page.evaluate(() => {
       const res = {};
       const tachie = document.getElementById("mTachie");
       tachie.dispatchEvent(new MouseEvent("mousedown", { bubbles: true, clientX: 700, clientY: 300 }));
+      window.dispatchEvent(new MouseEvent("mouseup", { bubbles: true }));
       window.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowLeft" }));
       window.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight", shiftKey: true }));
       window.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
@@ -599,6 +606,114 @@ function dumpChrome(EXCLUDE) {
     });
     dump.sliderProbe = sliderProbe;
 
+    /* ---- 撤销栈探针 (行为门禁, 不是快照) ----
+     * 快照里不含撤销栈, 于是「改完能不能撤回来」在门禁上是完全失明的: 把
+     * pushHistory 调用删掉、把回放闭包写错、把基准变量忘了刷新, compare 全绿。
+     * 这里走用户真实路径 (派发 input/change), 只读 __bocchi 做断言, 因此它不是
+     * 「把当前行为拍下来」而是「要求行为正确」—— 坏掉就 exit 1, 与基线无关。
+     * 跑在所有快照采集之后: 它会改模型, 不能污染外壳快照。 */
+    const historyProbe = await page.evaluate(() => {
+      const B = globalThis.__bocchi;
+      const fails = [];
+      const ok = (cond, msg) => { if (!cond) fails.push(msg); };
+      const depth = () => B.historyStats().undo;
+      /* 先把栈撤空, 再取基准。上面 sliderProbe 改过面板宽度并留了一条记录, 若不先
+         撤掉, 后面「撤到底应当回到本次探针开始时的值」就会因为它而对不上; 同键
+         700ms 的合并窗也会把两次入栈并成一条。undo() 顺手清掉合并标记。 */
+      for (let i = 0; i < 200 && B.historyStats().undo > 0; i++) B.undo();
+      const setVal = (el, v) => {
+        const proto = el instanceof HTMLTextAreaElement ? HTMLTextAreaElement.prototype : HTMLInputElement.prototype;
+        Object.getOwnPropertyDescriptor(proto, "value").set.call(el, v);
+        el.dispatchEvent(new Event("input", { bubbles: true }));
+      };
+      const blur = (el) => el.dispatchEvent(new Event("change", { bubbles: true }));
+      const cssVar = (k) => document.documentElement.style.getPropertyValue(k).trim();
+
+      /* 1) 滑杆: input 事件应当恰好入栈一条, undo 回原值, redo 复原 */
+      const sliderRow = [...document.querySelectorAll(".slider-row")]
+        .find(r => r.querySelector("label") && r.querySelector("label").textContent.includes("面板宽度"));
+      const slider = sliderRow && sliderRow.querySelector("input[type=range]");
+      const sOrig = slider ? slider.value : null;
+      const d0 = depth();
+      if (!slider) fails.push("滑杆探针: 找不到「面板宽度」行");
+      else {
+        setVal(slider, slider.value === slider.max ? slider.min : slider.max);
+        ok(depth() === d0 + 1, `滑杆: 拖动应入栈 1 条, 实际 ${depth() - d0} 条`);
+        B.undo();
+        ok(slider.value === sOrig, `滑杆: undo 未回到原值 (${slider.value} != ${sOrig})`);
+        B.redo();
+        ok(slider.value !== sOrig, "滑杆: redo 未复原");
+        B.undo();
+      }
+
+      /* 2) 文本: input 只改模型不入栈, change 才入栈; 且回放后撤销基准必须跟着走 */
+      const tInput = document.querySelector("#sec-texts .text-row input[type=text]");
+      const tOrig = tInput ? tInput.value : null;
+      const td0 = depth();
+      if (!tInput) fails.push("文本探针: #sec-texts 下找不到文本输入框");
+      else {
+        setVal(tInput, tOrig + "-探针");
+        ok(depth() === td0, `文本: input 事件不应入栈, 实际多了 ${depth() - td0} 条`);
+        blur(tInput);
+        ok(depth() === td0 + 1, `文本: change 应入栈 1 条, 实际多了 ${depth() - td0} 条`);
+        B.undo();
+        ok(tInput.value === tOrig, `文本: undo 未回退 (${tInput.value} != ${tOrig})`);
+        // 基准回归的核心断言: 撤销后基准若仍停在被撤掉的值上, 用户把同一个值再输
+        // 一遍就会凭空多出一条撤销条目 —— 撤销次数开始凭空增长。
+        const after = depth();
+        blur(tInput);
+        ok(depth() === after, `文本: 撤销后再失焦生成了 ${depth() - after} 条伪造历史条目`);
+      }
+
+      /* 3) 预览配色: 改颜色此前零入栈, 撤不回来; 且 CSS 变量与状态表必须同步回退 */
+      const cInput = document.querySelector("#sec-colors-preview input[type=color]");
+      const cBefore = JSON.parse(JSON.stringify(B.state.PREVIEW_COLORS));
+      const cd0 = depth();
+      /* 先探一下撤销栈本身还活着没有: 拖拽手势靠一个全局静音区成对开关, 一旦
+         beginGesture 没等到 endGesture, 之后所有 push 都被无声吞掉, 而症状是
+         「Ctrl+Z 忽然什么都不干」—— 没有任何报错。 */
+      B.pushHistory({ label: "探针存活检查", undo: () => {}, redo: () => {} });
+      if (depth() !== cd0 + 1) {
+        fails.push("撤销栈已失效: 直接 push 也被吞, 怀疑手势静音区泄漏");
+        B.redo();
+      } else {
+        B.undo();
+      }
+      if (!cInput) fails.push("预览配色探针: 找不到取色器");
+      else {
+        setVal(cInput, cInput.value === "#ff0000" ? "#00ff00" : "#ff0000");
+        ok(depth() === cd0 + 1, `预览配色: 应入栈 1 条, 实际多了 ${depth() - cd0} 条 (控件值 ${cInput.value}, 栈 ${cd0}->${depth()})`);
+        const key = Object.keys(B.state.PREVIEW_COLORS).find(k => B.state.PREVIEW_COLORS[k] !== cBefore[k]);
+        ok(!!key, "预览配色: 状态表没有跟着变");
+        if (key) {
+          ok(cssVar(key) === B.state.PREVIEW_COLORS[key],
+            `预览配色: CSS 变量 ${key} 未同步 (${cssVar(key)} != ${B.state.PREVIEW_COLORS[key]})`);
+          B.undo();
+          ok(B.state.PREVIEW_COLORS[key] === cBefore[key], `预览配色: undo 未还原状态表 (${key})`);
+          ok(cssVar(key) === cBefore[key], `预览配色: undo 未还原 CSS 变量 (${key})`);
+          B.redo();
+          B.undo();
+        }
+      }
+
+      /* 4) 撤到底: 必须能撤空, 且撤空后三个模型都回到初始值 */
+      let guard = 200;
+      while (B.historyStats().undo > 0 && guard-- > 0) B.undo();
+      ok(depth() === 0, `撤销栈: 撤到底后仍有 ${depth()} 条`);
+      ok(slider && slider.value === sOrig, "撤销栈: 撤空后滑杆未回到初始值");
+      ok(tInput && tInput.value === tOrig, "撤销栈: 撤空后文本未回到初始值");
+      for (const k of Object.keys(cBefore)) {
+        ok(B.state.PREVIEW_COLORS[k] === cBefore[k], `撤销栈: 撤空后预览色 ${k} 未回到初始值`);
+      }
+      return { ok: fails.length === 0, fails, finalDepth: B.historyStats() };
+    });
+    if (!historyProbe || !historyProbe.ok) {
+      const fails = historyProbe ? historyProbe.fails : ["探针未执行 (缺少 __bocchi 调试出口)"];
+      console.error("\n撤销栈探针失败:");
+      for (const f of fails) console.error("  - " + f);
+      throw new Error("撤销栈探针未通过");
+    }
+
     dump.console = consoleMsgs;
     fs.mkdirSync(path.dirname(OUT), { recursive: true });
     fs.writeFileSync(OUT, JSON.stringify(dump, null, 1));
@@ -606,6 +721,7 @@ function dumpChrome(EXCLUDE) {
     console.log("console warn/error:", consoleMsgs.length ? consoleMsgs.join(" | ") : "(none)");
     console.log("smoke:", JSON.stringify(dump.smoke));
     console.log("sliderProbe:", JSON.stringify(sliderProbe));
+    console.log("historyProbe: ok");
   } finally {
     if (browser) await browser.close();
     if (srv) srv.server.close();

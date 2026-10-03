@@ -7,16 +7,24 @@ import { $, toast } from "./core.js";
 import { state } from "./core.js";
 import { escapeHtml } from "./core.js";
 import {
-  S, DEFAULT_DESIGN, DEFAULT_TEXTS, buildDesignJSON, hexToCss, saveState, setBlob, localAsset,
+  S, DEFAULT_DESIGN, DEFAULT_TEXTS, buildDesignJSON, hexToCss, saveState, scheduleSave, setBlob, localAsset,
 } from "./design.js";
 import { refreshPreviews, refreshVinyl } from "./preview.js";
 import { FONT_SET_NAME, replaceFace } from "./fonts.js";
-import { registerSlider, clampSaved, onSliderInput, resetAll, setFill, setOV } from "./ov.js";
+import { registerSlider, clampSaved, onSliderInput, resetAll, setFill, setOV, flushClamped } from "./ov.js";
 import { relayout, scheduleRelayout } from "./render.js";
 import { exportPack, exportJson, copyJson } from "./io.js";
 import { push as pushHistory } from "./history.js";
 
 const OV = state.OV;
+
+/* 撤销基准登记表。每一行 (配色/文本) 都把「重置基准」的动作登记进来, 于是导入
+   模型后一次调用就能把所有基准对齐到新值 —— 此前导入只清了撤销栈, 没有动基准,
+   于是导入后第一次编辑任一行, 都会被拿去和一个已经不存在的旧值比较, 生成一条
+   从「导入前的值」到「导入后的值」的撤销条目: 用户以为在撤销刚才那次编辑, 实际
+   上屏幕整个跳回导入前。 */
+const BASELINES = new Set();
+export function resyncBaselines() { for (const fn of BASELINES) fn(); }
 
 /* ---------- 折叠分区 ---------- */
 const controls = $("controls");
@@ -82,6 +90,17 @@ function addSlider(body, label, key, min, max, def, step) {
 }
 
 /* ---------- 预览配色 ---------- */
+/* 预览配色的落地函数 (拖色/撤销/重做共用)。它写的是三处地方, 必须一次写全:
+   状态表 -> documentElement CSS 变量 -> --btn-bg 的按钮内联背景。少写任何一处,
+   撤销就只撤了一半, 屏幕上留着一个撤不掉的色块。取色器也要跟着回写, 否则用户
+   在撤销后看到的色块和控件里的色块对不上。 */
+function applyPreviewColor(key, v, input) {
+  document.documentElement.style.setProperty(key, v);
+  state.PREVIEW_COLORS[key] = v;
+  if (key === "--btn-bg") document.querySelectorAll(".btn, .btn-icon").forEach(el => el.style.background = v);
+  if (input && document.activeElement !== input) input.value = v;
+  scheduleSave();
+}
 function addPreviewColor(body, label, key) {
   const wrap = document.createElement("div");
   wrap.className = "field";
@@ -90,11 +109,18 @@ function addPreviewColor(body, label, key) {
   const input = document.createElement("input");
   input.type = "color";
   input.value = state.PREVIEW_COLORS[key];
+  // 预览配色此前只落盘不入栈 —— 等于改了就撤不回来。这里补上; 取色器是连续
+  // input 事件, 所以按 key 合并, 免得拖一次色板留下几十条历史。
   input.addEventListener("input", () => {
-    document.documentElement.style.setProperty(key, input.value);
-    state.PREVIEW_COLORS[key] = input.value;
-    if (key === "--btn-bg") document.querySelectorAll(".btn, .btn-icon").forEach(el => el.style.background = input.value);
-    saveState();
+    const to = input.value;
+    const from = state.PREVIEW_COLORS[key];
+    if (to === from) return;
+    applyPreviewColor(key, to, input);
+    pushHistory({
+      label: `预览色 ${label}`,
+      undo: () => applyPreviewColor(key, from, input),
+      redo: () => applyPreviewColor(key, to, input),
+    }, "pcolor:" + key);
   });
   wrap.append(lab, input);
   body.appendChild(wrap);
@@ -212,6 +238,7 @@ function addColorRow(body, label, key) {
     }, "color:" + key);
     committedColor = cur;
   };
+  BASELINES.add(() => { committedColor = S.colors[key]; });
   text.addEventListener("change", () => {
     applyColor(text.value.trim() || DEFAULT_DESIGN.colors[key]);
     commitColor();
@@ -271,11 +298,11 @@ function addTextRow(body, label, elId) {
     const to = input.value;
     if (to === rec.committed) return;
     const from = rec.committed;
-    pushHistory({
-      label: `文本 ${label}`,
-      undo: () => setTextModel(elId, from, input),
-      redo: () => setTextModel(elId, to, input),
-    });
+    // 回放时必须同步搬动基准, 否则基准停在被撤销掉的那个值上: 下一次失焦会拿
+    // 它当 from, 生成一条「从没发生过」的撤销条目, 撤销次数凭空多一次。
+    const undo = () => { rec.committed = from; setTextModel(elId, from, input); };
+    const redo = () => { rec.committed = to; setTextModel(elId, to, input); };
+    pushHistory({ label: `文本 ${label}`, undo, redo });
     rec.committed = to;
   });
   input.addEventListener("input", () => {
@@ -287,6 +314,7 @@ function addTextRow(body, label, elId) {
   row.append(dot, lab, input);
   body.appendChild(row);
   TEXT_INPUTS[elId] = rec;
+  BASELINES.add(() => { rec.committed = state.TEXTS[elId]; });
 }
 const INNER_HTML_IDS = new Set(["mPhobia", "mInfo", "pJKana", "pCopy1", "pCopy2"]);
 // L7: 仅放行 <br>, 其余标签/脚本转义 (escapeHtml 见 core.js), 消除自我 XSS 面
@@ -490,5 +518,8 @@ export function build() {
   exportHint.className = "hint";
   exportHint.textContent = "生成 pack.mcmeta + assets/minecraft/client/design.json + 全部引用资源（未上传的资源自动用内置默认）。支持 1.21.1~1.21.5+（pack_format 33-9999）。";
   body.appendChild(exportHint);
+
+  // 滑块建完才知道哪些持久化值被夹过, 此时一次性落盘 (见 ov.flushClamped)
+  flushClamped();
 }
 

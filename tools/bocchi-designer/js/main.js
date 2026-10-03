@@ -12,12 +12,12 @@ import { loadState } from "./design.js";
 import { initPreview, refreshPreviews } from "./preview.js";
 import { relayout } from "./render.js";
 import { setAfterRelayout } from "./render.js";
-import { build, applyAllTexts, updateResNames, focusTextInput } from "./panels.js";
+import { build, applyAllTexts, updateResNames, focusTextInput, resyncBaselines } from "./panels.js";
 import { bind as bindIO, onModelImported } from "./io.js";
 import { showStage, replay, currentStage, fitStage, updateSelBox, hooks } from "./interactions.js";
 import { FONT_SET_NAME, loadUploadedFonts } from "./fonts.js";
 import { S } from "./design.js";
-import { undo as undoHistory, redo as redoHistory } from "./history.js";
+import { undo as undoHistory, redo as redoHistory, stats as historyStats, push as pushHistory } from "./history.js";
 
 /** 撤销/重做入口: 空栈给提示, 成功回放报 label */
 function doUndo() {
@@ -35,6 +35,7 @@ function doRedo() {
 function syncAllFromModel() {
   applyAllTexts();
   updateResNames();
+  resyncBaselines();
   const sel = $("themeSel");
   if (sel) sel.value = S.menu.theme;
   refreshPreviews();
@@ -109,5 +110,15 @@ function boot() {
     .then(() => relayout())
     .catch(() => relayout());
 }
+
+/* 门禁调试出口。挂在 boot() 之前、且只给读取和驱动能力, 不构成一条新的状态
+   写入入口 —— 探针走的仍是用户真实路径 (派发 input/change/click)。存在的理由:
+   撤销栈从来没有被任何门禁看见过, 于是「改完能不能撤回来」只能靠人肉点。
+   见 dev/verify.mjs 的 historyProbe。 */
+globalThis.__bocchi = {
+  state, S,
+  historyStats, pushHistory,
+  undo: undoHistory, redo: redoHistory,
+};
 
 boot();

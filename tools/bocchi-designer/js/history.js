@@ -80,7 +80,11 @@ export function redo() {
   return cmd.label;
 }
 
-/** 导入新模型 / 重置会话时清空全部历史 */
+/** 导入新模型时清空全部历史。
+ *  muted 一并清掉: 未闭合的静音区会把后续所有 push 吞掉, clearHistory 是会话级
+ *  的重置, 留着它等于让「导入之后这个页面再也不入栈」(test/history.test.mjs
+ *  「clearHistory 解除」一条锁的就是这个)。拖拽进行中导入导致的收尾错位, 真正的
+ *  修法是让清栈先于任何模型写入 —— 见 io.applyDesignJSON 开头。 */
 export function clearHistory() {
   undoStack.length = 0;
   redoStack.length = 0;
