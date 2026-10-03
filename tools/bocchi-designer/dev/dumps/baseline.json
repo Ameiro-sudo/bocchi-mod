@@ -819,6 +819,19 @@
     "menu": {
      "_comment": "主菜单主题: misayos (默认) / poulsen. 材质包覆盖此项即可切换主题, 资源重载后生效",
      "theme": "misayos"
+    },
+    "layout": {
+     "_comment": "misayos 菜单布局。值是相对宽/高的归一化比例, 不是像素 —— 所以不同分辨率下观感一致。尺寸类键写绝对比例 (缺省 = mod 内置值); Offset 类键写相对内置位置的偏移比例 (缺省 0)。键就是游戏端的查找路径 (layout.<键>)。整段删掉等于全部回退到 mod 内置布局。用 Bocchi Designer 的「misayos 布局微调」段生成。",
+     "misayos.block1SizeW": 0.226563,
+     "misayos.block1SizeH": 0.402778,
+     "misayos.block1XOffset": 0,
+     "misayos.block1YOffset": 0,
+     "misayos.tachieH": 0.95,
+     "misayos.tachieXOffset": 0,
+     "misayos.tachieYOffset": 0,
+     "misayos.recordSize": 0.65,
+     "misayos.recordXOffset": 0,
+     "misayos.recordYOffset": 0
     }
    },
    "statusText": "主菜单 misayos · 1:1 预览 · 1280×720 设计分辨率 · 点击元素可选中拖拽"
@@ -1725,6 +1738,19 @@
     "menu": {
      "_comment": "主菜单主题: misayos (默认) / poulsen. 材质包覆盖此项即可切换主题, 资源重载后生效",
      "theme": "misayos"
+    },
+    "layout": {
+     "_comment": "misayos 菜单布局。值是相对宽/高的归一化比例, 不是像素 —— 所以不同分辨率下观感一致。尺寸类键写绝对比例 (缺省 = mod 内置值); Offset 类键写相对内置位置的偏移比例 (缺省 0)。键就是游戏端的查找路径 (layout.<键>)。整段删掉等于全部回退到 mod 内置布局。用 Bocchi Designer 的「misayos 布局微调」段生成。",
+     "misayos.block1SizeW": 0.226563,
+     "misayos.block1SizeH": 0.402778,
+     "misayos.block1XOffset": 0,
+     "misayos.block1YOffset": 0,
+     "misayos.tachieH": 0.95,
+     "misayos.tachieXOffset": 0,
+     "misayos.tachieYOffset": 0,
+     "misayos.recordSize": 0.65,
+     "misayos.recordXOffset": 0,
+     "misayos.recordYOffset": 0
     }
    },
    "statusText": "主菜单 poulsen · 1:1 预览 · 1280×720 设计分辨率"
@@ -1913,6 +1939,19 @@
     "menu": {
      "_comment": "主菜单主题: misayos (默认) / poulsen. 材质包覆盖此项即可切换主题, 资源重载后生效",
      "theme": "misayos"
+    },
+    "layout": {
+     "_comment": "misayos 菜单布局。值是相对宽/高的归一化比例, 不是像素 —— 所以不同分辨率下观感一致。尺寸类键写绝对比例 (缺省 = mod 内置值); Offset 类键写相对内置位置的偏移比例 (缺省 0)。键就是游戏端的查找路径 (layout.<键>)。整段删掉等于全部回退到 mod 内置布局。用 Bocchi Designer 的「misayos 布局微调」段生成。",
+     "misayos.block1SizeW": 0.226563,
+     "misayos.block1SizeH": 0.402778,
+     "misayos.block1XOffset": 0,
+     "misayos.block1YOffset": 0,
+     "misayos.tachieH": 0.95,
+     "misayos.tachieXOffset": 0,
+     "misayos.tachieYOffset": 0,
+     "misayos.recordSize": 0.65,
+     "misayos.recordXOffset": 0,
+     "misayos.recordYOffset": 0
     }
    },
    "statusText": "加载页（点击 TAP TO START） · 1:1 预览 · 1280×720 设计分辨率"
@@ -1933,9 +1972,9 @@
    "svgs/lang": true,
    "svgs/quit": true,
    "svgs/theme": true,
+   "fonts/meiryo-bold": false,
    "fonts/Radikal-Black": true,
    "fonts/Radikal-Regular": true,
-   "fonts/meiryo-bold": false,
    "fonts/SourceHanSansSC-Light": true,
    "fonts/SourceHanSansSC-Regular": true,
    "fonts/SourceHanSansSC-Heavy": true,
@@ -2316,7 +2355,7 @@
     {
      "path": "1.0.1",
      "tag": "H2",
-     "text": "misayos 布局微调（画布上可直接拖拽）· 仅本地预览，不写入 design.json"
+     "text": "misayos 布局微调（画布上可直接拖拽）· 标「仅预览」的滑杆不进 design.json"
     },
     {
      "path": "1.0.2",
@@ -2433,7 +2472,7 @@
     {
      "path": "1.1.0.3.0",
      "tag": "LABEL",
-     "text": "立绘旋转"
+     "text": "立绘旋转 · 仅预览"
     },
     {
      "path": "1.1.0.3.1",
@@ -2460,7 +2499,7 @@
     {
      "path": "1.1.0.4.0",
      "tag": "LABEL",
-     "text": "立绘透明度"
+     "text": "立绘透明度 · 仅预览"
     },
     {
      "path": "1.1.0.4.1",
@@ -2568,7 +2607,7 @@
     {
      "path": "1.1.0.8.0",
      "tag": "LABEL",
-     "text": "标题字号"
+     "text": "标题字号 · 仅预览"
     },
     {
      "path": "1.1.0.8.1",
@@ -2595,7 +2634,7 @@
     {
      "path": "1.1.0.9.0",
      "tag": "LABEL",
-     "text": "标题 X 偏移"
+     "text": "标题 X 偏移 · 仅预览"
     },
     {
      "path": "1.1.0.9.1",
@@ -2622,7 +2661,7 @@
     {
      "path": "1.1.0.10.0",
      "tag": "LABEL",
-     "text": "标题 Y 位置"
+     "text": "标题 Y 位置 · 仅预览"
     },
     {
      "path": "1.1.0.10.1",
@@ -2649,7 +2688,7 @@
     {
      "path": "1.1.0.11.0",
      "tag": "LABEL",
-     "text": "面板宽度"
+     "text": "面板宽度 · 仅预览"
     },
     {
      "path": "1.1.0.11.1",
@@ -2676,7 +2715,7 @@
     {
      "path": "1.1.0.12.0",
      "tag": "LABEL",
-     "text": "面板 X 偏移"
+     "text": "面板 X 偏移 · 仅预览"
     },
     {
      "path": "1.1.0.12.1",
@@ -2780,7 +2819,7 @@
      "path": "1.1.1",
      "tag": "DIV",
      "class": "hint",
-     "text": "画布上: 点击选中 → 拖拽移动 / 拖角缩放; 双击文字定位到编辑框; Esc 取消选中; 方向键微调。布局/文本/配色/资源替换均可 Ctrl+Z 撤销、Ctrl+Y 重做。"
+     "text": "画布上: 点击选中 → 拖拽移动 / 拖角缩放; 双击文字定位到编辑框; Esc 取消选中; 方向键微调。布局/文本/配色/资源替换均可 Ctrl+Z 撤销、Ctrl+Y 重做。导出时写入 design.json 的 layout 段 ——"
     },
     {
      "path": "2",
@@ -4868,7 +4907,7 @@
      "path": "8.1.0",
      "tag": "PRE",
      "id": "jsonPreview",
-     "text": "<designJSON len=2612>"
+     "text": "<designJSON len=3116>"
     },
     {
      "path": "9",
@@ -4945,7 +4984,7 @@
      "path": "9.1.2",
      "tag": "DIV",
      "class": "hint",
-     "text": "实际写入 design.json 的只有六段: textures / svgs / fonts / colors / menu / texts。预览配色与 misayos 布局微调只存在于本页面, 不进产物 —— 调整它们是为了对齐预览, "
+     "text": "实际写入 design.json 的有七段: textures / svgs / fonts / colors / menu / texts / layout。layout 是 misayos 菜单的布局系数 (归一化比例, 覆盖游戏端硬编"
     }
    ]
   },

@@ -186,6 +186,11 @@ def java_substitutions(text):
     text = text.replace("Math.max", "max")
     text = text.replace("Mth.lerp", "lerp")      # lerp 终态常量在 args 里; 剥成不可解析调用, 参数单独切分
     text = text.replace("Mth.clamp", "clamp")
+    # Design.num("layout.misayos.xxx", 0.4f) ≡ 0.4f —— design.json 没写这个键时用的就是
+    # 第二个参数那个内置常量, 所以把整个调用剥成它的缺省值。这样求值的是「未覆盖」这一
+    # 语义下的结果, 与改之前逐字节同值, 布局漂移检测照常有效 (而不是因为多了一层函数
+    # 调用就把所有 layout.misayos.* 误判成 Java 已重构)。
+    text = re.sub(r'Design\.num\(\s*"[^"]*"\s*,\s*([^()]*?)\s*\)', r"\1", text)
     text = text.replace("getScaledWidth()", "SCALED_WIDTH")
     text = text.replace("getScaledHeight()", "SCALED_HEIGHT")
     # SplashFrameContext getter -> 预读绑定名 (见 main() 的 prelude 文件列表)

@@ -428,7 +428,7 @@ export function build() {
   addPreviewColor(cg, "按钮底色", "--btn-bg");
 
   /* misayos 布局微调 */
-  body = addSection("misayos 布局微调（画布上可直接拖拽）· 仅本地预览，不写入 design.json", "layout-misayos", {
+  body = addSection("misayos 布局微调（画布上可直接拖拽）· 标「仅预览」的滑杆不进 design.json", "layout-misayos", {
     tool: { label: "全部复位", onClick: () => resetAll() },
     badge: "↑↓←→ 微调 · Shift×10 · 双击滑杆标签复位 · Ctrl+Z 撤销",
   });
@@ -438,22 +438,22 @@ export function build() {
   addSlider(lg, "立绘 X 偏移", "tachieX", -200, 200, 0);
   addSlider(lg, "立绘 Y 偏移", "tachieY", -200, 200, 0);
   addSlider(lg, "立绘高度", "tachieH", 300, 800, 684);
-  addSlider(lg, "立绘旋转", "tachieRot", -10, 10, 0, 0.1);
-  addSlider(lg, "立绘透明度", "tachieOp", 0, 100, 100);
+  addSlider(lg, "立绘旋转 · 仅预览", "tachieRot", -10, 10, 0, 0.1);
+  addSlider(lg, "立绘透明度 · 仅预览", "tachieOp", 0, 100, 100);
   addSlider(lg, "唱片大小", "recordSize", 200, 600, 468);
   addSlider(lg, "唱片 X 偏移", "recordX", -200, 200, 0);
   addSlider(lg, "唱片 Y 偏移", "recordY", -200, 200, 0);
-  addSlider(lg, "标题字号", "titleSize", 30, 90, 53);
-  addSlider(lg, "标题 X 偏移", "titleX", -300, 300, 0);
-  addSlider(lg, "标题 Y 位置", "titleY", -100, 100, 0);
-  addSlider(lg, "面板宽度", "panelW", 60, 140, 95);
-  addSlider(lg, "面板 X 偏移", "panelX", -100, 100, 0);
+  addSlider(lg, "标题字号 · 仅预览", "titleSize", 30, 90, 53);
+  addSlider(lg, "标题 X 偏移 · 仅预览", "titleX", -300, 300, 0);
+  addSlider(lg, "标题 Y 位置 · 仅预览", "titleY", -100, 100, 0);
+  addSlider(lg, "面板宽度 · 仅预览", "panelW", 60, 140, 95);
+  addSlider(lg, "面板 X 偏移 · 仅预览", "panelX", -100, 100, 0);
   addSlider(lg, "block1 大小", "block1", 150, 400, 290);
   addSlider(lg, "block1 X 偏移", "blockX", -200, 200, 0);
   addSlider(lg, "block1 Y 偏移", "blockY", -200, 200, 0);
   const hint = document.createElement("div");
   hint.className = "hint";
-  hint.innerHTML = "画布上: 点击选中 → 拖拽移动 / 拖角缩放; 双击文字定位到编辑框; Esc 取消选中; 方向键微调。布局/文本/配色/资源替换均可 Ctrl+Z 撤销、Ctrl+Y 重做。";
+  hint.innerHTML = "画布上: 点击选中 → 拖拽移动 / 拖角缩放; 双击文字定位到编辑框; Esc 取消选中; 方向键微调。布局/文本/配色/资源替换均可 Ctrl+Z 撤销、Ctrl+Y 重做。导出时写入 design.json 的 layout 段 —— 标「仅预览」的 7 个滑杆游戏端不读, 不导出。";
   body.appendChild(hint);
 
   /* 文本内容 */
@@ -588,8 +588,9 @@ export function build() {
   // 这段清单是「产物里到底有什么」的唯一说明, 所以逐段写实。写不写全, 用户就只能
   // 靠导出后再打开 zip 去核对; 而漏写的那一段恰好是他刚才花了十分钟调的东西。
   exportHint.textContent =
-    "实际写入 design.json 的只有六段: textures / svgs / fonts / colors / menu / texts。"
-    + "预览配色与 misayos 布局微调只存在于本页面, 不进产物 —— 调整它们是为了对齐预览, 不是交付内容。"
+    "实际写入 design.json 的有七段: textures / svgs / fonts / colors / menu / texts / layout。"
+    + "layout 是 misayos 菜单的布局系数 (归一化比例, 覆盖游戏端硬编码); 布局微调段里标「仅预览」的 7 个滑杆不在其中 —— 游戏端不读, 写进去也只是让人误以为生效了。"
+    + "预览配色同样只存在于本页面, 不进产物 —— 它调的是设计器自己的界面主题, 不是 mod 的。"
     + "包内另有 pack.mcmeta 与全部被引用的资源 (未上传的自动用内置默认)。支持 1.21.1~1.21.5+ (pack_format 33-9999)。";
   body.appendChild(exportHint);
 

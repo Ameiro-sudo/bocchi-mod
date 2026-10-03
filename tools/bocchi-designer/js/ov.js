@@ -133,3 +133,11 @@ export function flushClamped() {
   saveState();
   return true;
 }
+
+/** 模型被导入 (design.json/zip 里的 layout 段) 后, 把滑杆 UI 拉回 state.OV。
+ *  applyLayout() 只改数据不改界面, 不调这个的话导入完面板还显示导入前的值,
+ *  用户会以为导入没生效 —— 而实际生效了, 只是看不见。 */
+export function syncSlidersFromModel() {
+  for (const k of Object.keys(SLIDERS)) applyOV(k, OV[k] != null ? +OV[k] : +SLIDERS[k].def);
+  applyNow();
+}

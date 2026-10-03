@@ -81,21 +81,21 @@ function parseExpr(src) {
  */
 const G = {
   misayos: {
-    block1X:      { expr: "scaledWidth * 0.095",                          java: "ui/model/MainMenuMisayosFrameContext.java:15" },
-    block1Y:      { expr: "scaledHeight * 0.4",                           java: "ui/model/MainMenuMisayosFrameContext.java:15" },
-    block1Size:   { expr: "min(scaledWidth * 0.2265625, scaledHeight * 0.4027777777777778)", java: "ui/model/MainMenuMisayosFrameContext.java:16" },
-    block3X:      { expr: "scaledWidth * 0.263125",                       java: "ui/model/MainMenuMisayosFrameContext.java:17" },
-    block3Y:      { expr: "scaledHeight * 0.0972222222222222",            java: "ui/model/MainMenuMisayosFrameContext.java:17" },
-    block3Size:   { expr: "min(scaledWidth * 0.4166666666666667, scaledHeight * 0.7407407407407407)", java: "ui/model/MainMenuMisayosFrameContext.java:18" },
+    block1X:      { expr: "scaledWidth * 0.095",                          java: "ui/model/MainMenuMisayosFrameContext.java:19" },
+    block1Y:      { expr: "scaledHeight * 0.4",                           java: "ui/model/MainMenuMisayosFrameContext.java:19" },
+    block1Size:   { expr: "min(scaledWidth * 0.2265625, scaledHeight * 0.4027777777777778)", java: "ui/model/MainMenuMisayosFrameContext.java:22" },
+    block3X:      { expr: "scaledWidth * 0.263125",                       java: "ui/model/MainMenuMisayosFrameContext.java:23" },
+    block3Y:      { expr: "scaledHeight * 0.0972222222222222",            java: "ui/model/MainMenuMisayosFrameContext.java:23" },
+    block3Size:   { expr: "min(scaledWidth * 0.4166666666666667, scaledHeight * 0.7407407407407407)", java: "ui/model/MainMenuMisayosFrameContext.java:24" },
     // 立绘 (MainTachieComponent)
-    tachieH:      { expr: "scaledHeight * 0.95",                          java: "ui/mainmenu/misayos/MainTachieComponent.java:68" },
-    tachieW:      { expr: "scaledHeight * 0.95 * 1.035483870967742",      java: "ui/mainmenu/misayos/MainTachieComponent.java:69" },
-    tachieX:      { expr: "block3X + block3Size * 0.1",                   java: "ui/mainmenu/misayos/MainTachieComponent.java:70" },
-    tachieY:      { expr: "scaledHeight * 0.05",                          java: "ui/mainmenu/misayos/MainTachieComponent.java:71" },
+    tachieH:      { expr: "scaledHeight * 0.95",                          java: "ui/mainmenu/misayos/MainTachieComponent.java:73" },
+    tachieW:      { expr: "scaledHeight * 0.95 * 1.035483870967742",      java: "ui/mainmenu/misayos/MainTachieComponent.java:74" },
+    tachieX:      { expr: "block3X + block3Size * 0.1",                   java: "ui/mainmenu/misayos/MainTachieComponent.java:75" },
+    tachieY:      { expr: "scaledHeight * 0.05",                          java: "ui/mainmenu/misayos/MainTachieComponent.java:76" },
     // 唱片 (MainTachieComponent / AlbumRenderer)
-    recordX:      { expr: "scaledWidth * 0.6",                            java: "ui/mainmenu/misayos/MainTachieComponent.java:94" },
-    recordY:      { expr: "scaledHeight * 0.18",                          java: "ui/mainmenu/misayos/MainTachieComponent.java:94" },
-    recordSize:   { expr: "scaledHeight * 0.65",                          java: "ui/mainmenu/misayos/MainTachieComponent.java:94" },
+    recordX:      { expr: "scaledWidth * 0.6",                            java: "ui/mainmenu/misayos/MainTachieComponent.java:99" },
+    recordY:      { expr: "scaledHeight * 0.18",                          java: "ui/mainmenu/misayos/MainTachieComponent.java:100" },
+    recordSize:   { expr: "scaledHeight * 0.65",                          java: "ui/mainmenu/misayos/MainTachieComponent.java:101" },
     // 简介文字 (TextElementsComponent)
     infoX:        { expr: "block1X + block1Size * 0.15",                  java: "ui/mainmenu/misayos/TextElementsComponent.java:66" },
     infoY:        { expr: "block1Size * 0.05",                            java: "ui/mainmenu/misayos/TextElementsComponent.java:67" },

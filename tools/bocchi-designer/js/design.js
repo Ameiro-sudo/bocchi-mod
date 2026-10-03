@@ -6,6 +6,7 @@
  * 上传的资源 (blob) 仅存在内存; 布局/文本/配色等偏好存 localStorage。
  * ==========================================================================*/
 import { state } from "./core.js";
+import * as facts from "./facts.js";
 
 export const DEFAULT_DESIGN = {
   textures: {
@@ -126,6 +127,64 @@ export function textsForExport() {
 }
 
 /* ---------- design.json 生成 (导出/预览) ---------- */
+/* ---------- layout 段 (misayos 布局微调 -> design.json) ----------
+ * 面板上 16 个滑杆里有 7 个是纯预览 (Java 端无对应公式: tachieRot/tachieOp/
+ * titleSize/titleX/titleY/panelW/panelX), 其余 9 个在 Java 端有确切公式, 这里写进
+ * design.json 的 layout 段。7 个 webOnly 滑杆刻意不导出 —— 导出一个游戏端不会读的
+ * 键比不导出更糟: 用户会以为改了生效了。
+ *
+ * 存的是**归一化比例**而非像素: Java 的 FrameContext 固定 scaledWidth=480 /
+ * scaledHeight=270, 预览是 1280x720, 同一组公式在两帧下成比例, 所以 px/轴长 就是
+ * Java 那边的系数本身。
+ *
+ * 两类键, 语义不同:
+ *   - 尺寸类 (无 offset 标记): 绝对比例, 缺省值 = mod 内置常量。
+ *   - 偏移类 (offset: true): 相对**内置位置**的偏移比例, 缺省 0。
+ * 偏移类用 0 做缺省是有意的 —— Java 那边不必知道基准值, 少一次我把常量抄错的
+ * 机会, 也让 check-layout.py 的原有表达式原样保留。
+ *
+ * 键名直接就是 Design.num("layout.<键>", d) 的查找路径, 与 Design.merge() 写入
+ * VALUES 的格式一致, 所以 Java 端不需要任何遍历改动, 只需要一个取值函数。
+ */
+export const LAYOUT_SPEC = [
+  { ov: "block1", base: "misayos.block1Size", json: { "misayos.block1SizeW": "w", "misayos.block1SizeH": "h" } },
+  { ov: "blockX", json: { "misayos.block1XOffset": "w" }, offset: true },
+  { ov: "blockY", json: { "misayos.block1YOffset": "h" }, offset: true },
+  { ov: "tachieH", base: "misayos.tachieH", json: { "misayos.tachieH": "h" } },
+  { ov: "tachieX", json: { "misayos.tachieXOffset": "w" }, offset: true },
+  { ov: "tachieY", json: { "misayos.tachieYOffset": "h" }, offset: true },
+  { ov: "recordSize", base: "misayos.recordSize", json: { "misayos.recordSize": "h" } },
+  { ov: "recordX", json: { "misayos.recordXOffset": "w" }, offset: true },
+  { ov: "recordY", json: { "misayos.recordYOffset": "h" }, offset: true },
+];
+const r6 = (n) => Math.round(n * 1e6) / 1e6;   // 比例取 6 位: 够精确, 又不会让快照因浮点尾数抖动
+const r2 = (n) => Math.round(n * 100) / 100;   // 滑杆回到像素, 取 2 位
+const axisLen = (axis) => (axis === "w" ? facts.W : facts.H);
+
+/** 滑杆现状 -> design.json layout 段 (键与 LAYOUT_SPEC 一一对应) */
+export function layoutForExport() {
+  const o = {};
+  for (const s of LAYOUT_SPEC) {
+    const ov = Number(state.OV[s.ov]);
+    const px = s.offset
+      ? (Number.isFinite(ov) ? ov : 0)
+      : (Number.isFinite(ov) && ov !== 0 ? ov : facts.value(s.base));
+    for (const [key, axis] of Object.entries(s.json)) o[key] = r6(px / axisLen(axis));
+  }
+  return o;
+}
+
+/** design.json layout 段 -> 滑杆 px。不认识的键走 extra 保留, 导入不会丢东西。 */
+export function applyLayout(obj) {
+  for (const s of LAYOUT_SPEC) {
+    for (const [key, axis] of Object.entries(s.json)) {
+      const v = Number(obj?.[key]);
+      if (!Number.isFinite(v)) continue;
+      state.OV[s.ov] = r2(v * axisLen(axis));
+    }
+  }
+}
+
 function objOf(sec) {
   const o = {};
   // textures/svgs/fonts 值为 {path, blob}, colors 值为字符串 - 兼容两种形态
@@ -150,9 +209,13 @@ function buildDesignJSON() {
     colors: mergeExtras("colors", { _comment: "设计色板, 代码内硬编码颜色已接入此表. 格式 #RRGGBB 或 #AARRGGBB", ...objOf("colors") }),
     texts: mergeExtras("texts", { _comment: "界面文案. mInfoLine1~3 为 misayos 介绍三行; 其余键与 Bocchi Designer 文本面板一致", ...textsForExport() }),
     menu: { _comment: "主菜单主题: misayos (默认) / poulsen. 材质包覆盖此项即可切换主题, 资源重载后生效", theme: S.menu.theme },
+    layout: mergeExtras("layout", {
+      _comment: "misayos 菜单布局。值是相对宽/高的归一化比例, 不是像素 —— 所以不同分辨率下观感一致。尺寸类键写绝对比例 (缺省 = mod 内置值); Offset 类键写相对内置位置的偏移比例 (缺省 0)。键就是游戏端的查找路径 (layout.<键>)。整段删掉等于全部回退到 mod 内置布局。用 Bocchi Designer 的「misayos 布局微调」段生成。",
+      ...layoutForExport(),
+    }),
   };
   for (const [sec, val] of Object.entries(S.extra)) {
-    if (sec === "textures" || sec === "svgs" || sec === "fonts" || sec === "colors" || sec === "texts") continue;
+    if (sec === "textures" || sec === "svgs" || sec === "fonts" || sec === "colors" || sec === "texts" || sec === "layout") continue;
     if (sec === "menu") { for (const [k, v] of Object.entries(val)) if (!UNSAFE_KEYS.has(k) && !Object.hasOwn(o.menu, k)) o.menu[k] = v; continue; }
     o[sec] = typeof val === "object" && val !== null ? { ...val } : val;
   }

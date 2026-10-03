@@ -7,7 +7,9 @@ import { fileURLToPath } from "node:url";
 import {
   S, DEFAULT_DESIGN, DEFAULT_TEXTS, UNSAFE_KEYS, cleanCopy, hexToCss,
   buildDesignJSON, textsForExport, uploadedCount,
+  layoutForExport, applyLayout, LAYOUT_SPEC,
 } from "../js/design.js";
+import { state } from "../js/core.js";
 
 /* ---------- 契约测试: 工具的建模面必须覆盖 mod 内置 design.json ----------
  *
@@ -127,4 +129,67 @@ test("uploadedCount: 只数 textures/svgs/fonts 的 blob, colors/menu/texts 不�
   S.colors.vinyl_edge = DEFAULT_DESIGN.colors.vinyl_edge;
   S.texts.mBocchi = DEFAULT_TEXTS.mBocchi;
   S.menu.theme = "misayos";
+});
+
+/* ---------- layout 段: 滑杆 <-> design.json ----------
+ *
+ * 这是「工具调的东西游戏端真的会读」的唯一保证。写错方向的后果很安静: 导出的数字
+ * 看着合理, 游戏里画面却纹丝不动, 用户只会以为 mod 没生效。所以下面几条把语义钉死:
+ * 尺寸类写绝对比例, 偏移类写 0 而不是基准值。
+ */
+const withOV = (patch, fn) => {
+  const saved = {};
+  for (const k of Object.keys(patch)) { saved[k] = state.OV[k]; state.OV[k] = patch[k]; }
+  try { return fn(); } finally { for (const [k, v] of Object.entries(saved)) state.OV[k] = v; }
+};
+
+test("layoutForExport: 全默认时尺寸键等于内置常量, 偏移键全为 0", () => {
+  const l = withOV({ block1: 290, blockX: 0, blockY: 0, tachieH: 684, tachieX: 0, tachieY: 0,
+                      recordSize: 468, recordX: 0, recordY: 0 }, layoutForExport);
+  // 290/1280 与 290/720 —— 与 MainMenuMisayosFrameContext 里的乘数同一种东西
+  assert.equal(l["misayos.block1SizeW"], 0.226563);
+  assert.equal(l["misayos.block1SizeH"], 0.402778);
+  assert.equal(l["misayos.tachieH"], 0.95);
+  assert.equal(l["misayos.recordSize"], 0.65);
+  // 偏移类导 0: Java 那边 Design.num("...", 0f) 加上 0 就是原位, 不必知道基准值
+  for (const k of ["block1XOffset", "block1YOffset", "tachieXOffset",
+                   "tachieYOffset", "recordXOffset", "recordYOffset"]) {
+    assert.equal(l["misayos." + k], 0, k);
+  }
+  // 7 个纯预览滑杆绝不能出现在产物里 —— 游戏端不读, 写进去只会让人误以为生效
+  for (const v of ["tachieRot", "tachieOp", "titleSize", "titleX", "titleY", "panelW", "panelX"]) {
+    assert.ok(!Object.keys(l).some(k => k.includes(v)), v + " 不该被导出");
+  }
+});
+
+test("applyLayout ∘ layoutForExport: 滑杆值往返一致", () => {
+  const patch = { block1: 320, blockX: -40, blockY: 25, tachieH: 700, tachieX: 60,
+                  tachieY: -15, recordSize: 420, recordX: 30, recordY: 10 };
+  withOV(patch, () => {
+    applyLayout(layoutForExport());
+    for (const [k, v] of Object.entries(patch)) {
+      assert.ok(Math.abs(state.OV[k] - v) < 0.5, `${k}: ${state.OV[k]} != ${v}`);
+    }
+  });
+});
+
+test("applyLayout: 缺键/非法值不动滑杆 (Java 端 Design.num 的缺省语义)", () => {
+  withOV({ tachieH: 684, tachieX: 0 }, () => {
+    applyLayout({});                                   // design.json 没写 layout 段
+    assert.equal(state.OV.tachieH, 684);
+    applyLayout({ "misayos.tachieH": "abc", "misayos.tachieXOffset": null });
+    assert.equal(state.OV.tachieH, 684);
+    assert.equal(state.OV.tachieX, 0);
+  });
+});
+
+test("buildDesignJSON: layout 段在位, 且默认状态下导出的是可直接覆盖的整段", () => {
+  const o = withOV({ block1: 290, blockX: 0, tachieH: 684, recordSize: 468 }, buildDesignJSON);
+  assert.ok(o.layout && typeof o.layout === "object");
+  assert.ok(o.layout._comment.includes("Offset"));
+  assert.deepEqual(
+    Object.keys(o.layout).filter(k => !k.startsWith("_")).sort(),
+    LAYOUT_SPEC.flatMap(s => Object.keys(s.json)).sort(),
+    "layout 段的键必须与 LAYOUT_SPEC 一一对应, 不多不少",
+  );
 });

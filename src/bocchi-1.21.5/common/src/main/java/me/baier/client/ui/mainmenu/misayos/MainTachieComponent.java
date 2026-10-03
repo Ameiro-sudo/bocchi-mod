@@ -65,10 +65,15 @@ public class MainTachieComponent extends AbstractBaseComponent<MainMenuMisayosFr
 
     var canvas = ctx.canvas();
 
-    float mainImageFinalHeight = screenHeight * 0.95f;
+    // layout.* 覆盖来自 design.json (Bocchi Designer「misayos 布局微调」): 存的是归一化
+    // 比例而非像素, 缺省 0/内置常数, 所以不覆盖时与硬编码完全一致。
+    // 赋值必须单行 —— sync/check-layout.py 逐行求值, 折行会让这些绑定消失。
+    float tachieXOffset = Design.num("layout.misayos.tachieXOffset", 0f);
+    float tachieYOffset = Design.num("layout.misayos.tachieYOffset", 0f);
+    float mainImageFinalHeight = screenHeight * Design.num("layout.misayos.tachieH", 0.95f);
     float mainImageFinalWidth = mainImageFinalHeight * 1.035483870967742f;
-    float mainImageFinalX = block3Pos.getX() + block3Size * 0.1f;
-    float mainImageFinalY = screenHeight * 0.05f;
+    float mainImageFinalX = block3Pos.getX() + block3Size * 0.1f + screenWidth * tachieXOffset;
+    float mainImageFinalY = screenHeight * (0.05f + tachieYOffset);
     if (mainImageFinalHeight <= screenHeight) mainImageFinalY = screenHeight - mainImageFinalHeight;
     Point gotohImgStartPos =
         ScreenUtils.calculateStartPosition(
@@ -91,7 +96,10 @@ public class MainTachieComponent extends AbstractBaseComponent<MainMenuMisayosFr
       var rect3 = Rect.makeXYWH(block3Pos.getX(), block3Pos.getY(), block3Size, block3Size);
       var recordRect =
           Rect.makeXYWH(
-              screenWidth * 0.6f, screenHeight * 0.18f, screenHeight * 0.65f, screenHeight * 0.65f);
+              screenWidth * (0.6f + Design.num("layout.misayos.recordXOffset", 0f)),
+              screenHeight * (0.18f + Design.num("layout.misayos.recordYOffset", 0f)),
+              screenHeight * Design.num("layout.misayos.recordSize", 0.65f),
+              screenHeight * Design.num("layout.misayos.recordSize", 0.65f));
       /*
       var colorPaint = SkiaEnvironment.getCurrent().borrowPaint();
       canvas.drawRect(recordRect, colorPaint.setColor(0xAAFFFFFF));

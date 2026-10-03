@@ -8,8 +8,11 @@ import { $, toast, download, zipWrite, zipRead } from "./core.js";
 import {
   S, buildDesignJSON, usedPath, localAsset, zipEntry,
   UNSAFE_KEYS, cleanCopy, setBlob, splitPath, uploadedCount,
+  applyLayout, LAYOUT_SPEC,
 } from "./design.js";
 import { clearHistory } from "./history.js";
+
+const LAYOUT_JSON_KEYS = new Set(LAYOUT_SPEC.flatMap((s) => Object.keys(s.json)));
 
 const README_TEXT = [
   "bocchi design pack - exported by Bocchi Designer",
@@ -87,7 +90,7 @@ export function applyDesignJSON(root, entries) {
   // 清栈是「整体替换模型」的固有后果, 所以归它管, 而不是归文件对话框管。
   clearHistory();
   let count = 0;
-  const KNOWN = new Set(["textures", "svgs", "fonts", "colors", "menu", "texts"]);
+  const KNOWN = new Set(["textures", "svgs", "fonts", "colors", "menu", "texts", "layout"]);
   /** 确保 extras 下存在对象容器 (null 原型) */
   const extraObj = (sec) => {
     if (!Object.hasOwn(S.extra, sec) || !S.extra[sec] || typeof S.extra[sec] !== "object")
@@ -114,6 +117,15 @@ export function applyDesignJSON(root, entries) {
         } else {
           extraObj("menu")[k] = v;
         }
+      }
+      continue;
+    }
+    if (sec === "layout") {
+      // 布局段: 已知键还原成滑杆 px, 未知键入 extras (游戏端读的键比工具认的多, 不能丢)
+      applyLayout(obj);
+      for (const [k, val] of Object.entries(obj)) {
+        if (k.startsWith("_") || UNSAFE_KEYS.has(k)) continue;
+        if (!LAYOUT_JSON_KEYS.has(k)) extraObj("layout")[k] = val;
       }
       continue;
     }

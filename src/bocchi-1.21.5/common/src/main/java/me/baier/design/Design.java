@@ -86,6 +86,23 @@ public final class Design {
     return VALUES.getOrDefault(key, fallback);
   }
 
+  /**
+   * 取任意数值配置 (如 "layout.misayos.block1X"), 未定义或非法时回退 fallback.
+   *
+   * <p>Bocchi Designer 的 layout 段写的是归一化比例而非像素 —— 同一组系数在不同分辨率下
+   * 成比例, 所以这里拿到的数字和代码里原来硬编码的那个常量是同一种东西。
+   */
+  public static float num(String key, float fallback) {
+    String value = value(key, null);
+    if (value == null) return fallback;
+    try {
+      return Float.parseFloat(value.trim());
+    } catch (RuntimeException e) {
+      warnOnce(key, "数值格式非法, 已忽略: " + value);
+      return fallback;
+    }
+  }
+
   private static synchronized void ensureLoaded() {
     if (loaded) return;
     VALUES.clear();

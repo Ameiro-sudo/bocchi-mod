@@ -9,6 +9,7 @@
  * ==========================================================================*/
 import { $, state, toast } from "./core.js";
 import { loadState } from "./design.js";
+import { syncSlidersFromModel } from "./ov.js";
 import { initPreview, refreshPreviews } from "./preview.js";
 import { relayout } from "./render.js";
 import { setAfterRelayout } from "./render.js";
@@ -44,6 +45,7 @@ function syncAllFromModel() {
   applyAllTexts();
   updateResNames();
   resyncBaselines();
+  syncSlidersFromModel();
   const sel = $("themeSel");
   if (sel) sel.value = S.menu.theme;
   refreshPreviews();
