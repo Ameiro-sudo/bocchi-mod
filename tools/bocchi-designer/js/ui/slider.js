@@ -26,5 +26,7 @@ export function addSlider(body, label, key, min, max, def, step) {
   setFill(input);
   row.append(lab, input, val);
   body.appendChild(row);
+  // 先 clampSaved 再 registerSlider: OV_FIELDS[key] 的撤销基准在注册那一刻读 OV[key],
+  // 反过来 (先注册后夹) 会让基准停在那个越界值上, 首次拖动的 undo 就回不到夹过的值。
   registerSlider(key, def, input, val);
 }

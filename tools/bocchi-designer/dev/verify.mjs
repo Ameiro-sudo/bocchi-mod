@@ -801,7 +801,25 @@ function dumpChrome(EXCLUDE) {
         }
       }
 
-      /* 5) 撤到底: 必须能撤空, 且撤空后三个模型都回到初始值 */
+      /* 5) 配色回放后的撤销基准: 与文本同一条不变量, 但走的是另一条代码路径
+       *  (ui/color.js 的 field)。两处曾各自手写一份, 其中一份漏了搬基准 ——
+       *  于是撤销一次配色后, 下一次改配色会以「已经被撤销掉的值」为起点, 撤一次
+       *  屏幕跳回一个用户从没见过的颜色。快照对此毫无反应: 模型值和 CSS 变量都是对的。 */
+      const cText = document.querySelector("#sec-res-colors .color-row input[type=text]");
+      if (!cText) fails.push("配色基准探针: #sec-res-colors 下找不到配色输入框");
+      else {
+        const cOrig = cText.value;
+        setVal(cText, cOrig === "#0f0f0f" ? "#101010" : "#0f0f0f");
+        blur(cText);
+        B.undo();
+        ok(cText.value === cOrig, `配色: undo 未回到原值 (${cText.value} != ${cOrig})`);
+        const cAfter = depth();
+        blur(cText);   // 基准若停在被撤销掉的值上, 这一次失焦就会凭空多一条
+        ok(depth() === cAfter, `配色: 撤销后再失焦生成了 ${depth() - cAfter} 条伪造历史条目`);
+        B.undo();     // 清掉可能产生的伪造条目
+      }
+
+      /* 6) 撤到底: 必须能撤空, 且撤空后三个模型都回到初始值 */
       let guard = 200;
       while (B.historyStats().undo > 0 && guard-- > 0) B.undo();
       ok(depth() === 0, `撤销栈: 撤到底后仍有 ${depth()} 条`);

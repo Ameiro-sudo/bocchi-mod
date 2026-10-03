@@ -9,7 +9,7 @@ import { S, DEFAULT_DESIGN, setBlob, localAsset } from "../design.js";
 import { refreshPreviews } from "../preview.js";
 import { FONT_SET_NAME, replaceFace } from "../fonts.js";
 import { relayout } from "../render.js";
-import { push as pushHistory } from "../history.js";
+import { createField } from "../store.js";
 import { markDirty, scheduleDirty } from "./dirty.js";
 
 function applyRes(sec, key, blob, path) {
@@ -27,6 +27,9 @@ function applyRes(sec, key, blob, path) {
   scheduleDirty();
 }
 
+/** 资源值 = [blob, path] 二元组; 二元组每次都是新引用, 必须按内容判等 */
+const sameRes = (a, b) => a[0] === b[0] && a[1] === b[1];
+
 export function addResRow(body, label, sec, key) {
   const row = document.createElement("div");
   row.className = "res-row";
@@ -40,19 +43,24 @@ export function addResRow(body, label, sec, key) {
   name.className = "r-name"; name.id = `rn_${sec}_${key}`;
   name.title = "资源路径 (namespace:path, 省略命名空间则默认 minecraft)。改完回车或失焦生效, 可撤销。";
   name.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); name.blur(); } });
+  // 三处编辑 (改路径 / 换文件 / 还原内置) 全部经它, 于是「撤销回放时基准同步搬动」
+  // 这件事只有一份实现。label 是函数: 同一个 field 三种编辑动作措辞不同, 每次入栈
+  // 时才求值, 而 undo/redo 闭包里保留的是入栈那一刻的措辞。
+  let verb = "资源";
+  const field = createField({
+    label: () => `${verb} ${label}`,
+    read: () => { const e = S[sec][key]; return [e.blob, e.path]; },
+    apply: ([blob, p]) => applyRes(sec, key, blob, p),
+    isSame: sameRes,
+  });
   name.addEventListener("change", () => {
     const entry = S[sec][key];
     const to = name.value.trim();
     if (!to) { toast(`${label} 的路径不能为空`); updateResName(sec, key); return; }
     if (to === entry.path) return;
-    const from = entry.path;
     // 只换路径不动 blob: 内容还在内存里, 只是打包时落到另一个条目名。
-    applyRes(sec, key, entry.blob, to);
-    pushHistory({
-      label: `改资源路径 ${label}`,
-      undo: () => applyRes(sec, key, entry.blob, from),
-      redo: () => applyRes(sec, key, entry.blob, to),
-    });
+    verb = "改资源路径";
+    field.set([entry.blob, to]);
   });
   const rst = document.createElement("button");
   rst.className = "row-reset"; rst.textContent = "内置";
@@ -65,14 +73,10 @@ export function addResRow(body, label, sec, key) {
     const f = input.files[0];
     if (!f) return;
     // 记录可撤销的资源替换 (blob 引用互换, 无拷贝开销)
-    const prevBlob = S[sec][key].blob, prevPath = S[sec][key].path;
-    applyRes(sec, key, f, prevPath);
-    pushHistory({
-      label: `替换资源 ${label}`,
-      undo: () => applyRes(sec, key, prevBlob, prevPath),
-      redo: () => applyRes(sec, key, f, prevPath),
-    });
-    toast(`已上传 ${f.name} (仅本次会话生效, 刷新后还原; Ctrl+Z 可撤销)`);
+    verb = "替换资源";
+    if (field.set([f, S[sec][key].path])) {
+      toast(`已上传 ${f.name} (仅本次会话生效, 刷新后还原; Ctrl+Z 可撤销)`);
+    }
     input.value = "";
   });
   btn.addEventListener("click", () => input.click());
@@ -81,14 +85,8 @@ export function addResRow(body, label, sec, key) {
     const entry = S[sec][key];
     const defPath = DEFAULT_DESIGN[sec][key];
     if (!entry.blob && entry.path === defPath) { toast(`${label} 已是内置默认`); return; }
-    const prevBlob = entry.blob, prevPath = entry.path;
-    applyRes(sec, key, null, defPath);
-    pushHistory({
-      label: `还原资源 ${label}`,
-      undo: () => applyRes(sec, key, prevBlob, prevPath),
-      redo: () => applyRes(sec, key, null, defPath),
-    });
-    toast(`已还原内置默认: ${label}`);
+    verb = "还原资源";
+    if (field.set([null, defPath])) toast(`已还原内置默认: ${label}`);
   });
   row.append(lab, name, rst, btn, input);
   body.appendChild(row);

@@ -4,8 +4,9 @@
 import { toast } from "../core.js";
 import { S, DEFAULT_DESIGN, saveState } from "../design.js";
 import { relayout } from "../render.js";
-import { push as pushHistory } from "../history.js";
+import { createField } from "../store.js";
 import { markDirty, scheduleDirty } from "./dirty.js";
+import { registerBaseline } from "./baseline.js";
 
 export function addThemeRow(body) {
   const row = document.createElement("div");
@@ -29,16 +30,13 @@ export function addThemeRow(body) {
     scheduleDirty();
     toast("主题已改为 " + v + "（design.json menu.theme）");
   };
-  sel.addEventListener("change", () => {
-    const from = S.menu.theme, to = sel.value;
-    if (from === to) return;
-    applyTheme(to);
-    pushHistory({
-      label: `主题 ${to}`,
-      undo: () => applyTheme(from),
-      redo: () => applyTheme(to),
-    });
+  const field = createField({
+    label: "主题",
+    read: () => S.menu.theme,
+    apply: applyTheme,
   });
+  registerBaseline(() => field.resync());
+  sel.addEventListener("change", () => field.set(sel.value));
   row.append(lab, sel);
   markDirty(row, () => S.menu.theme !== DEFAULT_DESIGN.menu.theme);
   body.appendChild(row);

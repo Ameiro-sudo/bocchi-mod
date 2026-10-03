@@ -9,15 +9,25 @@ import { state } from "./core.js";
 import { scheduleSave, saveState } from "./design.js";
 import { applyNow, scheduleRelayout } from "./render.js";
 import { push as pushHistory } from "./history.js";
+import { createField } from "./store.js";
 
 const OV = state.OV;
 
 /** key -> { input, val, def } ; panels.addSlider 注册 */
 export const SLIDERS = {};
 
+/** key -> 可撤销字段 (与面板/画布拖拽共用同一份撤销基准), 见 setOV */
+const OV_FIELDS = {};
+
 export function registerSlider(key, def, input, val) {
   SLIDERS[key] = { input, val, def };
   if (!(key in OV)) OV[key] = def;
+  OV_FIELDS[key] = createField({
+    label: "布局微调",
+    read: () => OV[key],
+    apply: (v) => applyOV(key, v),
+    coalesce: "ov:" + key,
+  });
 }
 
 function setFill(input) {
@@ -51,15 +61,10 @@ export function setOV(key, v) {
   const s = SLIDERS[key];
   v = s ? Math.min(Math.max(v, +s.input.min), +s.input.max) : v;
   v = Math.round(v * 100) / 100;
-  const from = OV[key];
-  applyOV(key, v);
-  if (from !== v) {
-    pushHistory({
-      label: "布局微调",
-      undo: () => applyOV(key, from),
-      redo: () => applyOV(key, v),
-    }, "ov:" + key);
-  }
+  // 滑杆与拖拽共用一个 field: 拖拽期间 setOV 的逐帧 push 被手势静音区吞掉, 收尾
+  // 由 pushOVGesture 用 snapshotOV() 起的另一条命令封口, 但「基准」必须是同一个,
+  // 否则滑杆拖完后紧接着的画布拖拽会以一个已经作废的值为 from。
+  OV_FIELDS[key].set(v);
 }
 
 /** 拖拽起始快照: 全部 OV 当前值 (无持久化值时取滑杆现值), 供 move/resize 增量计算 */
@@ -139,5 +144,8 @@ export function flushClamped() {
  *  用户会以为导入没生效 —— 而实际生效了, 只是看不见。 */
 export function syncSlidersFromModel() {
   for (const k of Object.keys(SLIDERS)) applyOV(k, OV[k] != null ? +OV[k] : +SLIDERS[k].def);
+  // applyLayout 整体替换了模型值, 每个滑杆 field 的撤销基准必须一并搬过来,
+  // 否则导入后第一次拖动会以「导入前的旧值」为 from, 一撤销就整屏跳回导入前。
+  for (const f of Object.values(OV_FIELDS)) f.resync();
   applyNow();
 }

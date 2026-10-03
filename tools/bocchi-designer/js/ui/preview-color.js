@@ -3,7 +3,7 @@
  * ==========================================================================*/
 import { state } from "../core.js";
 import { scheduleSave } from "../design.js";
-import { push as pushHistory } from "../history.js";
+import { createField } from "../store.js";
 
 /* 预览配色的落地函数 (拖色/撤销/重做共用)。它写的是三处地方, 必须一次写全:
    状态表 -> documentElement CSS 变量 -> --btn-bg 的按钮内联背景。少写任何一处,
@@ -27,17 +27,13 @@ export function addPreviewColor(body, label, key) {
   input.value = state.PREVIEW_COLORS[key];
   // 预览配色此前只落盘不入栈 —— 等于改了就撤不回来。这里补上; 取色器是连续
   // input 事件, 所以按 key 合并, 免得拖一次色板留下几十条历史。
-  input.addEventListener("input", () => {
-    const to = input.value;
-    const from = state.PREVIEW_COLORS[key];
-    if (to === from) return;
-    applyPreviewColor(key, to, input);
-    pushHistory({
-      label: `预览色 ${label}`,
-      undo: () => applyPreviewColor(key, from, input),
-      redo: () => applyPreviewColor(key, to, input),
-    }, "pcolor:" + key);
+  const field = createField({
+    label: `预览色 ${label}`,
+    read: () => state.PREVIEW_COLORS[key],
+    apply: (v) => applyPreviewColor(key, v, input),
+    coalesce: "pcolor:" + key,
   });
+  input.addEventListener("input", () => field.set(input.value));
   wrap.append(lab, input);
   body.appendChild(wrap);
 }
