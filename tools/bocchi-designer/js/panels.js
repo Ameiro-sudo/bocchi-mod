@@ -15,6 +15,7 @@ import { registerSlider, clampSaved, onSliderInput, resetAll, setFill, setOV, fl
 import { relayout, scheduleRelayout } from "./render.js";
 import { exportPack, exportJson, copyJson } from "./io.js";
 import { push as pushHistory } from "./history.js";
+import { SLIDER_SPEC } from "./sliders.js";
 
 const OV = state.OV;
 
@@ -468,22 +469,9 @@ export function build() {
   const lg = document.createElement("div");
   lg.className = "grid";
   body.appendChild(lg);
-  addSlider(lg, "立绘 X 偏移", "tachieX", -200, 200, 0);
-  addSlider(lg, "立绘 Y 偏移", "tachieY", -200, 200, 0);
-  addSlider(lg, "立绘高度", "tachieH", 300, 800, 684);
-  addSlider(lg, "立绘旋转 · 仅预览", "tachieRot", -10, 10, 0, 0.1);
-  addSlider(lg, "立绘透明度 · 仅预览", "tachieOp", 0, 100, 100);
-  addSlider(lg, "唱片大小", "recordSize", 200, 600, 468);
-  addSlider(lg, "唱片 X 偏移", "recordX", -200, 200, 0);
-  addSlider(lg, "唱片 Y 偏移", "recordY", -200, 200, 0);
-  addSlider(lg, "标题字号 · 仅预览", "titleSize", 30, 90, 53);
-  addSlider(lg, "标题 X 偏移 · 仅预览", "titleX", -300, 300, 0);
-  addSlider(lg, "标题 Y 位置 · 仅预览", "titleY", -100, 100, 0);
-  addSlider(lg, "面板宽度 · 仅预览", "panelW", 60, 140, 95);
-  addSlider(lg, "面板 X 偏移 · 仅预览", "panelX", -100, 100, 0);
-  addSlider(lg, "block1 大小", "block1", 150, 400, 290);
-  addSlider(lg, "block1 X 偏移", "blockX", -200, 200, 0);
-  addSlider(lg, "block1 Y 偏移", "blockY", -200, 200, 0);
+  // 16 组值域来自 sliders.js (纯数据), 理由见那里的注释: 定义埋在 build() 里时,
+  // 「默认值等于 mod 内置常量」这个不变量没有任何地方能守住。
+  for (const s of SLIDER_SPEC) addSlider(lg, s.label, s.key, s.min, s.max, s.def, s.step);
   const hint = document.createElement("div");
   hint.className = "hint";
   hint.innerHTML = "画布上: 点击选中 → 拖拽移动 / 拖角缩放; 双击文字定位到编辑框; Esc 取消选中; 方向键微调。布局/文本/配色/资源替换均可 Ctrl+Z 撤销、Ctrl+Y 重做。导出时写入 design.json 的 layout 段 —— 标「仅预览」的 7 个滑杆游戏端不读, 不导出。";

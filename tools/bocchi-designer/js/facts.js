@@ -203,7 +203,8 @@ function refsOf(expr) {
   }
   return out;
 }
-function evalWithBindings(expr, bind) {
+// 导出供单测: 绑定替换的词边界是这里最容易悄悄错的地方 (见 facts.test.mjs)
+export function evalWithBindings(expr, bind) {
   let s = expr;
   for (const k of Object.keys(bind)) s = s.replace(new RegExp("\\b" + k + "\\b", "g"), "(" + bind[k] + ")");
   return parseExpr(s);
