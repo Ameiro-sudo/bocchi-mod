@@ -45,6 +45,7 @@ export function push(cmd, coalesceKey) {
   trim();
   redoStack.length = 0;
   lastCoalesce = coalesceKey ? { key: coalesceKey, at: t } : null;
+  notify();
 }
 
 /** 开启手势静音区: 区间内 push 全部吞掉, 命令由所有者在结束时合成入栈 */
@@ -65,6 +66,7 @@ export function undo() {
   try { cmd.undo(); } finally { applying = false; }
   redoStack.push(cmd);
   lastCoalesce = null;
+  notify();
   return cmd.label;
 }
 
@@ -77,6 +79,7 @@ export function redo() {
   undoStack.push(cmd);
   trim();
   lastCoalesce = null;
+  notify();
   return cmd.label;
 }
 
@@ -90,9 +93,21 @@ export function clearHistory() {
   redoStack.length = 0;
   muted = false;
   lastCoalesce = null;
+  notify();
 }
 
 export const canUndo = () => undoStack.length > 0;
 export const canRedo = () => redoStack.length > 0;
 /** 测试/状态栏用: {undo, redo} 深度 */
 export function stats() { return { undo: undoStack.length, redo: redoStack.length }; }
+
+/* 栈变化通知。撤销按钮的可用态只能由这里驱动: 让每个写入点各自记得刷新, 漏一处
+   就留下一个恒亮的按钮, 而恒亮的按钮看起来是「可按」, 按下去只弹一句提示。 */
+const listeners = new Set();
+/** 注册栈变化回调, 返回注销函数 */
+export function onStackChange(fn) { listeners.add(fn); return () => listeners.delete(fn); }
+function notify() {
+  if (!listeners.size) return;
+  const u = canUndo(), r = canRedo();
+  for (const fn of listeners) { try { fn(u, r); } catch (e) { console.error("[history] onStackChange 回调抛错", e); } }
+}

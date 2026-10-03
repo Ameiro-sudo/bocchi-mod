@@ -577,6 +577,36 @@ function dumpChrome(EXCLUDE) {
       return res;
     });
     await new Promise(r => setTimeout(r, 500)); // scheduleSave debounce 250ms 落盘
+
+    /* UI 不变量探针: 快照采不到的东西, 只能写成断言。
+     * 快照的采集面是 header + #controls, 舞台 DOM 与状态栏文案都在采集面之外 ——
+     * 「#misayosStage 被打上 data-sel 导致整块画布 hover 描粉色虚线」和「Esc 之后
+     * 状态栏永久变空」这两类回归, compare.mjs 报 0 处差异, 页面照坏。 */
+    const uiProbe = await page.evaluate(() => {
+      const failures = [];
+      const stage = document.getElementById("misayosStage");
+      // stage.css 的 [data-sel]:hover 会给整块 1280x720 画布描一圈虚线
+      if (stage.hasAttribute("data-sel")) failures.push("#misayosStage 不应带 data-sel (整块画布会被 hover 描边)");
+      // SEL_HIT 里这四个都映射到 "title", 可点却没 hover 反馈
+      for (const id of ["mBocchi", "mRock", "mBoxGotoh", "mBoxGirl"]) {
+        const el = document.getElementById(id);
+        if (!el) failures.push("#" + id + " 不存在");
+        else if (!el.hasAttribute("data-sel")) failures.push("#" + id + " 可点击但没有 data-sel (无 hover 反馈)");
+      }
+      // 撤销/重做按钮可用态由 history 的栈变化通知驱动。走到这里时, 上面的烟测已经
+      // 做过方向键微调 => 撤销栈非空、重做栈为空。这条断言抓的是「notify 没接上」
+      // 或者「只接了 push 没接 undo」这类接错线的错。
+      const u = document.getElementById("btnUndo"), r = document.getElementById("btnRedo");
+      if (u.disabled) failures.push("烟测已压入撤销记录, 但 btnUndo 仍是 disabled (栈变化通知没接上)");
+      if (!r.disabled) failures.push("重做栈为空, 但 btnRedo 未 disabled");
+      // Esc 取消选中后状态栏必须回到舞台基线文案, 而不是空串
+      const st = (document.getElementById("status").textContent || "").trim();
+      if (!st) failures.push("Esc 取消选中后状态栏为空 (clearSel 未恢复舞台基线文案)");
+      if (!/misayos/.test(st)) failures.push("状态栏文案不含当前舞台名: " + JSON.stringify(st.slice(0, 40)));
+      return { ok: failures.length === 0, failures, statusLen: st.length };
+    });
+    if (!uiProbe.ok) throw new Error("UI 不变量探针失败:\n  - " + uiProbe.failures.join("\n  - "));
+
     dump.smoke = {
       ...smoke,
       ovTachieXAfterNudge: await page.evaluate(() => {
@@ -720,6 +750,7 @@ function dumpChrome(EXCLUDE) {
     console.log("dumped:", OUT);
     console.log("console warn/error:", consoleMsgs.length ? consoleMsgs.join(" | ") : "(none)");
     console.log("smoke:", JSON.stringify(dump.smoke));
+    console.log("uiProbe: ok");
     console.log("sliderProbe:", JSON.stringify(sliderProbe));
     console.log("historyProbe: ok");
   } finally {

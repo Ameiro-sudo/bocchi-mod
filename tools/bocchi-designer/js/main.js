@@ -17,7 +17,15 @@ import { bind as bindIO, onModelImported } from "./io.js";
 import { showStage, replay, currentStage, fitStage, updateSelBox, hooks } from "./interactions.js";
 import { FONT_SET_NAME, loadUploadedFonts } from "./fonts.js";
 import { S } from "./design.js";
-import { undo as undoHistory, redo as redoHistory, stats as historyStats, push as pushHistory } from "./history.js";
+import { undo as undoHistory, redo as redoHistory, stats as historyStats, push as pushHistory, onStackChange, canUndo, canRedo } from "./history.js";
+
+/* 撤销/重做按钮的可用态。此前 canUndo/canRedo 全工程零调用点, 两个按钮恒亮 ——
+   恒亮的按钮等于承诺「按了有反应」, 而按下去只会弹一句「没有可撤销的操作」。
+   状态由 history 的栈变化通知驱动, 不靠各写入点自己记得刷新。 */
+function syncUndoButtons(canU, canR) {
+  $("btnUndo").disabled = !canU;
+  $("btnRedo").disabled = !canR;
+}
 
 /** 撤销/重做入口: 空栈给提示, 成功回放报 label */
 function doUndo() {
@@ -71,6 +79,8 @@ function boot() {
   $("btnReplay").addEventListener("click", () => replay(currentStage()));
 
   // 撤销/重做: 头部按钮 + 快捷键 (输入框聚焦期间交给浏览器原生撤销, 失焦后走模型栈)
+  onStackChange(syncUndoButtons);
+  syncUndoButtons(canUndo(), canRedo());
   $("btnUndo").addEventListener("click", doUndo);
   $("btnRedo").addEventListener("click", doRedo);
   window.addEventListener("keydown", (e) => {

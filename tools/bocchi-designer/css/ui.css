@@ -17,7 +17,11 @@
   --ui-ink: #faf4f8;
   --ui-ink-muted: #dccbe6;
   --ui-ink-subtle: #b09cc0;
-  --ui-ink-tertiary: #877298;
+  /* 第三级文字色。原 #877298 对 --ui-s1 只有 3.9:1、对 --ui-bg 4.2:1, 低于
+     WCAG AA 的 4.5:1 —— 而它承担的恰恰是三处最需要看清的东西: 资源路径 (每行的
+     身份标识)、.hint (唯一的交互说明)、以及 .val.is-default (「数值处在默认值」
+     这个最常见状态)。#a08cb0 提到 5.5:1 / 5.9:1。 */
+  --ui-ink-tertiary: #a08cb0;
   /* 信号色: 波奇粉 → 紫 */
   --ui-pink: #fc67a7;
   --ui-pink-hover: #ff8ac2;

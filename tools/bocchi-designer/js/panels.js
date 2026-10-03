@@ -362,7 +362,7 @@ export function build() {
   addPreviewColor(cg, "按钮底色", "--btn-bg");
 
   /* misayos 布局微调 */
-  body = addSection("misayos 布局微调（画布上可直接拖拽）", "layout-misayos", {
+  body = addSection("misayos 布局微调（画布上可直接拖拽）· 仅本地预览，不写入 design.json", "layout-misayos", {
     tool: { label: "全部复位", onClick: () => resetAll() },
     badge: "↑↓←→ 微调 · Shift×10 · 双击滑杆标签复位 · Ctrl+Z 撤销",
   });
@@ -516,7 +516,12 @@ export function build() {
   body.appendChild(copyBtn);
   const exportHint = document.createElement("div");
   exportHint.className = "hint";
-  exportHint.textContent = "生成 pack.mcmeta + assets/minecraft/client/design.json + 全部引用资源（未上传的资源自动用内置默认）。支持 1.21.1~1.21.5+（pack_format 33-9999）。";
+  // 这段清单是「产物里到底有什么」的唯一说明, 所以逐段写实。写不写全, 用户就只能
+  // 靠导出后再打开 zip 去核对; 而漏写的那一段恰好是他刚才花了十分钟调的东西。
+  exportHint.textContent =
+    "实际写入 design.json 的只有六段: textures / svgs / fonts / colors / menu / texts。"
+    + "预览配色与 misayos 布局微调只存在于本页面, 不进产物 —— 调整它们是为了对齐预览, 不是交付内容。"
+    + "包内另有 pack.mcmeta 与全部被引用的资源 (未上传的自动用内置默认)。支持 1.21.1~1.21.5+ (pack_format 33-9999)。";
   body.appendChild(exportHint);
 
   // 滑块建完才知道哪些持久化值被夹过, 此时一次性落盘 (见 ov.flushClamped)

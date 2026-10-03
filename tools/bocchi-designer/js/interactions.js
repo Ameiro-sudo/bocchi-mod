@@ -17,6 +17,20 @@ export const hooks = {};
 
 /* ---------- 舞台切换 ---------- */
 let current = "misayos";
+/** 当前舞台的状态栏基线文案。
+ *  切舞台和取消选中都要写这段文案 —— 此前只有切舞台写, clearSel 写空串,
+ *  于是「选中→Esc」之后状态栏就永久变空, 用户失去「现在看的是哪个舞台/能点什么」
+ *  这条唯一常驻提示。把构造收在这里, 是为了让基线只有一份。 */
+function stageStatus() {
+  const names = {
+    splash: "加载页（点击 TAP TO START）",
+    misayos: "主菜单 misayos",
+    poulsen: "主菜单 poulsen",
+  };
+  const name = currentStage();
+  return "<b>" + names[name] + "</b> · 1:1 预览 · 1280×720 设计分辨率" + (name === "misayos" ? " · 点击元素可选中拖拽" : "");
+}
+
 function showStage(name) {
   current = name;
   selKey = null;
@@ -28,12 +42,7 @@ function showStage(name) {
   $("swSplash").classList.toggle("active", name === "splash");
   $("swMisayos").classList.toggle("active", name === "misayos");
   $("swPoulsen").classList.toggle("active", name === "poulsen");
-  const names = {
-    splash: "加载页（点击 TAP TO START）",
-    misayos: "主菜单 misayos",
-    poulsen: "主菜单 poulsen",
-  };
-  setStatus("<b>" + names[name] + "</b> · 1:1 预览 · 1280×720 设计分辨率" + (name === "misayos" ? " · 点击元素可选中拖拽" : ""));
+  setStatus(stageStatus());
   if (name === "splash") startSplashDemo();
   else { clearInterval(splashTimer); replay(name); } // L6: 离开加载页清理演示定时器
   if (name === "misayos") startAmbient();
@@ -164,7 +173,7 @@ function clearSel() {
   if (!selKey) return;
   selKey = null;
   updateSelBox();
-  setStatus("");
+  setStatus(stageStatus());
 }
 
 $("stageScale").addEventListener("mousedown", e => {

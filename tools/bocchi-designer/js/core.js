@@ -1,4 +1,4 @@
-﻿/* ============================================================================
+/* ============================================================================
  * core.js - 基础工具: 应用状态 / DOM 助手 / toast / 下载 / ZIP 读写 (零依赖) / 节流
  *
  * 本模块不依赖任何其他模块; 所有纯函数可在 Node 下直接单测。
@@ -14,7 +14,11 @@ export const state = {
     "--bg-top": "#07021C", "--bg-bottom": "#492F49",
     "--splash-bg": "#1F1F1F", "--btn-bg": "#353535",
   },
-  openSections: ["layout-misayos", "res-textures", "export"],       // 展开的面板 section id
+  /* 默认展开哪几段。原先是 ["layout-misayos","res-textures","export"]: 把「导出」放在
+   首屏黄金位, 却把 21 行的 texts 收起来 —— 而 texts 是全页最大的可编辑面, 收起后
+   面板看起来像缺了一块。改成 layout(画布拖拽, 头牌功能) + texts(最大编辑面)。
+   只影响新会话: 已存过 localStorage 的用户 openSections 是从磁盘读的, 不受影响。 */
+  openSections: ["layout-misayos", "texts"],  // 展开的面板 section id
   zoom: 0,                // 0=适应窗口 1=100% 2=200%
 };
 

@@ -2010,7 +2010,7 @@
      "text": "↶ 撤销",
      "attrs": {
       "type": null,
-      "disabled": false
+      "disabled": true
      }
     },
     {
@@ -2021,7 +2021,7 @@
      "text": "↷ 重做",
      "attrs": {
       "type": null,
-      "disabled": false
+      "disabled": true
      }
     },
     {
@@ -2264,7 +2264,7 @@
     {
      "path": "1.0.1",
      "tag": "H2",
-     "text": "misayos 布局微调（画布上可直接拖拽）"
+     "text": "misayos 布局微调（画布上可直接拖拽）· 仅本地预览，不写入 design.json"
     },
     {
      "path": "1.0.2",
@@ -2734,7 +2734,7 @@
      "path": "2",
      "tag": "DIV",
      "id": "sec-texts",
-     "class": "sec"
+     "class": "sec open"
     },
     {
      "path": "2.0",
@@ -2760,8 +2760,7 @@
     {
      "path": "2.1",
      "tag": "DIV",
-     "class": "sec-body",
-     "hidden": true
+     "class": "sec-body"
     },
     {
      "path": "2.1.0",
@@ -3276,7 +3275,7 @@
      "path": "3",
      "tag": "DIV",
      "id": "sec-res-textures",
-     "class": "sec open"
+     "class": "sec"
     },
     {
      "path": "3.0",
@@ -3301,7 +3300,8 @@
     {
      "path": "3.1",
      "tag": "DIV",
-     "class": "sec-body"
+     "class": "sec-body",
+     "hidden": true
     },
     {
      "path": "3.1.0",
@@ -4706,7 +4706,7 @@
      "path": "9",
      "tag": "DIV",
      "id": "sec-export",
-     "class": "sec open"
+     "class": "sec"
     },
     {
      "path": "9.0",
@@ -4732,7 +4732,8 @@
     {
      "path": "9.1",
      "tag": "DIV",
-     "class": "sec-body"
+     "class": "sec-body",
+     "hidden": true
     },
     {
      "path": "9.1.0",
@@ -4776,7 +4777,7 @@
      "path": "9.1.2",
      "tag": "DIV",
      "class": "hint",
-     "text": "生成 pack.mcmeta + assets/minecraft/client/design.json + 全部引用资源（未上传的资源自动用内置默认）。支持 1.21.1~1.21.5+（pack_format 33-9999）。"
+     "text": "实际写入 design.json 的只有六段: textures / svgs / fonts / colors / menu / texts。预览配色与 misayos 布局微调只存在于本页面, 不进产物 —— 调整它们是为了对齐预览, "
     }
    ]
   },
