@@ -307,8 +307,9 @@ function addColorRow(body, label, key) {
     S.colors[key] = value;
     text.value = value;
     refreshVinyl();
-    relayout();
-    saveState();
+    // 取色器 input 是连续事件 (拖动时每像素一个), 与文本框同理由走节流
+    scheduleRelayout();
+    scheduleSave();
     scheduleDirty();
   };
   let committedColor = S.colors[key];   // 最近一次入栈的值 (时间窗合并的基准)
@@ -366,8 +367,8 @@ function setTextModel(elId, v, input) {
   state.TEXTS[elId] = v;
   if (document.activeElement !== input) input.value = v;
   applyText(elId, v);
-  relayout();
-  saveState();
+  scheduleRelayout();
+  scheduleSave();
   scheduleDirty();
 }
 /** 网格内的分组小标题 (占满一行, 把不同界面的字段隔开) */
@@ -406,8 +407,12 @@ function addTextRow(body, label, elId) {
   input.addEventListener("input", () => {
     state.TEXTS[elId] = input.value;
     applyText(elId, input.value);
-    relayout();
-    saveState();
+    // 这里此前是裸 relayout() + 裸 saveState(): 每敲一键就同步重排三个舞台 (含字体
+    // 度量) 并同步写一遍 localStorage。文字越长的字段卡得越明显。
+    // scheduleRelayout 是 rAF 节流 (一帧一次), scheduleSave 是 250ms 防抖; 关页前
+    // design.js 的 beforeunload 会 flush, 所以不丢数据。
+    scheduleRelayout();
+    scheduleSave();
     scheduleDirty();
   });
   row.append(dot, lab, input);
