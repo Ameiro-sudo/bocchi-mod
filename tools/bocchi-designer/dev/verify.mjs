@@ -10,7 +10,11 @@
  * EXCLUDE 表: 定时器/常驻动画驱动的属性天然不稳定, 不参与对比。
  *
  * 用法:
- *   node dev/verify.mjs --url http://127.0.0.1:8833/ --out dev/dumps/base.json [--shots dev/shots]
+ *   node dev/verify.mjs --out dev/dumps/base.json [--shots dev/shots]
+ *   node dev/verify.mjs --url http://127.0.0.1:8833/   # 复用已在跑的服务
+ *
+ * 默认自起一个临时端口的静态服务指向仓库根, 无需先手工 npm run serve;
+ * 传 --url 则改用外部地址 (自起服务被跳过)。
  *
  * 依赖 (均为外部环境, 不写进 package.json —— 本项目刻意保持零 npm 依赖):
  *   - puppeteer-core: 按 PUPPETEER_REQUIRE -> PUPPETEER_CORE_PATH -> 逐级向上查找
@@ -23,6 +27,7 @@
  * ==========================================================================*/
 import { createRequire } from "node:module";
 import fs from "node:fs";
+import http from "node:http";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -34,9 +39,65 @@ function arg(name, def) {
   const i = process.argv.indexOf("--" + name);
   return i >= 0 ? process.argv[i + 1] : def;
 }
-const URL_BASE = arg("url", "http://127.0.0.1:8833/");
+/* null = 未指定, 主流程会自起静态服务 */
+let URL_BASE = arg("url", null);
 const OUT = arg("out", path.join(ROOT, "dev", "dumps", "baseline.json"));
 const SHOTS = arg("shots", null);
+
+/* 快照结构版本: 变更采集内容时 +1。compare 会拿它判「基线是不是同一代产物」,
+   避免拿旧基线比新快照得到一堆无意义的键差异。 */
+const SCHEMA_VERSION = 3;
+
+/* ---------------------------------------------------------------------------
+ * 零依赖静态服务: 让 verify.mjs 成为单命令门禁 (否则要先手工 npm run serve,
+ * 且起错目录/端口被占都会变成「环境问题」而非「代码回归」)。
+ * -------------------------------------------------------------------------*/
+const MIME = {
+  ".html": "text/html; charset=utf-8",
+  ".js": "text/javascript; charset=utf-8",
+  ".mjs": "text/javascript; charset=utf-8",
+  ".css": "text/css; charset=utf-8",
+  ".json": "application/json; charset=utf-8",
+  ".svg": "image/svg+xml",
+  ".png": "image/png",
+  ".jpg": "image/jpeg",
+  ".jpeg": "image/jpeg",
+  ".gif": "image/gif",
+  ".webp": "image/webp",
+  ".woff": "font/woff",
+  ".woff2": "font/woff2",
+  ".ttf": "font/ttf",
+  ".otf": "font/otf",
+};
+
+function startStaticServer(root) {
+  return new Promise((resolve, reject) => {
+    const server = http.createServer((req, res) => {
+      let pathname;
+      try {
+        pathname = decodeURIComponent(new URL(req.url, "http://127.0.0.1").pathname);
+      } catch {
+        res.writeHead(400); return res.end("bad url");
+      }
+      if (pathname.endsWith("/")) pathname += "index.html";
+      const file = path.join(root, path.normalize(pathname));
+      // 归一化后必须仍落在 root 内, 否则 403 —— 防目录穿越
+      if (file !== root && !file.startsWith(root + path.sep)) {
+        res.writeHead(403); return res.end("forbidden");
+      }
+      fs.readFile(file, (err, buf) => {
+        if (err) { res.writeHead(404, { "content-type": "text/plain; charset=utf-8" }); return res.end("not found: " + pathname); }
+        res.writeHead(200, {
+          "content-type": MIME[path.extname(file).toLowerCase()] || "application/octet-stream",
+          "cache-control": "no-store",
+        });
+        res.end(buf);
+      });
+    });
+    server.on("error", reject);
+    server.listen(0, "127.0.0.1", () => resolve({ server, url: `http://127.0.0.1:${server.address().port}/` }));
+  });
+}
 
 /* ---------------------------------------------------------------------------
  * puppeteer-core 解析
@@ -284,10 +345,19 @@ function formatViewport(vp) {
 
 /* 排除表: [stage, elementId, 属性名正则] */
 /* 属性过滤用字符串形式的正则 (page.evaluate 序列化不保留 RegExp 对象) */
+/* 每条排除都必须写明理由 —— 排除表本身就是「已知不稳定」的契约, 无理由的排除
+   等于把真回归藏起来。EXCLUDE_VERSION 会写进快照, 改动本表时顺手 +1,
+   compare 见到基线与新快照版本不同会直接判不兼容, 避免拿旧基线误判等价。 */
+const EXCLUDE_VERSION = 2;
 const EXCLUDE = [
+  // 进度条宽度由 splash.js 的常驻 rAF 定时器推进, 与采样时刻强相关。
   ["splash", "progressFill", "width"],
+  // loadingIcon 的 backgroundPosition/backgroundImage 同样由该定时器改写。
   ["splash", "loadingIcon", "backgroundPosition|backgroundImage"],
+  // tapText 在入场后 1s 淡出 (main.js 点击淡出链路), 采样落在淡出窗口内。
   ["splash", "tapText", "opacity"],
+  // 选中态 transform 由拖拽/键盘微调写入, transform 是旋转矩阵, 序列化后
+  // 浮点尾数不可重现; 其余几何属性仍在采集面内。
   ["misayos", "mTachie", "^transform$"],
   ["misayos", "mRecord", "^transform$"],
 ];
@@ -334,7 +404,13 @@ function dumpStage(stageName, EXCLUDE) {
   for (const el of scope.querySelectorAll("[id]")) {
     if (el.id === "stage") continue;
     const rec = { rect: geom(el), styles: {}, attrs: {} };
-    for (const k of ["left", "top", "width", "height"]) rec.rect[k] = Math.round(rec.rect[k] * 1000) / 1000;
+    /* 排除表同时作用于 styles 与 rect: 定时器驱动的宽度改的是行内 width,
+       只排 styles.width 而留着 rect.width 会让同一份代码两次采集就不等价
+       (实测 progressFill.rect.width 在 442~452 间抖动)。 */
+    for (const k of ["left", "top", "width", "height"]) {
+      if (excluded(el.id, k)) delete rec.rect[k];
+      else rec.rect[k] = Math.round(rec.rect[k] * 1000) / 1000;
+    }
     const tr = el.style.transform;
     if (tr && !excluded(el.id, "transform")) rec.attrs.inlineTransform = tr;
     const cs = getComputedStyle(el);
@@ -342,8 +418,13 @@ function dumpStage(stageName, EXCLUDE) {
       if (excluded(el.id, p)) continue;
       rec.styles[p] = cs[p];
     }
-    if (el.dataset.baseRot != null) rec.attrs.baseRot = el.dataset.baseRot;
-    if (el.tagName === "IMG") { rec.attrs.naturalW = el.naturalWidth; rec.attrs.naturalH = el.naturalHeight; }
+    /* baseRot / naturalW / naturalH 同样走排除表: baseRot 由入场动画写入,
+       图片固有尺寸依赖解码时机, 都可能造成采样时刻相关的噪声。 */
+    if (el.dataset.baseRot != null && !excluded(el.id, "baseRot")) rec.attrs.baseRot = el.dataset.baseRot;
+    if (el.tagName === "IMG" && !excluded(el.id, "naturalW")) {
+      rec.attrs.naturalW = el.naturalWidth;
+      rec.attrs.naturalH = el.naturalHeight;
+    }
     out.elements[el.id] = rec;
   }
   out.childCounts = {};
@@ -356,15 +437,89 @@ function dumpStage(stageName, EXCLUDE) {
   return out;
 }
 
+/* 工具外壳 (header + #controls 面板) 的采集。
+   此前采集面只有三个舞台容器, 于是 panels.js / index.html / css/ui.css 怎么改门禁
+   都是绿的 —— 只量三分之一的尺子比没有尺子更危险, 因为它给的是假保证。
+   这里把外壳按「结构路径」摊平成有序数组: 路径由子节点下标组成 (0.2.1), 不含
+   class 名, 所以改类名不会炸快照; 但增删控件、改滑杆 min/max、改分区标题或折叠
+   状态一定会被抓出来。排除表用 stage="chrome" 命名空间。 */
+function dumpChrome(EXCLUDE) {
+  const excluded = (id, prop) =>
+    EXCLUDE.some(([s, e, src]) => s === "chrome" && e === id && new RegExp(src).test(prop));
+  const round = (n) => Math.round(n * 1000) / 1000;
+  const norm = (s) => (s || "").replace(/\s+/g, " ").trim();
+
+  function scan(root) {
+    const nodes = [];
+    const r = root.getBoundingClientRect();
+    const visit = (el, path) => {
+      const key = el.id || path;
+      const sig = { path, tag: el.tagName };
+      if (el.id && !excluded(key, "id")) sig.id = el.id;
+      const cls = el.getAttribute("class");
+      if (cls && !excluded(key, "class")) sig.class = cls;
+      /* 只收元素自身的直接文本节点, 不含后代 —— 后代会在各自条目里各记一次 */
+      let text = "";
+      for (const n of el.childNodes) if (n.nodeType === 3) text += n.nodeValue;
+      text = norm(text);
+      /* jsonPreview 的完整内容已由 stages.*.designJSON 逐项比过, 这里只留长度
+         指纹, 免得同一份 JSON 在快照里出现两遍并撑爆 diff 输出 */
+      if (el.id === "jsonPreview") text = "<designJSON len=" + text.length + ">";
+      if (text && !excluded(key, "text")) sig.text = text.slice(0, 120);
+      if (el.tagName === "INPUT" || el.tagName === "SELECT" || el.tagName === "TEXTAREA") {
+        const attrs = {};
+        for (const k of ["type", "min", "max", "step", "placeholder", "accept"]) {
+          const v = el.getAttribute(k);
+          if (v !== null && !excluded(key, k)) attrs[k] = v;
+        }
+        attrs.value = el.value;
+        sig.attrs = attrs;
+      }
+      if (el.tagName === "BUTTON") {
+        sig.attrs = { type: el.getAttribute("type"), disabled: el.disabled };
+        if (el.classList.contains("on") || el.classList.contains("active")) sig.state = "on";
+      }
+      if (getComputedStyle(el).display === "none") sig.hidden = true;
+      nodes.push(sig);
+      for (let i = 0; i < el.children.length; i++) visit(el.children[i], path + "." + i);
+    };
+    for (let i = 0; i < root.children.length; i++) visit(root.children[i], String(i));
+    return { rect: { x: round(r.x), y: round(r.y), w: round(r.width), h: round(r.height) }, nodes };
+  }
+
+  const out = {};
+  const header = document.querySelector("header");
+  const controls = document.getElementById("controls");
+  if (header) out.header = scan(header);
+  if (controls) out.controls = scan(controls);
+  const sel = document.getElementById("selBox");
+  if (sel) {
+    const r = sel.getBoundingClientRect();
+    out.selBox = {
+      display: sel.style.display || getComputedStyle(sel).display,
+      handles: [...sel.querySelectorAll("[data-h]")].map((h) => h.dataset.h).join(","),
+      rect: { w: round(r.width), h: round(r.height) },
+    };
+  }
+  return out;
+}
+
 (async () => {
   console.error("[verify] puppeteer-core 来源:", puppeteerAttempts.filter((t) => t.includes("命中")).join(" | ") || "(见失败清单)");
   console.error("[verify] 浏览器:", browserExe.path, "(" + browserExe.source + ")");
-  const browser = await puppeteer.launch({
-    executablePath: browserExe.path,
-    headless: true,
-    args: ["--no-first-run", "--disable-sync", "--disable-gpu", "--font-render-hinting=none"],
-  });
+  let srv = null;
+  let browser = null;
   try {
+    if (!URL_BASE) {
+      srv = await startStaticServer(ROOT);
+      URL_BASE = srv.url;
+      console.error("[verify] 自起静态服务:", srv.url, "(临时端口, 等效 npm run serve)");
+    }
+    browser = await puppeteer.launch({
+      executablePath: browserExe.path,
+      headless: true,
+      args: ["--no-first-run", "--disable-sync", "--disable-gpu", "--font-render-hinting=none"],
+    });
     const page = await browser.newPage();
     await page.setViewport({ width: 1600, height: 900, deviceScaleFactor: 1 });
 
@@ -376,7 +531,15 @@ function dumpStage(stageName, EXCLUDE) {
     await page.evaluate(() => document.fonts.ready);
     await new Promise(r => setTimeout(r, 600)); // boot 尾部的 fonts.ready 重排
 
-    const dump = { url: URL_BASE, viewport: formatViewport(page.viewport()), stages: {}, console: [] };
+    /* 只记 pathname: 端口是临时分配的, 写进快照会让每次采集都「不等价」 */
+    const dump = {
+      schemaVersion: SCHEMA_VERSION,
+      excludeVersion: EXCLUDE_VERSION,
+      page: new URL(URL_BASE).pathname,
+      viewport: formatViewport(page.viewport()),
+      stages: {},
+      console: [],
+    };
     for (const s of STAGES) {
       await page.evaluate((tab) => document.getElementById(tab).click(), s.tab);
       await new Promise(r => setTimeout(r, 2400)); // 入场动画 (700ms + 40ms 级联) 完全落定
@@ -387,9 +550,13 @@ function dumpStage(stageName, EXCLUDE) {
       }
     }
 
-    /* 交互烟测: 选中立绘 -> 方向键微调 -> Esc 取消; 导出按钮存在 */
+    /* 工具外壳在烟测之前采: 烟测会改选中态与滑杆值, 采在之后就掺进了交互噪声。
+       先切回默认舞台再采, 这样外壳快照不依赖 STAGES 数组的末项是哪一个。 */
     await page.evaluate(() => document.getElementById("swMisayos").click());
     await new Promise(r => setTimeout(r, 900));
+    dump.chrome = await page.evaluate(dumpChrome, EXCLUDE);
+
+    /* 交互烟测: 选中立绘 -> 方向键微调 -> Esc 取消; 导出按钮存在 */
     const smoke = await page.evaluate(() => {
       const res = {};
       const tachie = document.getElementById("mTachie");
@@ -440,7 +607,8 @@ function dumpStage(stageName, EXCLUDE) {
     console.log("smoke:", JSON.stringify(dump.smoke));
     console.log("sliderProbe:", JSON.stringify(sliderProbe));
   } finally {
-    await browser.close();
+    if (browser) await browser.close();
+    if (srv) srv.server.close();
   }
 })().catch(e => { console.error(e); process.exit(1); });
 

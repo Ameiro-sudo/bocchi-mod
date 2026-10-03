@@ -1,12 +1,17 @@
-﻿{
+{
   "name": "bocchi-designer",
   "private": true,
   "type": "module",
-  "description": "Bocchi Client Design Editor - 零依赖 Web 工具 (无 npm 依赖, package.json 仅承载脚本)",
+  "description": "Bocchi Client Design Editor - 运行期零依赖 Web 工具 (devDependencies 只服务于浏览器快照门禁, 不会被页面加载)",
   "scripts": {
     "test": "node --test",
     "check-layout": "python sync/check-layout.py",
-    "serve": "python -m http.server 8833 --bind 127.0.0.1"
+    "serve": "python -m http.server 8833 --bind 127.0.0.1",
+    "verify": "node dev/verify.mjs --out dev/dumps/head.json && node dev/compare.mjs dev/dumps/baseline.json dev/dumps/head.json",
+    "verify:ci": "node dev/verify.mjs --out dev/dumps/head.json && node dev/compare.mjs dev/dumps/baseline.json dev/dumps/head.json --struct",
+    "verify:baseline": "node dev/verify.mjs --out dev/dumps/baseline.json"
+  },
+  "devDependencies": {
+    "puppeteer-core": "^24.9.0"
   }
 }
-

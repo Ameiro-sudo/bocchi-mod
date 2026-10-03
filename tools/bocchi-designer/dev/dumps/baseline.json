@@ -1,0 +1,4802 @@
+{
+ "schemaVersion": 3,
+ "excludeVersion": 2,
+ "page": "/",
+ "viewport": "1600x900@1",
+ "stages": {
+  "misayos": {
+   "elements": {
+    "mBlock1": {
+     "rect": {
+      "left": 121.6,
+      "top": 288,
+      "width": 290,
+      "height": 290
+     },
+     "styles": {
+      "fontSize": "16px",
+      "letterSpacing": "normal",
+      "opacity": "1",
+      "color": "rgb(250, 244, 248)",
+      "backgroundColor": "rgb(252, 103, 167)",
+      "backgroundImage": "none",
+      "borderTopWidth": "0px",
+      "lineHeight": "normal",
+      "textAlign": "start",
+      "display": "block"
+     },
+     "attrs": {}
+    },
+    "mStroke1": {
+     "rect": {
+      "left": 121.6,
+      "top": 287,
+      "width": 290,
+      "height": 1
+     },
+     "styles": {
+      "fontSize": "16px",
+      "letterSpacing": "normal",
+      "opacity": "1",
+      "color": "rgb(250, 244, 248)",
+      "backgroundColor": "rgb(251, 133, 174)",
+      "backgroundImage": "none",
+      "borderTopWidth": "0px",
+      "lineHeight": "normal",
+      "textAlign": "start",
+      "display": "block"
+     },
+     "attrs": {}
+    },
+    "mBlock3": {
+     "rect": {
+      "left": 336.8,
+      "top": 70,
+      "width": 533.333,
+      "height": 533.333
+     },
+     "styles": {
+      "fontSize": "16px",
+      "letterSpacing": "normal",
+      "opacity": "1",
+      "color": "rgb(250, 244, 248)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "borderTopWidth": "0px",
+      "lineHeight": "normal",
+      "textAlign": "start",
+      "display": "block"
+     },
+     "attrs": {}
+    },
+    "mWatermark": {
+     "rect": {
+      "left": 336.8,
+      "top": 70,
+      "width": 533.333,
+      "height": 533.333
+     },
+     "styles": {
+      "fontSize": "16px",
+      "letterSpacing": "normal",
+      "opacity": "0.07",
+      "color": "rgb(250, 244, 248)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "borderTopWidth": "0px",
+      "lineHeight": "normal",
+      "textAlign": "start",
+      "display": "block"
+     },
+     "attrs": {
+      "naturalW": 2247,
+      "naturalH": 2170
+     }
+    },
+    "mDash1": {
+     "rect": {
+      "left": 150.6,
+      "top": 28.8,
+      "width": 179.8,
+      "height": 1
+     },
+     "styles": {
+      "fontSize": "16px",
+      "letterSpacing": "normal",
+      "opacity": "1",
+      "color": "rgb(250, 244, 248)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "borderTopWidth": "1px",
+      "lineHeight": "normal",
+      "textAlign": "start",
+      "display": "block"
+     },
+     "attrs": {}
+    },
+    "mDash2": {
+     "rect": {
+      "left": 0,
+      "top": 292.8,
+      "width": 339.25,
+      "height": 1
+     },
+     "styles": {
+      "fontSize": "16px",
+      "letterSpacing": "normal",
+      "opacity": "1",
+      "color": "rgb(250, 244, 248)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "borderTopWidth": "1px",
+      "lineHeight": "normal",
+      "textAlign": "start",
+      "display": "block"
+     },
+     "attrs": {}
+    },
+    "mRectW": {
+     "rect": {
+      "left": 78.1,
+      "top": 283,
+      "width": 174,
+      "height": 5
+     },
+     "styles": {
+      "fontSize": "16px",
+      "letterSpacing": "normal",
+      "opacity": "1",
+      "color": "rgb(250, 244, 248)",
+      "backgroundColor": "rgb(255, 255, 255)",
+      "backgroundImage": "none",
+      "borderTopWidth": "0px",
+      "lineHeight": "normal",
+      "textAlign": "start",
+      "display": "block"
+     },
+     "attrs": {}
+    },
+    "mInfo": {
+     "rect": {
+      "left": 165.1,
+      "top": 13.493,
+      "width": 70,
+      "height": 12
+     },
+     "styles": {
+      "fontSize": "3.25px",
+      "letterSpacing": "normal",
+      "opacity": "1",
+      "color": "rgb(255, 255, 255)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "borderTopWidth": "0px",
+      "lineHeight": "4.055px",
+      "textAlign": "start",
+      "display": "block"
+     },
+     "attrs": {}
+    },
+    "mPhobia": {
+     "rect": {
+      "left": 133.2,
+      "top": 289.18,
+      "width": 66,
+      "height": 4
+     },
+     "styles": {
+      "fontSize": "4.25px",
+      "letterSpacing": "2.4px",
+      "opacity": "1",
+      "color": "rgb(255, 255, 255)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "borderTopWidth": "0px",
+      "lineHeight": "4.25px",
+      "textAlign": "start",
+      "display": "block"
+     },
+     "attrs": {}
+    },
+    "mBocchi": {
+     "rect": {
+      "left": 99.499,
+      "top": 312.15,
+      "width": 95,
+      "height": 27
+     },
+     "styles": {
+      "fontSize": "26.5px",
+      "letterSpacing": "-1.5px",
+      "opacity": "1",
+      "color": "rgb(255, 255, 255)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "borderTopWidth": "0px",
+      "lineHeight": "26.5px",
+      "textAlign": "start",
+      "display": "block"
+     },
+     "attrs": {}
+    },
+    "mRock": {
+     "rect": {
+      "left": 113.12,
+      "top": 342.06,
+      "width": 133,
+      "height": 27
+     },
+     "styles": {
+      "fontSize": "26.5px",
+      "letterSpacing": "-1.5px",
+      "opacity": "1",
+      "color": "rgb(255, 255, 255)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "borderTopWidth": "0px",
+      "lineHeight": "26.5px",
+      "textAlign": "start",
+      "display": "block"
+     },
+     "attrs": {}
+    },
+    "mBoxGotoh": {
+     "rect": {
+      "left": 196.635,
+      "top": 367.736,
+      "width": 43.195,
+      "height": 8.554
+     },
+     "styles": {
+      "fontSize": "6.5px",
+      "letterSpacing": "normal",
+      "opacity": "1",
+      "color": "rgb(255, 255, 255)",
+      "backgroundColor": "rgb(0, 0, 0)",
+      "backgroundImage": "none",
+      "borderTopWidth": "0px",
+      "lineHeight": "8.554px",
+      "textAlign": "center",
+      "display": "block"
+     },
+     "attrs": {}
+    },
+    "mBoxGirl": {
+     "rect": {
+      "left": 218.871,
+      "top": 329.806,
+      "width": 27.505,
+      "height": 8.037
+     },
+     "styles": {
+      "fontSize": "4.75px",
+      "letterSpacing": "normal",
+      "opacity": "1",
+      "color": "rgb(255, 255, 255)",
+      "backgroundColor": "rgb(0, 0, 0)",
+      "backgroundImage": "none",
+      "borderTopWidth": "0px",
+      "lineHeight": "8.037px",
+      "textAlign": "center",
+      "display": "block"
+     },
+     "attrs": {}
+    },
+    "mTachie": {
+     "rect": {
+      "left": 390.133,
+      "top": 36,
+      "width": 708.271,
+      "height": 684
+     },
+     "styles": {
+      "fontSize": "16px",
+      "letterSpacing": "normal",
+      "opacity": "1",
+      "color": "rgb(250, 244, 248)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "borderTopWidth": "0px",
+      "lineHeight": "normal",
+      "textAlign": "start",
+      "display": "block"
+     },
+     "attrs": {
+      "baseRot": "0"
+     }
+    },
+    "mTachieImg": {
+     "rect": {
+      "left": 390,
+      "top": 36,
+      "width": 708,
+      "height": 684
+     },
+     "styles": {
+      "fontSize": "16px",
+      "letterSpacing": "normal",
+      "opacity": "1",
+      "color": "rgb(250, 244, 248)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "borderTopWidth": "0px",
+      "lineHeight": "normal",
+      "textAlign": "start",
+      "display": "inline"
+     },
+     "attrs": {
+      "naturalW": 2247,
+      "naturalH": 2170
+     }
+    },
+    "mRecord": {
+     "rect": {
+      "left": 773,
+      "top": 134.6,
+      "width": 458,
+      "height": 458
+     },
+     "styles": {
+      "fontSize": "16px",
+      "letterSpacing": "normal",
+      "opacity": "1",
+      "color": "rgb(250, 244, 248)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "borderTopWidth": "0px",
+      "lineHeight": "normal",
+      "textAlign": "start",
+      "display": "block"
+     },
+     "attrs": {}
+    },
+    "mRecordCover": {
+     "rect": {
+      "left": 1002,
+      "top": 364,
+      "width": 473.493,
+      "height": 457.267
+     },
+     "styles": {
+      "fontSize": "16px",
+      "letterSpacing": "normal",
+      "opacity": "1",
+      "color": "rgb(250, 244, 248)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "borderTopWidth": "0px",
+      "lineHeight": "normal",
+      "textAlign": "start",
+      "display": "block"
+     },
+     "attrs": {
+      "inlineTransform": "translate(calc(-50% + 88.7799px), calc(-50% - 13.818px))",
+      "naturalW": 2247,
+      "naturalH": 2170
+     }
+    },
+    "mLogo": {
+     "rect": {
+      "left": 112.896,
+      "top": 72,
+      "width": 60,
+      "height": 19.02
+     },
+     "styles": {
+      "fontSize": "16px",
+      "letterSpacing": "normal",
+      "opacity": "1",
+      "color": "rgb(250, 244, 248)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "borderTopWidth": "0px",
+      "lineHeight": "normal",
+      "textAlign": "start",
+      "display": "block"
+     },
+     "attrs": {}
+    },
+    "mPanel": {
+     "rect": {
+      "left": 1022.94,
+      "top": 133.245,
+      "width": 257.061,
+      "height": 453.509
+     },
+     "styles": {
+      "fontSize": "16px",
+      "letterSpacing": "normal",
+      "opacity": "1",
+      "color": "rgb(250, 244, 248)",
+      "backgroundColor": "rgb(245, 245, 245)",
+      "backgroundImage": "none",
+      "borderTopWidth": "0px",
+      "lineHeight": "normal",
+      "textAlign": "start",
+      "display": "block"
+     },
+     "attrs": {}
+    },
+    "pTitle": {
+     "rect": {
+      "left": 20.38,
+      "top": 14.55,
+      "width": 41,
+      "height": 11
+     },
+     "styles": {
+      "fontSize": "10.5px",
+      "letterSpacing": "-0.1px",
+      "opacity": "1",
+      "color": "rgb(53, 53, 53)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "borderTopWidth": "0px",
+      "lineHeight": "10.5px",
+      "textAlign": "start",
+      "display": "block"
+     },
+     "attrs": {}
+    },
+    "pVer": {
+     "rect": {
+      "left": 66.139,
+      "top": 19.455,
+      "width": 13,
+      "height": 9
+     },
+     "styles": {
+      "fontSize": "5px",
+      "letterSpacing": "normal",
+      "opacity": "1",
+      "color": "rgb(53, 53, 53)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "borderTopWidth": "1px",
+      "lineHeight": "5px",
+      "textAlign": "start",
+      "display": "block"
+     },
+     "attrs": {}
+    },
+    "pLine": {
+     "rect": {
+      "left": 17.88,
+      "top": 25.24,
+      "width": 45.76,
+      "height": 1
+     },
+     "styles": {
+      "fontSize": "16px",
+      "letterSpacing": "normal",
+      "opacity": "1",
+      "color": "rgb(250, 244, 248)",
+      "backgroundColor": "rgba(53, 53, 53, 0.4)",
+      "backgroundImage": "none",
+      "borderTopWidth": "0px",
+      "lineHeight": "normal",
+      "textAlign": "start",
+      "display": "block"
+     },
+     "attrs": {}
+    },
+    "pBranch": {
+     "rect": {
+      "left": 20.38,
+      "top": 30.205,
+      "width": 25,
+      "height": 6
+     },
+     "styles": {
+      "fontSize": "5.5px",
+      "letterSpacing": "-0.1px",
+      "opacity": "1",
+      "color": "rgb(53, 53, 53)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "borderTopWidth": "0px",
+      "lineHeight": "5.5px",
+      "textAlign": "start",
+      "display": "block"
+     },
+     "attrs": {}
+    },
+    "pBtnS": {
+     "rect": {
+      "left": 33.824,
+      "top": 108.236,
+      "width": 202.943,
+      "height": 40.589
+     },
+     "styles": {
+      "fontSize": "12.853px",
+      "letterSpacing": "normal",
+      "opacity": "1",
+      "color": "rgb(255, 255, 255)",
+      "backgroundColor": "rgb(53, 53, 53)",
+      "backgroundImage": "none",
+      "borderTopWidth": "0px",
+      "lineHeight": "normal",
+      "textAlign": "start",
+      "display": "flex"
+     },
+     "attrs": {}
+    },
+    "pBtnM": {
+     "rect": {
+      "left": 33.824,
+      "top": 163.707,
+      "width": 202.943,
+      "height": 40.589
+     },
+     "styles": {
+      "fontSize": "12.853px",
+      "letterSpacing": "normal",
+      "opacity": "1",
+      "color": "rgb(255, 255, 255)",
+      "backgroundColor": "rgb(53, 53, 53)",
+      "backgroundImage": "none",
+      "borderTopWidth": "0px",
+      "lineHeight": "normal",
+      "textAlign": "start",
+      "display": "flex"
+     },
+     "attrs": {}
+    },
+    "pBtnO": {
+     "rect": {
+      "left": 33.824,
+      "top": 219.178,
+      "width": 116.354,
+      "height": 40.589
+     },
+     "styles": {
+      "fontSize": "12.853px",
+      "letterSpacing": "normal",
+      "opacity": "1",
+      "color": "rgb(255, 255, 255)",
+      "backgroundColor": "rgb(53, 53, 53)",
+      "backgroundImage": "none",
+      "borderTopWidth": "0px",
+      "lineHeight": "normal",
+      "textAlign": "start",
+      "display": "flex"
+     },
+     "attrs": {}
+    },
+    "pBtnLang": {
+     "rect": {
+      "left": 152.883,
+      "top": 219.178,
+      "width": 40.589,
+      "height": 40.589
+     },
+     "styles": {
+      "fontSize": "16px",
+      "letterSpacing": "normal",
+      "opacity": "1",
+      "color": "rgb(250, 244, 248)",
+      "backgroundColor": "rgb(53, 53, 53)",
+      "backgroundImage": "none",
+      "borderTopWidth": "0px",
+      "lineHeight": "normal",
+      "textAlign": "start",
+      "display": "flex"
+     },
+     "attrs": {}
+    },
+    "pBtnQuit": {
+     "rect": {
+      "left": 196.178,
+      "top": 219.178,
+      "width": 40.589,
+      "height": 40.589
+     },
+     "styles": {
+      "fontSize": "16px",
+      "letterSpacing": "normal",
+      "opacity": "1",
+      "color": "rgb(250, 244, 248)",
+      "backgroundColor": "rgb(53, 53, 53)",
+      "backgroundImage": "none",
+      "borderTopWidth": "0px",
+      "lineHeight": "normal",
+      "textAlign": "start",
+      "display": "flex"
+     },
+     "attrs": {}
+    },
+    "pBtnTheme": {
+     "rect": {
+      "left": 33.824,
+      "top": 377.744,
+      "width": 202.943,
+      "height": 40.589
+     },
+     "styles": {
+      "fontSize": "12.853px",
+      "letterSpacing": "normal",
+      "opacity": "1",
+      "color": "rgb(255, 255, 255)",
+      "backgroundColor": "rgb(53, 53, 53)",
+      "backgroundImage": "none",
+      "borderTopWidth": "0px",
+      "lineHeight": "normal",
+      "textAlign": "start",
+      "display": "flex"
+     },
+     "attrs": {}
+    },
+    "pFooter": {
+     "rect": {
+      "left": 8,
+      "top": 385.483,
+      "width": 241.061,
+      "height": 1
+     },
+     "styles": {
+      "fontSize": "16px",
+      "letterSpacing": "normal",
+      "opacity": "1",
+      "color": "rgb(250, 244, 248)",
+      "backgroundColor": "rgba(53, 53, 53, 0.4)",
+      "backgroundImage": "none",
+      "borderTopWidth": "0px",
+      "lineHeight": "normal",
+      "textAlign": "start",
+      "display": "block"
+     },
+     "attrs": {}
+    },
+    "pCopy1": {
+     "rect": {
+      "left": 109.588,
+      "top": 439.199,
+      "width": 43,
+      "height": 4
+     },
+     "styles": {
+      "fontSize": "3.5px",
+      "letterSpacing": "normal",
+      "opacity": "1",
+      "color": "rgb(53, 53, 53)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "borderTopWidth": "0px",
+      "lineHeight": "3.5px",
+      "textAlign": "center",
+      "display": "block"
+     },
+     "attrs": {}
+    },
+    "pCopy2": {
+     "rect": {
+      "left": 113.705,
+      "top": 444.989,
+      "width": 35,
+      "height": 4
+     },
+     "styles": {
+      "fontSize": "3.5px",
+      "letterSpacing": "normal",
+      "opacity": "1",
+      "color": "rgb(53, 53, 53)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "borderTopWidth": "0px",
+      "lineHeight": "3.5px",
+      "textAlign": "center",
+      "display": "block"
+     },
+     "attrs": {}
+    },
+    "mDim": {
+     "rect": {
+      "left": 0,
+      "top": 0,
+      "width": 1280,
+      "height": 720
+     },
+     "styles": {
+      "fontSize": "16px",
+      "letterSpacing": "normal",
+      "opacity": "0",
+      "color": "rgb(250, 244, 248)",
+      "backgroundColor": "rgba(0, 0, 0, 0.49)",
+      "backgroundImage": "none",
+      "borderTopWidth": "0px",
+      "lineHeight": "normal",
+      "textAlign": "start",
+      "display": "block"
+     },
+     "attrs": {}
+    }
+   },
+   "childCounts": {
+    "mBlock1": 0,
+    "mStroke1": 0,
+    "mBlock3": 2,
+    "mWatermark": 0,
+    "mDash1": 0,
+    "mDash2": 0,
+    "mRectW": 0,
+    "mInfo": 2,
+    "mPhobia": 0,
+    "mBocchi": 0,
+    "mRock": 0,
+    "mBoxGotoh": 0,
+    "mBoxGirl": 0,
+    "mTachie": 1,
+    "mTachieImg": 0,
+    "mRecord": 8,
+    "mRecordCover": 0,
+    "mLogo": 1,
+    "mPanel": 14,
+    "pTitle": 0,
+    "pVer": 0,
+    "pLine": 0,
+    "pBranch": 0,
+    "pBtnS": 2,
+    "pBtnM": 2,
+    "pBtnO": 2,
+    "pBtnLang": 1,
+    "pBtnQuit": 1,
+    "pBtnTheme": 2,
+    "pFooter": 0,
+    "pCopy1": 0,
+    "pCopy2": 0,
+    "mDim": 0
+   },
+   "designJSON": {
+    "_readme": "bocchi 设计模板 (Design Template). 复制本文件到材质包 assets/minecraft/client/design.json 即可替换整个设计. 想换哪项就改哪项, 其余自动回退到 mod 内置默认. 所有以 _ 开头的键是注释/说明, 加载时会忽略. 路径格式: namespace:path, 省略命名空间则默认 minecraft. 颜色格式: #AARRGGBB 或 #RRGGBB.",
+    "textures": {
+     "_comment": "位图资源: 立绘/Logo/加载图",
+     "bocchi": "client/textures/bocchi.png",
+     "gotoh": "client/textures/gotoh.png",
+     "gotoh_image_1": "client/textures/gotoh_image_1.png",
+     "gotoh_image_2": "client/textures/gotoh_image_2.png",
+     "bocchi_loading": "client/textures/bocchi_loading.png",
+     "logo": "client/textures/logo.png"
+    },
+    "svgs": {
+     "_comment": "主菜单按钮图标 (SVG), 与按钮 icon 参数对应: lang/multi/option/quit/single/theme",
+     "single": "client/svgs/single.svg",
+     "multi": "client/svgs/multi.svg",
+     "option": "client/svgs/option.svg",
+     "lang": "client/svgs/lang.svg",
+     "quit": "client/svgs/quit.svg",
+     "theme": "client/svgs/theme.svg"
+    },
+    "fonts": {
+     "_comment": "Skia 字体. 键 = FontSet 中的字体名 (区分大小写), 值 = ttf/otf 文件路径. 换同名字体直接换文件, 换路径改这里.",
+     "Radikal-Black": "client/fonts/radikal-black.ttf",
+     "Radikal-Regular": "client/fonts/radikal-regular.ttf",
+     "meiryo-bold": "client/fonts/meiryo-bold.ttf",
+     "SourceHanSansSC-Light": "client/fonts/sourcehansanssc-light.ttf",
+     "SourceHanSansSC-Regular": "client/fonts/sourcehansanssc-regular.ttf",
+     "SourceHanSansSC-Heavy": "client/fonts/sourcehansanssc-heavy.ttf",
+     "SourceHanSansSC-Normal": "client/fonts/sourcehansanssc-normal.ttf",
+     "SourceHanSansSC-Bold": "client/fonts/sourcehansanssc-bold.ttf"
+    },
+    "colors": {
+     "_comment": "设计色板, 代码内硬编码颜色已接入此表. 格式 #RRGGBB 或 #AARRGGBB",
+     "vinyl_edge": "#050505",
+     "vinyl_base": "#1A1A1A",
+     "vinyl_shine_1": "#33FFFFFF",
+     "vinyl_shine_2": "#1AFFFFFF",
+     "vinyl_shine_3": "#001A1A1A",
+     "vinyl_groove": "#1FFFFFFF",
+     "vinyl_label": "#981A1A1A"
+    },
+    "texts": {
+     "_comment": "界面文案. mInfoLine1~3 为 misayos 介绍三行; 其余键与 Bocchi Designer 文本面板一致",
+     "mBocchi": "BOCCHI",
+     "mRock": "THE ROCK!",
+     "mBoxGotoh": "Gotoh Hitori",
+     "mBoxGirl": "A reclusive girl",
+     "mPhobia": "SOCIAL  PHOBIA",
+     "mInfoLine1": "Goto, nicknamed \"Little Solitude\",",
+     "mInfoLine2": "is a girl who always starts her speech with \"Ah...\"",
+     "mInfoLine3": "and is extremely accepting and introverted",
+     "pTitle": "BOCCHI",
+     "pVer": "1.0",
+     "pBranch": "\"ALPHA\"",
+     "pCopy1": "Bocchi Client    Version - 1.0",
+     "pCopy2": "@COPYRIGHT MISAYO",
+     "pHitoriTop": "HITORI",
+     "pHitoriBottom": "HITORI",
+     "pGoto1": "GOTO",
+     "pGoto2": "GOTO",
+     "pJName": "後藤 ひとり",
+     "pJKana": "ご   とう",
+     "pAliasText": "ギターヒーロー",
+     "pAdd1": "FEBRUARY 21",
+     "pAdd2": "50 kg & 156 cm",
+     "pAdd3": "Aqua eye"
+    },
+    "menu": {
+     "_comment": "主菜单主题: misayos (默认) / poulsen. 材质包覆盖此项即可切换主题, 资源重载后生效",
+     "theme": "misayos"
+    }
+   },
+   "statusText": "主菜单 misayos · 1:1 预览 · 1280×720 设计分辨率 · 点击元素可选中拖拽"
+  },
+  "poulsen": {
+   "elements": {
+    "pRectPink": {
+     "rect": {
+      "left": 376.32,
+      "top": 0,
+      "width": 527.36,
+      "height": 720
+     },
+     "styles": {
+      "fontSize": "16px",
+      "letterSpacing": "normal",
+      "opacity": "1",
+      "color": "rgb(250, 244, 248)",
+      "backgroundColor": "rgb(245, 103, 180)",
+      "backgroundImage": "none",
+      "borderTopWidth": "0px",
+      "lineHeight": "normal",
+      "textAlign": "start",
+      "display": "block"
+     },
+     "attrs": {}
+    },
+    "pRectLpink": {
+     "rect": {
+      "left": 903.68,
+      "top": 0,
+      "width": 376.32,
+      "height": 720
+     },
+     "styles": {
+      "fontSize": "16px",
+      "letterSpacing": "normal",
+      "opacity": "1",
+      "color": "rgb(250, 244, 248)",
+      "backgroundColor": "rgb(241, 152, 211)",
+      "backgroundImage": "none",
+      "borderTopWidth": "0px",
+      "lineHeight": "normal",
+      "textAlign": "start",
+      "display": "block"
+     },
+     "attrs": {}
+    },
+    "pBgImg": {
+     "rect": {
+      "left": -240.64,
+      "top": -108.875,
+      "width": 930.558,
+      "height": 3266.26
+     },
+     "styles": {
+      "fontSize": "16px",
+      "letterSpacing": "normal",
+      "opacity": "0.18",
+      "color": "rgb(250, 244, 248)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "borderTopWidth": "0px",
+      "lineHeight": "normal",
+      "textAlign": "start",
+      "display": "block"
+     },
+     "attrs": {
+      "naturalW": 459,
+      "naturalH": 1611
+     }
+    },
+    "pStrip": {
+     "rect": {
+      "left": 903.68,
+      "top": 421.92,
+      "width": 376.32,
+      "height": 61.92
+     },
+     "styles": {
+      "fontSize": "16px",
+      "letterSpacing": "normal",
+      "opacity": "1",
+      "color": "rgb(250, 244, 248)",
+      "backgroundColor": "rgb(255, 255, 255)",
+      "backgroundImage": "none",
+      "borderTopWidth": "0px",
+      "lineHeight": "normal",
+      "textAlign": "start",
+      "display": "block"
+     },
+     "attrs": {}
+    },
+    "pHitoriTop": {
+     "rect": {
+      "left": -50.979,
+      "top": 184.738,
+      "width": 478,
+      "height": 134
+     },
+     "styles": {
+      "fontSize": "133.566px",
+      "letterSpacing": "normal",
+      "opacity": "1",
+      "color": "rgb(233, 90, 159)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "borderTopWidth": "0px",
+      "lineHeight": "133.566px",
+      "textAlign": "start",
+      "display": "block"
+     },
+     "attrs": {}
+    },
+    "pHitoriBottom": {
+     "rect": {
+      "left": 356.156,
+      "top": 505.514,
+      "width": 866,
+      "height": 242
+     },
+     "styles": {
+      "fontSize": "241.967px",
+      "letterSpacing": "normal",
+      "opacity": "1",
+      "color": "rgb(255, 134, 192)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "borderTopWidth": "0px",
+      "lineHeight": "241.967px",
+      "textAlign": "start",
+      "display": "block"
+     },
+     "attrs": {}
+    },
+    "pGoto1": {
+     "rect": {
+      "left": 370.271,
+      "top": 60.831,
+      "width": 737,
+      "height": 242
+     },
+     "styles": {
+      "fontSize": "241.967px",
+      "letterSpacing": "normal",
+      "opacity": "1",
+      "color": "rgb(255, 134, 192)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "borderTopWidth": "0px",
+      "lineHeight": "241.967px",
+      "textAlign": "start",
+      "display": "block"
+     },
+     "attrs": {}
+    },
+    "pGoto2": {
+     "rect": {
+      "left": 370.271,
+      "top": 320.075,
+      "width": 737,
+      "height": 242
+     },
+     "styles": {
+      "fontSize": "241.967px",
+      "letterSpacing": "normal",
+      "opacity": "1",
+      "color": "rgb(233, 90, 159)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "borderTopWidth": "0px",
+      "lineHeight": "241.967px",
+      "textAlign": "start",
+      "display": "block"
+     },
+     "attrs": {}
+    },
+    "pSq1": {
+     "rect": {
+      "left": 254.74,
+      "top": 460.5,
+      "width": 15,
+      "height": 15
+     },
+     "styles": {
+      "fontSize": "16px",
+      "letterSpacing": "normal",
+      "opacity": "1",
+      "color": "rgb(250, 244, 248)",
+      "backgroundColor": "rgb(233, 90, 159)",
+      "backgroundImage": "none",
+      "borderTopWidth": "0px",
+      "lineHeight": "normal",
+      "textAlign": "start",
+      "display": "block"
+     },
+     "attrs": {}
+    },
+    "pSq2": {
+     "rect": {
+      "left": 274.74,
+      "top": 460.5,
+      "width": 15,
+      "height": 15
+     },
+     "styles": {
+      "fontSize": "16px",
+      "letterSpacing": "normal",
+      "opacity": "1",
+      "color": "rgb(250, 244, 248)",
+      "backgroundColor": "rgb(233, 90, 159)",
+      "backgroundImage": "none",
+      "borderTopWidth": "0px",
+      "lineHeight": "normal",
+      "textAlign": "start",
+      "display": "block"
+     },
+     "attrs": {}
+    },
+    "pSq3": {
+     "rect": {
+      "left": 294.74,
+      "top": 460.5,
+      "width": 15,
+      "height": 15
+     },
+     "styles": {
+      "fontSize": "16px",
+      "letterSpacing": "normal",
+      "opacity": "1",
+      "color": "rgb(250, 244, 248)",
+      "backgroundColor": "rgb(233, 90, 159)",
+      "backgroundImage": "none",
+      "borderTopWidth": "0px",
+      "lineHeight": "normal",
+      "textAlign": "start",
+      "display": "block"
+     },
+     "attrs": {}
+    },
+    "pBar": {
+     "rect": {
+      "left": 896.935,
+      "top": 259.244,
+      "width": 226.844,
+      "height": 30.96
+     },
+     "styles": {
+      "fontSize": "16px",
+      "letterSpacing": "normal",
+      "opacity": "1",
+      "color": "rgb(250, 244, 248)",
+      "backgroundColor": "rgb(233, 90, 159)",
+      "backgroundImage": "none",
+      "borderTopWidth": "0px",
+      "lineHeight": "normal",
+      "textAlign": "start",
+      "display": "block"
+     },
+     "attrs": {}
+    },
+    "pBoxA": {
+     "rect": {
+      "left": 1123.78,
+      "top": 77.769,
+      "width": 84.24,
+      "height": 84.24
+     },
+     "styles": {
+      "fontSize": "16px",
+      "letterSpacing": "normal",
+      "opacity": "1",
+      "color": "rgb(250, 244, 248)",
+      "backgroundColor": "rgb(255, 255, 255)",
+      "backgroundImage": "none",
+      "borderTopWidth": "0px",
+      "lineHeight": "normal",
+      "textAlign": "start",
+      "display": "block"
+     },
+     "attrs": {}
+    },
+    "pBoxAImg": {
+     "rect": {
+      "left": 6.318,
+      "top": 6.318,
+      "width": 71.604,
+      "height": 71.604
+     },
+     "styles": {
+      "fontSize": "16px",
+      "letterSpacing": "normal",
+      "opacity": "1",
+      "color": "rgb(250, 244, 248)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "borderTopWidth": "0px",
+      "lineHeight": "normal",
+      "textAlign": "start",
+      "display": "block"
+     },
+     "attrs": {
+      "naturalW": 96,
+      "naturalH": 96
+     }
+    },
+    "pBoxB": {
+     "rect": {
+      "left": 1123.78,
+      "top": 205.964,
+      "width": 84.24,
+      "height": 84.24
+     },
+     "styles": {
+      "fontSize": "16px",
+      "letterSpacing": "normal",
+      "opacity": "1",
+      "color": "rgb(250, 244, 248)",
+      "backgroundColor": "rgb(255, 255, 255)",
+      "backgroundImage": "none",
+      "borderTopWidth": "0px",
+      "lineHeight": "normal",
+      "textAlign": "start",
+      "display": "block"
+     },
+     "attrs": {}
+    },
+    "pBoxBImg": {
+     "rect": {
+      "left": 6.318,
+      "top": 6.318,
+      "width": 71.604,
+      "height": 71.604
+     },
+     "styles": {
+      "fontSize": "16px",
+      "letterSpacing": "normal",
+      "opacity": "1",
+      "color": "rgb(250, 244, 248)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "borderTopWidth": "0px",
+      "lineHeight": "normal",
+      "textAlign": "start",
+      "display": "block"
+     },
+     "attrs": {
+      "naturalW": 96,
+      "naturalH": 96
+     }
+    },
+    "pJName": {
+     "rect": {
+      "left": 48.496,
+      "top": 551.936,
+      "width": 278,
+      "height": 53
+     },
+     "styles": {
+      "fontSize": "53.4748px",
+      "letterSpacing": "normal",
+      "opacity": "1",
+      "color": "rgb(233, 90, 159)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "borderTopWidth": "0px",
+      "lineHeight": "53.4748px",
+      "textAlign": "start",
+      "display": "block"
+     },
+     "attrs": {}
+    },
+    "pJKana": {
+     "rect": {
+      "left": 68.049,
+      "top": 488.87,
+      "width": 74,
+      "height": 20
+     },
+     "styles": {
+      "fontSize": "20.053px",
+      "letterSpacing": "normal",
+      "opacity": "1",
+      "color": "rgb(0, 0, 0)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "borderTopWidth": "0px",
+      "lineHeight": "20.053px",
+      "textAlign": "start",
+      "display": "block"
+     },
+     "attrs": {}
+    },
+    "pAddInfo": {
+     "rect": {
+      "left": 903.68,
+      "top": 528.48,
+      "width": 137.728,
+      "height": 69.552
+     },
+     "styles": {
+      "fontSize": "16px",
+      "letterSpacing": "normal",
+      "opacity": "1",
+      "color": "rgb(250, 244, 248)",
+      "backgroundColor": "rgb(0, 0, 0)",
+      "backgroundImage": "none",
+      "borderTopWidth": "0px",
+      "lineHeight": "normal",
+      "textAlign": "start",
+      "display": "block"
+     },
+     "attrs": {}
+    },
+    "pAdd1": {
+     "rect": {
+      "left": 21.475,
+      "top": 533.624,
+      "width": 86,
+      "height": 14
+     },
+     "styles": {
+      "fontSize": "14.49px",
+      "letterSpacing": "normal",
+      "opacity": "1",
+      "color": "rgb(255, 255, 255)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "borderTopWidth": "0px",
+      "lineHeight": "14.49px",
+      "textAlign": "start",
+      "display": "block"
+     },
+     "attrs": {}
+    },
+    "pAdd2": {
+     "rect": {
+      "left": 18.533,
+      "top": 556.808,
+      "width": 101,
+      "height": 14
+     },
+     "styles": {
+      "fontSize": "14.49px",
+      "letterSpacing": "normal",
+      "opacity": "1",
+      "color": "rgb(66, 66, 66)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "borderTopWidth": "0px",
+      "lineHeight": "14.49px",
+      "textAlign": "start",
+      "display": "block"
+     },
+     "attrs": {}
+    },
+    "pAdd3": {
+     "rect": {
+      "left": 36.551,
+      "top": 579.992,
+      "width": 60,
+      "height": 14
+     },
+     "styles": {
+      "fontSize": "14.49px",
+      "letterSpacing": "normal",
+      "opacity": "1",
+      "color": "rgb(66, 66, 66)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "borderTopWidth": "0px",
+      "lineHeight": "14.49px",
+      "textAlign": "start",
+      "display": "block"
+     },
+     "attrs": {}
+    },
+    "pAlias": {
+     "rect": {
+      "left": 812.942,
+      "top": 321.861,
+      "width": 438,
+      "height": 67
+     },
+     "styles": {
+      "fontSize": "53.4748px",
+      "letterSpacing": "normal",
+      "opacity": "1",
+      "color": "rgb(255, 255, 255)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "borderTopWidth": "0px",
+      "lineHeight": "53.4748px",
+      "textAlign": "start",
+      "display": "block"
+     },
+     "attrs": {
+      "inlineTransform": "scaleX(0.85)"
+     }
+    },
+    "pAliasQ1": {
+     "rect": {
+      "left": 813,
+      "top": -71.255,
+      "width": 32,
+      "height": 97
+     },
+     "styles": {
+      "fontSize": "66.8434px",
+      "letterSpacing": "normal",
+      "opacity": "1",
+      "color": "rgb(255, 255, 255)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "borderTopWidth": "0px",
+      "lineHeight": "66.8434px",
+      "textAlign": "start",
+      "display": "inline"
+     },
+     "attrs": {}
+    },
+    "pAliasText": {
+     "rect": {
+      "left": 845,
+      "top": 322,
+      "width": 374,
+      "height": 77
+     },
+     "styles": {
+      "fontSize": "53.4748px",
+      "letterSpacing": "normal",
+      "opacity": "1",
+      "color": "rgb(255, 255, 255)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "borderTopWidth": "0px",
+      "lineHeight": "53.4748px",
+      "textAlign": "start",
+      "display": "inline"
+     },
+     "attrs": {}
+    },
+    "pAliasQ2": {
+     "rect": {
+      "left": -21.925,
+      "top": 60.293,
+      "width": 32,
+      "height": 97
+     },
+     "styles": {
+      "fontSize": "66.8434px",
+      "letterSpacing": "normal",
+      "opacity": "1",
+      "color": "rgb(255, 255, 255)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "borderTopWidth": "0px",
+      "lineHeight": "66.8434px",
+      "textAlign": "start",
+      "display": "inline"
+     },
+     "attrs": {}
+    },
+    "pTachie": {
+     "rect": {
+      "left": 512.168,
+      "top": 36,
+      "width": 339.62,
+      "height": 1192.07
+     },
+     "styles": {
+      "fontSize": "16px",
+      "letterSpacing": "normal",
+      "opacity": "1",
+      "color": "rgb(250, 244, 248)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "borderTopWidth": "0px",
+      "lineHeight": "normal",
+      "textAlign": "start",
+      "display": "block"
+     },
+     "attrs": {}
+    },
+    "pDots": {
+     "rect": {
+      "left": 1205,
+      "top": 675,
+      "width": 75,
+      "height": 45
+     },
+     "styles": {
+      "fontSize": "16px",
+      "letterSpacing": "normal",
+      "opacity": "1",
+      "color": "rgb(250, 244, 248)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "borderTopWidth": "0px",
+      "lineHeight": "normal",
+      "textAlign": "start",
+      "display": "block"
+     },
+     "attrs": {}
+    },
+    "pDot1": {
+     "rect": {
+      "left": 34.9,
+      "top": 32.5,
+      "width": 7,
+      "height": 7
+     },
+     "styles": {
+      "fontSize": "16px",
+      "letterSpacing": "normal",
+      "opacity": "1",
+      "color": "rgb(250, 244, 248)",
+      "backgroundColor": "rgb(242, 73, 73)",
+      "backgroundImage": "none",
+      "borderTopWidth": "0px",
+      "lineHeight": "normal",
+      "textAlign": "start",
+      "display": "block"
+     },
+     "attrs": {}
+    },
+    "pDot2": {
+     "rect": {
+      "left": 73.3,
+      "top": 32.5,
+      "width": 7,
+      "height": 7
+     },
+     "styles": {
+      "fontSize": "16px",
+      "letterSpacing": "normal",
+      "opacity": "1",
+      "color": "rgb(250, 244, 248)",
+      "backgroundColor": "rgb(229, 67, 155)",
+      "backgroundImage": "none",
+      "borderTopWidth": "0px",
+      "lineHeight": "normal",
+      "textAlign": "start",
+      "display": "block"
+     },
+     "attrs": {}
+    },
+    "pDot3": {
+     "rect": {
+      "left": 111.7,
+      "top": 32.5,
+      "width": 7,
+      "height": 7
+     },
+     "styles": {
+      "fontSize": "16px",
+      "letterSpacing": "normal",
+      "opacity": "1",
+      "color": "rgb(250, 244, 248)",
+      "backgroundColor": "rgb(255, 144, 197)",
+      "backgroundImage": "none",
+      "borderTopWidth": "0px",
+      "lineHeight": "normal",
+      "textAlign": "start",
+      "display": "block"
+     },
+     "attrs": {}
+    },
+    "pLogo": {
+     "rect": {
+      "left": 112.896,
+      "top": 72,
+      "width": 60,
+      "height": 19.02
+     },
+     "styles": {
+      "fontSize": "16px",
+      "letterSpacing": "normal",
+      "opacity": "1",
+      "color": "rgb(250, 244, 248)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "borderTopWidth": "0px",
+      "lineHeight": "normal",
+      "textAlign": "start",
+      "display": "block"
+     },
+     "attrs": {}
+    },
+    "pBtnSingle": {
+     "rect": {
+      "left": 38.4,
+      "top": 70.877,
+      "width": 111,
+      "height": 28
+     },
+     "styles": {
+      "fontSize": "16.0424px",
+      "letterSpacing": "normal",
+      "opacity": "1",
+      "color": "rgb(0, 0, 0)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "borderTopWidth": "0px",
+      "lineHeight": "16.0424px",
+      "textAlign": "start",
+      "display": "block"
+     },
+     "attrs": {}
+    },
+    "pBtnMulti": {
+     "rect": {
+      "left": 38.4,
+      "top": 154.298,
+      "width": 104,
+      "height": 28
+     },
+     "styles": {
+      "fontSize": "16.0424px",
+      "letterSpacing": "normal",
+      "opacity": "1",
+      "color": "rgb(0, 0, 0)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "borderTopWidth": "0px",
+      "lineHeight": "16.0424px",
+      "textAlign": "start",
+      "display": "block"
+     },
+     "attrs": {}
+    },
+    "pBtnOptions": {
+     "rect": {
+      "left": 38.4,
+      "top": 237.718,
+      "width": 79,
+      "height": 28
+     },
+     "styles": {
+      "fontSize": "16.0424px",
+      "letterSpacing": "normal",
+      "opacity": "1",
+      "color": "rgb(0, 0, 0)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "borderTopWidth": "0px",
+      "lineHeight": "16.0424px",
+      "textAlign": "start",
+      "display": "block"
+     },
+     "attrs": {}
+    },
+    "pBtnQuitP": {
+     "rect": {
+      "left": 38.4,
+      "top": 321.139,
+      "width": 53,
+      "height": 28
+     },
+     "styles": {
+      "fontSize": "16.0424px",
+      "letterSpacing": "normal",
+      "opacity": "1",
+      "color": "rgb(0, 0, 0)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "borderTopWidth": "0px",
+      "lineHeight": "16.0424px",
+      "textAlign": "start",
+      "display": "block"
+     },
+     "attrs": {}
+    },
+    "pBtnMisayos": {
+     "rect": {
+      "left": 38.4,
+      "top": 404.559,
+      "width": 89,
+      "height": 28
+     },
+     "styles": {
+      "fontSize": "16.0424px",
+      "letterSpacing": "normal",
+      "opacity": "1",
+      "color": "rgb(0, 0, 0)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "borderTopWidth": "0px",
+      "lineHeight": "16.0424px",
+      "textAlign": "start",
+      "display": "block"
+     },
+     "attrs": {}
+    }
+   },
+   "childCounts": {
+    "pRectPink": 0,
+    "pRectLpink": 0,
+    "pBgImg": 0,
+    "pStrip": 0,
+    "pHitoriTop": 0,
+    "pHitoriBottom": 0,
+    "pGoto1": 0,
+    "pGoto2": 0,
+    "pSq1": 0,
+    "pSq2": 0,
+    "pSq3": 0,
+    "pBar": 0,
+    "pBoxA": 1,
+    "pBoxAImg": 0,
+    "pBoxB": 1,
+    "pBoxBImg": 0,
+    "pJName": 0,
+    "pJKana": 0,
+    "pAddInfo": 3,
+    "pAdd1": 0,
+    "pAdd2": 0,
+    "pAdd3": 0,
+    "pAlias": 3,
+    "pAliasQ1": 0,
+    "pAliasText": 0,
+    "pAliasQ2": 0,
+    "pTachie": 1,
+    "pDots": 40,
+    "pDot1": 0,
+    "pDot2": 0,
+    "pDot3": 0,
+    "pLogo": 1,
+    "pBtnSingle": 0,
+    "pBtnMulti": 0,
+    "pBtnOptions": 0,
+    "pBtnQuitP": 0,
+    "pBtnMisayos": 0
+   },
+   "designJSON": {
+    "_readme": "bocchi 设计模板 (Design Template). 复制本文件到材质包 assets/minecraft/client/design.json 即可替换整个设计. 想换哪项就改哪项, 其余自动回退到 mod 内置默认. 所有以 _ 开头的键是注释/说明, 加载时会忽略. 路径格式: namespace:path, 省略命名空间则默认 minecraft. 颜色格式: #AARRGGBB 或 #RRGGBB.",
+    "textures": {
+     "_comment": "位图资源: 立绘/Logo/加载图",
+     "bocchi": "client/textures/bocchi.png",
+     "gotoh": "client/textures/gotoh.png",
+     "gotoh_image_1": "client/textures/gotoh_image_1.png",
+     "gotoh_image_2": "client/textures/gotoh_image_2.png",
+     "bocchi_loading": "client/textures/bocchi_loading.png",
+     "logo": "client/textures/logo.png"
+    },
+    "svgs": {
+     "_comment": "主菜单按钮图标 (SVG), 与按钮 icon 参数对应: lang/multi/option/quit/single/theme",
+     "single": "client/svgs/single.svg",
+     "multi": "client/svgs/multi.svg",
+     "option": "client/svgs/option.svg",
+     "lang": "client/svgs/lang.svg",
+     "quit": "client/svgs/quit.svg",
+     "theme": "client/svgs/theme.svg"
+    },
+    "fonts": {
+     "_comment": "Skia 字体. 键 = FontSet 中的字体名 (区分大小写), 值 = ttf/otf 文件路径. 换同名字体直接换文件, 换路径改这里.",
+     "Radikal-Black": "client/fonts/radikal-black.ttf",
+     "Radikal-Regular": "client/fonts/radikal-regular.ttf",
+     "meiryo-bold": "client/fonts/meiryo-bold.ttf",
+     "SourceHanSansSC-Light": "client/fonts/sourcehansanssc-light.ttf",
+     "SourceHanSansSC-Regular": "client/fonts/sourcehansanssc-regular.ttf",
+     "SourceHanSansSC-Heavy": "client/fonts/sourcehansanssc-heavy.ttf",
+     "SourceHanSansSC-Normal": "client/fonts/sourcehansanssc-normal.ttf",
+     "SourceHanSansSC-Bold": "client/fonts/sourcehansanssc-bold.ttf"
+    },
+    "colors": {
+     "_comment": "设计色板, 代码内硬编码颜色已接入此表. 格式 #RRGGBB 或 #AARRGGBB",
+     "vinyl_edge": "#050505",
+     "vinyl_base": "#1A1A1A",
+     "vinyl_shine_1": "#33FFFFFF",
+     "vinyl_shine_2": "#1AFFFFFF",
+     "vinyl_shine_3": "#001A1A1A",
+     "vinyl_groove": "#1FFFFFFF",
+     "vinyl_label": "#981A1A1A"
+    },
+    "texts": {
+     "_comment": "界面文案. mInfoLine1~3 为 misayos 介绍三行; 其余键与 Bocchi Designer 文本面板一致",
+     "mBocchi": "BOCCHI",
+     "mRock": "THE ROCK!",
+     "mBoxGotoh": "Gotoh Hitori",
+     "mBoxGirl": "A reclusive girl",
+     "mPhobia": "SOCIAL  PHOBIA",
+     "mInfoLine1": "Goto, nicknamed \"Little Solitude\",",
+     "mInfoLine2": "is a girl who always starts her speech with \"Ah...\"",
+     "mInfoLine3": "and is extremely accepting and introverted",
+     "pTitle": "BOCCHI",
+     "pVer": "1.0",
+     "pBranch": "\"ALPHA\"",
+     "pCopy1": "Bocchi Client    Version - 1.0",
+     "pCopy2": "@COPYRIGHT MISAYO",
+     "pHitoriTop": "HITORI",
+     "pHitoriBottom": "HITORI",
+     "pGoto1": "GOTO",
+     "pGoto2": "GOTO",
+     "pJName": "後藤 ひとり",
+     "pJKana": "ご   とう",
+     "pAliasText": "ギターヒーロー",
+     "pAdd1": "FEBRUARY 21",
+     "pAdd2": "50 kg & 156 cm",
+     "pAdd3": "Aqua eye"
+    },
+    "menu": {
+     "_comment": "主菜单主题: misayos (默认) / poulsen. 材质包覆盖此项即可切换主题, 资源重载后生效",
+     "theme": "misayos"
+    }
+   },
+   "statusText": "主菜单 poulsen · 1:1 预览 · 1280×720 设计分辨率"
+  },
+  "splash": {
+   "elements": {
+    "splashLogo": {
+     "rect": {
+      "left": 593,
+      "top": 260.6,
+      "width": 94,
+      "height": 29.798
+     },
+     "styles": {
+      "fontSize": "16px",
+      "letterSpacing": "normal",
+      "opacity": "1",
+      "color": "rgb(250, 244, 248)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "borderTopWidth": "0px",
+      "lineHeight": "normal",
+      "textAlign": "start",
+      "display": "block"
+     },
+     "attrs": {}
+    },
+    "progressTrack": {
+     "rect": {
+      "left": 256,
+      "top": 454.7,
+      "width": 768,
+      "height": 9
+     },
+     "styles": {
+      "fontSize": "16px",
+      "letterSpacing": "normal",
+      "opacity": "1",
+      "color": "rgb(250, 244, 248)",
+      "backgroundColor": "rgba(255, 255, 255, 0.15)",
+      "backgroundImage": "none",
+      "borderTopWidth": "0px",
+      "lineHeight": "normal",
+      "textAlign": "start",
+      "display": "block"
+     },
+     "attrs": {}
+    },
+    "progressFill": {
+     "rect": {
+      "left": 256,
+      "top": 455,
+      "height": 9
+     },
+     "styles": {
+      "fontSize": "16px",
+      "letterSpacing": "normal",
+      "opacity": "1",
+      "color": "rgb(250, 244, 248)",
+      "backgroundColor": "rgb(255, 255, 255)",
+      "backgroundImage": "none",
+      "borderTopWidth": "0px",
+      "lineHeight": "normal",
+      "textAlign": "start",
+      "display": "block"
+     },
+     "attrs": {}
+    },
+    "loadingIcon": {
+     "rect": {
+      "left": 1009.9,
+      "top": 440.6,
+      "width": 23.5,
+      "height": 23.5
+     },
+     "styles": {
+      "fontSize": "16px",
+      "letterSpacing": "normal",
+      "opacity": "1",
+      "color": "rgb(250, 244, 248)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "borderTopWidth": "0px",
+      "lineHeight": "normal",
+      "textAlign": "start",
+      "display": "block"
+     },
+     "attrs": {}
+    },
+    "tapText": {
+     "rect": {
+      "left": 614.511,
+      "top": 471.4,
+      "width": 51,
+      "height": 8
+     },
+     "styles": {
+      "fontSize": "7.5px",
+      "letterSpacing": "normal",
+      "color": "rgb(255, 255, 255)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "backgroundImage": "none",
+      "borderTopWidth": "0px",
+      "lineHeight": "7.5px",
+      "textAlign": "start",
+      "display": "block"
+     },
+     "attrs": {}
+    }
+   },
+   "childCounts": {
+    "splashLogo": 1,
+    "progressTrack": 1,
+    "progressFill": 0,
+    "loadingIcon": 0,
+    "tapText": 0
+   },
+   "designJSON": {
+    "_readme": "bocchi 设计模板 (Design Template). 复制本文件到材质包 assets/minecraft/client/design.json 即可替换整个设计. 想换哪项就改哪项, 其余自动回退到 mod 内置默认. 所有以 _ 开头的键是注释/说明, 加载时会忽略. 路径格式: namespace:path, 省略命名空间则默认 minecraft. 颜色格式: #AARRGGBB 或 #RRGGBB.",
+    "textures": {
+     "_comment": "位图资源: 立绘/Logo/加载图",
+     "bocchi": "client/textures/bocchi.png",
+     "gotoh": "client/textures/gotoh.png",
+     "gotoh_image_1": "client/textures/gotoh_image_1.png",
+     "gotoh_image_2": "client/textures/gotoh_image_2.png",
+     "bocchi_loading": "client/textures/bocchi_loading.png",
+     "logo": "client/textures/logo.png"
+    },
+    "svgs": {
+     "_comment": "主菜单按钮图标 (SVG), 与按钮 icon 参数对应: lang/multi/option/quit/single/theme",
+     "single": "client/svgs/single.svg",
+     "multi": "client/svgs/multi.svg",
+     "option": "client/svgs/option.svg",
+     "lang": "client/svgs/lang.svg",
+     "quit": "client/svgs/quit.svg",
+     "theme": "client/svgs/theme.svg"
+    },
+    "fonts": {
+     "_comment": "Skia 字体. 键 = FontSet 中的字体名 (区分大小写), 值 = ttf/otf 文件路径. 换同名字体直接换文件, 换路径改这里.",
+     "Radikal-Black": "client/fonts/radikal-black.ttf",
+     "Radikal-Regular": "client/fonts/radikal-regular.ttf",
+     "meiryo-bold": "client/fonts/meiryo-bold.ttf",
+     "SourceHanSansSC-Light": "client/fonts/sourcehansanssc-light.ttf",
+     "SourceHanSansSC-Regular": "client/fonts/sourcehansanssc-regular.ttf",
+     "SourceHanSansSC-Heavy": "client/fonts/sourcehansanssc-heavy.ttf",
+     "SourceHanSansSC-Normal": "client/fonts/sourcehansanssc-normal.ttf",
+     "SourceHanSansSC-Bold": "client/fonts/sourcehansanssc-bold.ttf"
+    },
+    "colors": {
+     "_comment": "设计色板, 代码内硬编码颜色已接入此表. 格式 #RRGGBB 或 #AARRGGBB",
+     "vinyl_edge": "#050505",
+     "vinyl_base": "#1A1A1A",
+     "vinyl_shine_1": "#33FFFFFF",
+     "vinyl_shine_2": "#1AFFFFFF",
+     "vinyl_shine_3": "#001A1A1A",
+     "vinyl_groove": "#1FFFFFFF",
+     "vinyl_label": "#981A1A1A"
+    },
+    "texts": {
+     "_comment": "界面文案. mInfoLine1~3 为 misayos 介绍三行; 其余键与 Bocchi Designer 文本面板一致",
+     "mBocchi": "BOCCHI",
+     "mRock": "THE ROCK!",
+     "mBoxGotoh": "Gotoh Hitori",
+     "mBoxGirl": "A reclusive girl",
+     "mPhobia": "SOCIAL  PHOBIA",
+     "mInfoLine1": "Goto, nicknamed \"Little Solitude\",",
+     "mInfoLine2": "is a girl who always starts her speech with \"Ah...\"",
+     "mInfoLine3": "and is extremely accepting and introverted",
+     "pTitle": "BOCCHI",
+     "pVer": "1.0",
+     "pBranch": "\"ALPHA\"",
+     "pCopy1": "Bocchi Client    Version - 1.0",
+     "pCopy2": "@COPYRIGHT MISAYO",
+     "pHitoriTop": "HITORI",
+     "pHitoriBottom": "HITORI",
+     "pGoto1": "GOTO",
+     "pGoto2": "GOTO",
+     "pJName": "後藤 ひとり",
+     "pJKana": "ご   とう",
+     "pAliasText": "ギターヒーロー",
+     "pAdd1": "FEBRUARY 21",
+     "pAdd2": "50 kg & 156 cm",
+     "pAdd3": "Aqua eye"
+    },
+    "menu": {
+     "_comment": "主菜单主题: misayos (默认) / poulsen. 材质包覆盖此项即可切换主题, 资源重载后生效",
+     "theme": "misayos"
+    }
+   },
+   "statusText": "加载页（点击 TAP TO START） · 1:1 预览 · 1280×720 设计分辨率"
+  }
+ },
+ "console": [],
+ "chrome": {
+  "header": {
+   "rect": {
+    "x": 0,
+    "y": 0,
+    "w": 1600,
+    "h": 62
+   },
+   "nodes": [
+    {
+     "path": "0",
+     "tag": "DIV",
+     "class": "brand"
+    },
+    {
+     "path": "0.0",
+     "tag": "SPAN",
+     "class": "brand-mark"
+    },
+    {
+     "path": "0.1",
+     "tag": "DIV",
+     "class": "brand-text"
+    },
+    {
+     "path": "0.1.0",
+     "tag": "H1",
+     "text": "Bocchi"
+    },
+    {
+     "path": "0.1.0.0",
+     "tag": "EM",
+     "text": "Designer"
+    },
+    {
+     "path": "0.1.1",
+     "tag": "SPAN",
+     "class": "sub",
+     "text": "材质包制作 · 布局常量与 Java 端同步 (sync/check-layout.py)"
+    },
+    {
+     "path": "1",
+     "tag": "SPAN",
+     "class": "h-sep"
+    },
+    {
+     "path": "2",
+     "tag": "NAV",
+     "class": "tabs"
+    },
+    {
+     "path": "2.0",
+     "tag": "BUTTON",
+     "id": "swMisayos",
+     "class": "tab active",
+     "text": "主菜单 · misayos",
+     "attrs": {
+      "type": null,
+      "disabled": false
+     },
+     "state": "on"
+    },
+    {
+     "path": "2.1",
+     "tag": "BUTTON",
+     "id": "swPoulsen",
+     "class": "tab",
+     "text": "主菜单 · poulsen",
+     "attrs": {
+      "type": null,
+      "disabled": false
+     }
+    },
+    {
+     "path": "2.2",
+     "tag": "BUTTON",
+     "id": "swSplash",
+     "class": "tab",
+     "text": "加载页",
+     "attrs": {
+      "type": null,
+      "disabled": false
+     }
+    },
+    {
+     "path": "3",
+     "tag": "SPAN",
+     "class": "sp"
+    },
+    {
+     "path": "4",
+     "tag": "BUTTON",
+     "id": "btnUndo",
+     "class": "btn-ghost",
+     "text": "↶ 撤销",
+     "attrs": {
+      "type": null,
+      "disabled": false
+     }
+    },
+    {
+     "path": "5",
+     "tag": "BUTTON",
+     "id": "btnRedo",
+     "class": "btn-ghost",
+     "text": "↷ 重做",
+     "attrs": {
+      "type": null,
+      "disabled": false
+     }
+    },
+    {
+     "path": "6",
+     "tag": "SPAN",
+     "class": "h-sep"
+    },
+    {
+     "path": "7",
+     "tag": "BUTTON",
+     "id": "btnReplay",
+     "class": "btn-ghost",
+     "text": "重播动画",
+     "attrs": {
+      "type": null,
+      "disabled": false
+     }
+    },
+    {
+     "path": "8",
+     "tag": "SPAN",
+     "class": "seg"
+    },
+    {
+     "path": "8.0",
+     "tag": "BUTTON",
+     "class": "on",
+     "text": "适应",
+     "attrs": {
+      "type": null,
+      "disabled": false
+     },
+     "state": "on"
+    },
+    {
+     "path": "8.1",
+     "tag": "BUTTON",
+     "text": "100%",
+     "attrs": {
+      "type": null,
+      "disabled": false
+     }
+    },
+    {
+     "path": "8.2",
+     "tag": "BUTTON",
+     "text": "200%",
+     "attrs": {
+      "type": null,
+      "disabled": false
+     }
+    },
+    {
+     "path": "9",
+     "tag": "SPAN",
+     "class": "h-sep"
+    },
+    {
+     "path": "10",
+     "tag": "BUTTON",
+     "id": "btnImport",
+     "class": "btn-pri",
+     "text": "导入",
+     "attrs": {
+      "type": null,
+      "disabled": false
+     }
+    }
+   ]
+  },
+  "controls": {
+   "rect": {
+    "x": 949.422,
+    "y": 62,
+    "w": 650.578,
+    "h": 837
+   },
+   "nodes": [
+    {
+     "path": "0",
+     "tag": "DIV",
+     "id": "sec-colors-preview",
+     "class": "sec"
+    },
+    {
+     "path": "0.0",
+     "tag": "DIV",
+     "class": "sec-head"
+    },
+    {
+     "path": "0.0.0",
+     "tag": "SPAN",
+     "class": "caret"
+    },
+    {
+     "path": "0.0.1",
+     "tag": "H2",
+     "text": "预览配色（仅预览，不导出）"
+    },
+    {
+     "path": "0.0.2",
+     "tag": "SPAN",
+     "class": "badge"
+    },
+    {
+     "path": "0.1",
+     "tag": "DIV",
+     "class": "sec-body",
+     "hidden": true
+    },
+    {
+     "path": "0.1.0",
+     "tag": "DIV",
+     "class": "grid"
+    },
+    {
+     "path": "0.1.0.0",
+     "tag": "DIV",
+     "class": "field"
+    },
+    {
+     "path": "0.1.0.0.0",
+     "tag": "LABEL",
+     "text": "主色 accent"
+    },
+    {
+     "path": "0.1.0.0.1",
+     "tag": "INPUT",
+     "attrs": {
+      "type": "color",
+      "value": "#fba0be"
+     }
+    },
+    {
+     "path": "0.1.0.1",
+     "tag": "DIV",
+     "class": "field"
+    },
+    {
+     "path": "0.1.0.1.0",
+     "tag": "LABEL",
+     "text": "深粉 accent-deep"
+    },
+    {
+     "path": "0.1.0.1.1",
+     "tag": "INPUT",
+     "attrs": {
+      "type": "color",
+      "value": "#e88ba6"
+     }
+    },
+    {
+     "path": "0.1.0.2",
+     "tag": "DIV",
+     "class": "field"
+    },
+    {
+     "path": "0.1.0.2.0",
+     "tag": "LABEL",
+     "text": "背景顶"
+    },
+    {
+     "path": "0.1.0.2.1",
+     "tag": "INPUT",
+     "attrs": {
+      "type": "color",
+      "value": "#07021c"
+     }
+    },
+    {
+     "path": "0.1.0.3",
+     "tag": "DIV",
+     "class": "field"
+    },
+    {
+     "path": "0.1.0.3.0",
+     "tag": "LABEL",
+     "text": "背景底"
+    },
+    {
+     "path": "0.1.0.3.1",
+     "tag": "INPUT",
+     "attrs": {
+      "type": "color",
+      "value": "#492f49"
+     }
+    },
+    {
+     "path": "0.1.0.4",
+     "tag": "DIV",
+     "class": "field"
+    },
+    {
+     "path": "0.1.0.4.0",
+     "tag": "LABEL",
+     "text": "加载页背景"
+    },
+    {
+     "path": "0.1.0.4.1",
+     "tag": "INPUT",
+     "attrs": {
+      "type": "color",
+      "value": "#1f1f1f"
+     }
+    },
+    {
+     "path": "0.1.0.5",
+     "tag": "DIV",
+     "class": "field"
+    },
+    {
+     "path": "0.1.0.5.0",
+     "tag": "LABEL",
+     "text": "按钮底色"
+    },
+    {
+     "path": "0.1.0.5.1",
+     "tag": "INPUT",
+     "attrs": {
+      "type": "color",
+      "value": "#353535"
+     }
+    },
+    {
+     "path": "1",
+     "tag": "DIV",
+     "id": "sec-layout-misayos",
+     "class": "sec open"
+    },
+    {
+     "path": "1.0",
+     "tag": "DIV",
+     "class": "sec-head"
+    },
+    {
+     "path": "1.0.0",
+     "tag": "SPAN",
+     "class": "caret"
+    },
+    {
+     "path": "1.0.1",
+     "tag": "H2",
+     "text": "misayos 布局微调（画布上可直接拖拽）"
+    },
+    {
+     "path": "1.0.2",
+     "tag": "BUTTON",
+     "class": "sec-tool",
+     "text": "全部复位",
+     "attrs": {
+      "type": null,
+      "disabled": false
+     }
+    },
+    {
+     "path": "1.0.3",
+     "tag": "SPAN",
+     "class": "badge",
+     "text": "↑↓←→ 微调 · Shift×10 · 双击滑杆标签复位 · Ctrl+Z 撤销"
+    },
+    {
+     "path": "1.1",
+     "tag": "DIV",
+     "class": "sec-body"
+    },
+    {
+     "path": "1.1.0",
+     "tag": "DIV",
+     "class": "grid"
+    },
+    {
+     "path": "1.1.0.0",
+     "tag": "DIV",
+     "class": "slider-row"
+    },
+    {
+     "path": "1.1.0.0.0",
+     "tag": "LABEL",
+     "text": "立绘 X 偏移"
+    },
+    {
+     "path": "1.1.0.0.1",
+     "tag": "INPUT",
+     "attrs": {
+      "type": "range",
+      "min": "-200",
+      "max": "200",
+      "step": "1",
+      "value": "0"
+     }
+    },
+    {
+     "path": "1.1.0.0.2",
+     "tag": "SPAN",
+     "class": "val is-default",
+     "text": "0"
+    },
+    {
+     "path": "1.1.0.1",
+     "tag": "DIV",
+     "class": "slider-row"
+    },
+    {
+     "path": "1.1.0.1.0",
+     "tag": "LABEL",
+     "text": "立绘 Y 偏移"
+    },
+    {
+     "path": "1.1.0.1.1",
+     "tag": "INPUT",
+     "attrs": {
+      "type": "range",
+      "min": "-200",
+      "max": "200",
+      "step": "1",
+      "value": "0"
+     }
+    },
+    {
+     "path": "1.1.0.1.2",
+     "tag": "SPAN",
+     "class": "val is-default",
+     "text": "0"
+    },
+    {
+     "path": "1.1.0.2",
+     "tag": "DIV",
+     "class": "slider-row"
+    },
+    {
+     "path": "1.1.0.2.0",
+     "tag": "LABEL",
+     "text": "立绘高度"
+    },
+    {
+     "path": "1.1.0.2.1",
+     "tag": "INPUT",
+     "attrs": {
+      "type": "range",
+      "min": "300",
+      "max": "800",
+      "step": "1",
+      "value": "684"
+     }
+    },
+    {
+     "path": "1.1.0.2.2",
+     "tag": "SPAN",
+     "class": "val is-default",
+     "text": "684"
+    },
+    {
+     "path": "1.1.0.3",
+     "tag": "DIV",
+     "class": "slider-row"
+    },
+    {
+     "path": "1.1.0.3.0",
+     "tag": "LABEL",
+     "text": "立绘旋转"
+    },
+    {
+     "path": "1.1.0.3.1",
+     "tag": "INPUT",
+     "attrs": {
+      "type": "range",
+      "min": "-10",
+      "max": "10",
+      "step": "0.1",
+      "value": "0"
+     }
+    },
+    {
+     "path": "1.1.0.3.2",
+     "tag": "SPAN",
+     "class": "val is-default",
+     "text": "0"
+    },
+    {
+     "path": "1.1.0.4",
+     "tag": "DIV",
+     "class": "slider-row"
+    },
+    {
+     "path": "1.1.0.4.0",
+     "tag": "LABEL",
+     "text": "立绘透明度"
+    },
+    {
+     "path": "1.1.0.4.1",
+     "tag": "INPUT",
+     "attrs": {
+      "type": "range",
+      "min": "0",
+      "max": "100",
+      "step": "1",
+      "value": "100"
+     }
+    },
+    {
+     "path": "1.1.0.4.2",
+     "tag": "SPAN",
+     "class": "val is-default",
+     "text": "100"
+    },
+    {
+     "path": "1.1.0.5",
+     "tag": "DIV",
+     "class": "slider-row"
+    },
+    {
+     "path": "1.1.0.5.0",
+     "tag": "LABEL",
+     "text": "唱片大小"
+    },
+    {
+     "path": "1.1.0.5.1",
+     "tag": "INPUT",
+     "attrs": {
+      "type": "range",
+      "min": "200",
+      "max": "600",
+      "step": "1",
+      "value": "468"
+     }
+    },
+    {
+     "path": "1.1.0.5.2",
+     "tag": "SPAN",
+     "class": "val is-default",
+     "text": "468"
+    },
+    {
+     "path": "1.1.0.6",
+     "tag": "DIV",
+     "class": "slider-row"
+    },
+    {
+     "path": "1.1.0.6.0",
+     "tag": "LABEL",
+     "text": "唱片 X 偏移"
+    },
+    {
+     "path": "1.1.0.6.1",
+     "tag": "INPUT",
+     "attrs": {
+      "type": "range",
+      "min": "-200",
+      "max": "200",
+      "step": "1",
+      "value": "0"
+     }
+    },
+    {
+     "path": "1.1.0.6.2",
+     "tag": "SPAN",
+     "class": "val is-default",
+     "text": "0"
+    },
+    {
+     "path": "1.1.0.7",
+     "tag": "DIV",
+     "class": "slider-row"
+    },
+    {
+     "path": "1.1.0.7.0",
+     "tag": "LABEL",
+     "text": "唱片 Y 偏移"
+    },
+    {
+     "path": "1.1.0.7.1",
+     "tag": "INPUT",
+     "attrs": {
+      "type": "range",
+      "min": "-200",
+      "max": "200",
+      "step": "1",
+      "value": "0"
+     }
+    },
+    {
+     "path": "1.1.0.7.2",
+     "tag": "SPAN",
+     "class": "val is-default",
+     "text": "0"
+    },
+    {
+     "path": "1.1.0.8",
+     "tag": "DIV",
+     "class": "slider-row"
+    },
+    {
+     "path": "1.1.0.8.0",
+     "tag": "LABEL",
+     "text": "标题字号"
+    },
+    {
+     "path": "1.1.0.8.1",
+     "tag": "INPUT",
+     "attrs": {
+      "type": "range",
+      "min": "30",
+      "max": "90",
+      "step": "1",
+      "value": "53"
+     }
+    },
+    {
+     "path": "1.1.0.8.2",
+     "tag": "SPAN",
+     "class": "val is-default",
+     "text": "53"
+    },
+    {
+     "path": "1.1.0.9",
+     "tag": "DIV",
+     "class": "slider-row"
+    },
+    {
+     "path": "1.1.0.9.0",
+     "tag": "LABEL",
+     "text": "标题 X 偏移"
+    },
+    {
+     "path": "1.1.0.9.1",
+     "tag": "INPUT",
+     "attrs": {
+      "type": "range",
+      "min": "-300",
+      "max": "300",
+      "step": "1",
+      "value": "0"
+     }
+    },
+    {
+     "path": "1.1.0.9.2",
+     "tag": "SPAN",
+     "class": "val is-default",
+     "text": "0"
+    },
+    {
+     "path": "1.1.0.10",
+     "tag": "DIV",
+     "class": "slider-row"
+    },
+    {
+     "path": "1.1.0.10.0",
+     "tag": "LABEL",
+     "text": "标题 Y 位置"
+    },
+    {
+     "path": "1.1.0.10.1",
+     "tag": "INPUT",
+     "attrs": {
+      "type": "range",
+      "min": "-100",
+      "max": "100",
+      "step": "1",
+      "value": "0"
+     }
+    },
+    {
+     "path": "1.1.0.10.2",
+     "tag": "SPAN",
+     "class": "val is-default",
+     "text": "0"
+    },
+    {
+     "path": "1.1.0.11",
+     "tag": "DIV",
+     "class": "slider-row"
+    },
+    {
+     "path": "1.1.0.11.0",
+     "tag": "LABEL",
+     "text": "面板宽度"
+    },
+    {
+     "path": "1.1.0.11.1",
+     "tag": "INPUT",
+     "attrs": {
+      "type": "range",
+      "min": "60",
+      "max": "140",
+      "step": "1",
+      "value": "95"
+     }
+    },
+    {
+     "path": "1.1.0.11.2",
+     "tag": "SPAN",
+     "class": "val is-default",
+     "text": "95"
+    },
+    {
+     "path": "1.1.0.12",
+     "tag": "DIV",
+     "class": "slider-row"
+    },
+    {
+     "path": "1.1.0.12.0",
+     "tag": "LABEL",
+     "text": "面板 X 偏移"
+    },
+    {
+     "path": "1.1.0.12.1",
+     "tag": "INPUT",
+     "attrs": {
+      "type": "range",
+      "min": "-100",
+      "max": "100",
+      "step": "1",
+      "value": "0"
+     }
+    },
+    {
+     "path": "1.1.0.12.2",
+     "tag": "SPAN",
+     "class": "val is-default",
+     "text": "0"
+    },
+    {
+     "path": "1.1.0.13",
+     "tag": "DIV",
+     "class": "slider-row"
+    },
+    {
+     "path": "1.1.0.13.0",
+     "tag": "LABEL",
+     "text": "block1 大小"
+    },
+    {
+     "path": "1.1.0.13.1",
+     "tag": "INPUT",
+     "attrs": {
+      "type": "range",
+      "min": "150",
+      "max": "400",
+      "step": "1",
+      "value": "290"
+     }
+    },
+    {
+     "path": "1.1.0.13.2",
+     "tag": "SPAN",
+     "class": "val is-default",
+     "text": "290"
+    },
+    {
+     "path": "1.1.0.14",
+     "tag": "DIV",
+     "class": "slider-row"
+    },
+    {
+     "path": "1.1.0.14.0",
+     "tag": "LABEL",
+     "text": "block1 X 偏移"
+    },
+    {
+     "path": "1.1.0.14.1",
+     "tag": "INPUT",
+     "attrs": {
+      "type": "range",
+      "min": "-200",
+      "max": "200",
+      "step": "1",
+      "value": "0"
+     }
+    },
+    {
+     "path": "1.1.0.14.2",
+     "tag": "SPAN",
+     "class": "val is-default",
+     "text": "0"
+    },
+    {
+     "path": "1.1.0.15",
+     "tag": "DIV",
+     "class": "slider-row"
+    },
+    {
+     "path": "1.1.0.15.0",
+     "tag": "LABEL",
+     "text": "block1 Y 偏移"
+    },
+    {
+     "path": "1.1.0.15.1",
+     "tag": "INPUT",
+     "attrs": {
+      "type": "range",
+      "min": "-200",
+      "max": "200",
+      "step": "1",
+      "value": "0"
+     }
+    },
+    {
+     "path": "1.1.0.15.2",
+     "tag": "SPAN",
+     "class": "val is-default",
+     "text": "0"
+    },
+    {
+     "path": "1.1.1",
+     "tag": "DIV",
+     "class": "hint",
+     "text": "画布上: 点击选中 → 拖拽移动 / 拖角缩放; 双击文字定位到编辑框; Esc 取消选中; 方向键微调。布局/文本/配色/资源替换均可 Ctrl+Z 撤销、Ctrl+Y 重做。"
+    },
+    {
+     "path": "2",
+     "tag": "DIV",
+     "id": "sec-texts",
+     "class": "sec"
+    },
+    {
+     "path": "2.0",
+     "tag": "DIV",
+     "class": "sec-head"
+    },
+    {
+     "path": "2.0.0",
+     "tag": "SPAN",
+     "class": "caret"
+    },
+    {
+     "path": "2.0.1",
+     "tag": "H2",
+     "text": "文本内容 texts（导出 design.json）"
+    },
+    {
+     "path": "2.0.2",
+     "tag": "SPAN",
+     "class": "badge",
+     "text": "游戏内已接入 texts 段"
+    },
+    {
+     "path": "2.1",
+     "tag": "DIV",
+     "class": "sec-body",
+     "hidden": true
+    },
+    {
+     "path": "2.1.0",
+     "tag": "DIV",
+     "class": "grid"
+    },
+    {
+     "path": "2.1.0.0",
+     "tag": "DIV",
+     "class": "text-row"
+    },
+    {
+     "path": "2.1.0.0.0",
+     "tag": "SPAN",
+     "class": "t-dot"
+    },
+    {
+     "path": "2.1.0.0.1",
+     "tag": "DIV",
+     "class": "t-label",
+     "text": "大标题 BOCCHI"
+    },
+    {
+     "path": "2.1.0.0.2",
+     "tag": "INPUT",
+     "attrs": {
+      "type": "text",
+      "value": "BOCCHI"
+     }
+    },
+    {
+     "path": "2.1.0.1",
+     "tag": "DIV",
+     "class": "text-row"
+    },
+    {
+     "path": "2.1.0.1.0",
+     "tag": "SPAN",
+     "class": "t-dot"
+    },
+    {
+     "path": "2.1.0.1.1",
+     "tag": "DIV",
+     "class": "t-label",
+     "text": "副标题 THE ROCK"
+    },
+    {
+     "path": "2.1.0.1.2",
+     "tag": "INPUT",
+     "attrs": {
+      "type": "text",
+      "value": "THE ROCK!"
+     }
+    },
+    {
+     "path": "2.1.0.2",
+     "tag": "DIV",
+     "class": "text-row"
+    },
+    {
+     "path": "2.1.0.2.0",
+     "tag": "SPAN",
+     "class": "t-dot"
+    },
+    {
+     "path": "2.1.0.2.1",
+     "tag": "DIV",
+     "class": "t-label",
+     "text": "姓名框 Gotoh Hitori"
+    },
+    {
+     "path": "2.1.0.2.2",
+     "tag": "INPUT",
+     "attrs": {
+      "type": "text",
+      "value": "Gotoh Hitori"
+     }
+    },
+    {
+     "path": "2.1.0.3",
+     "tag": "DIV",
+     "class": "text-row"
+    },
+    {
+     "path": "2.1.0.3.0",
+     "tag": "SPAN",
+     "class": "t-dot"
+    },
+    {
+     "path": "2.1.0.3.1",
+     "tag": "DIV",
+     "class": "t-label",
+     "text": "描述框 A reclusive girl"
+    },
+    {
+     "path": "2.1.0.3.2",
+     "tag": "INPUT",
+     "attrs": {
+      "type": "text",
+      "value": "A reclusive girl"
+     }
+    },
+    {
+     "path": "2.1.0.4",
+     "tag": "DIV",
+     "class": "text-row"
+    },
+    {
+     "path": "2.1.0.4.0",
+     "tag": "SPAN",
+     "class": "t-dot"
+    },
+    {
+     "path": "2.1.0.4.1",
+     "tag": "DIV",
+     "class": "t-label",
+     "text": "标语 SOCIAL PHOBIA"
+    },
+    {
+     "path": "2.1.0.4.2",
+     "tag": "INPUT",
+     "attrs": {
+      "type": "text",
+      "value": "SOCIAL  PHOBIA"
+     }
+    },
+    {
+     "path": "2.1.0.5",
+     "tag": "DIV",
+     "class": "text-row"
+    },
+    {
+     "path": "2.1.0.5.0",
+     "tag": "SPAN",
+     "class": "t-dot"
+    },
+    {
+     "path": "2.1.0.5.1",
+     "tag": "DIV",
+     "class": "t-label",
+     "text": "介绍 (支持<br>)"
+    },
+    {
+     "path": "2.1.0.5.2",
+     "tag": "INPUT",
+     "attrs": {
+      "type": "text",
+      "value": "Goto, nicknamed \"Little Solitude\",<br>is a girl who always starts her speech with \"Ah...\"<br>and is extremely accepting and introverted"
+     }
+    },
+    {
+     "path": "2.1.0.6",
+     "tag": "DIV",
+     "class": "text-row"
+    },
+    {
+     "path": "2.1.0.6.0",
+     "tag": "SPAN",
+     "class": "t-dot"
+    },
+    {
+     "path": "2.1.0.6.1",
+     "tag": "DIV",
+     "class": "t-label",
+     "text": "面板标题"
+    },
+    {
+     "path": "2.1.0.6.2",
+     "tag": "INPUT",
+     "attrs": {
+      "type": "text",
+      "value": "BOCCHI"
+     }
+    },
+    {
+     "path": "2.1.0.7",
+     "tag": "DIV",
+     "class": "text-row"
+    },
+    {
+     "path": "2.1.0.7.0",
+     "tag": "SPAN",
+     "class": "t-dot"
+    },
+    {
+     "path": "2.1.0.7.1",
+     "tag": "DIV",
+     "class": "t-label",
+     "text": "版本号"
+    },
+    {
+     "path": "2.1.0.7.2",
+     "tag": "INPUT",
+     "attrs": {
+      "type": "text",
+      "value": "1.0"
+     }
+    },
+    {
+     "path": "2.1.0.8",
+     "tag": "DIV",
+     "class": "text-row"
+    },
+    {
+     "path": "2.1.0.8.0",
+     "tag": "SPAN",
+     "class": "t-dot"
+    },
+    {
+     "path": "2.1.0.8.1",
+     "tag": "DIV",
+     "class": "t-label",
+     "text": "分支"
+    },
+    {
+     "path": "2.1.0.8.2",
+     "tag": "INPUT",
+     "attrs": {
+      "type": "text",
+      "value": "\"ALPHA\""
+     }
+    },
+    {
+     "path": "2.1.0.9",
+     "tag": "DIV",
+     "class": "text-row"
+    },
+    {
+     "path": "2.1.0.9.0",
+     "tag": "SPAN",
+     "class": "t-dot"
+    },
+    {
+     "path": "2.1.0.9.1",
+     "tag": "DIV",
+     "class": "t-label",
+     "text": "版权行 1"
+    },
+    {
+     "path": "2.1.0.9.2",
+     "tag": "INPUT",
+     "attrs": {
+      "type": "text",
+      "value": "Bocchi Client    Version - 1.0"
+     }
+    },
+    {
+     "path": "2.1.0.10",
+     "tag": "DIV",
+     "class": "text-row"
+    },
+    {
+     "path": "2.1.0.10.0",
+     "tag": "SPAN",
+     "class": "t-dot"
+    },
+    {
+     "path": "2.1.0.10.1",
+     "tag": "DIV",
+     "class": "t-label",
+     "text": "版权行 2"
+    },
+    {
+     "path": "2.1.0.10.2",
+     "tag": "INPUT",
+     "attrs": {
+      "type": "text",
+      "value": "@COPYRIGHT MISAYO"
+     }
+    },
+    {
+     "path": "2.1.0.11",
+     "tag": "DIV",
+     "class": "text-row"
+    },
+    {
+     "path": "2.1.0.11.0",
+     "tag": "SPAN",
+     "class": "t-dot"
+    },
+    {
+     "path": "2.1.0.11.1",
+     "tag": "DIV",
+     "class": "t-label",
+     "text": "poulsen 姓 HITORI (上)"
+    },
+    {
+     "path": "2.1.0.11.2",
+     "tag": "INPUT",
+     "attrs": {
+      "type": "text",
+      "value": "HITORI"
+     }
+    },
+    {
+     "path": "2.1.0.12",
+     "tag": "DIV",
+     "class": "text-row"
+    },
+    {
+     "path": "2.1.0.12.0",
+     "tag": "SPAN",
+     "class": "t-dot"
+    },
+    {
+     "path": "2.1.0.12.1",
+     "tag": "DIV",
+     "class": "t-label",
+     "text": "poulsen 姓 HITORI (下)"
+    },
+    {
+     "path": "2.1.0.12.2",
+     "tag": "INPUT",
+     "attrs": {
+      "type": "text",
+      "value": "HITORI"
+     }
+    },
+    {
+     "path": "2.1.0.13",
+     "tag": "DIV",
+     "class": "text-row"
+    },
+    {
+     "path": "2.1.0.13.0",
+     "tag": "SPAN",
+     "class": "t-dot"
+    },
+    {
+     "path": "2.1.0.13.1",
+     "tag": "DIV",
+     "class": "t-label",
+     "text": "poulsen 名 GOTO (上)"
+    },
+    {
+     "path": "2.1.0.13.2",
+     "tag": "INPUT",
+     "attrs": {
+      "type": "text",
+      "value": "GOTO"
+     }
+    },
+    {
+     "path": "2.1.0.14",
+     "tag": "DIV",
+     "class": "text-row"
+    },
+    {
+     "path": "2.1.0.14.0",
+     "tag": "SPAN",
+     "class": "t-dot"
+    },
+    {
+     "path": "2.1.0.14.1",
+     "tag": "DIV",
+     "class": "t-label",
+     "text": "poulsen 名 GOTO (下)"
+    },
+    {
+     "path": "2.1.0.14.2",
+     "tag": "INPUT",
+     "attrs": {
+      "type": "text",
+      "value": "GOTO"
+     }
+    },
+    {
+     "path": "2.1.0.15",
+     "tag": "DIV",
+     "class": "text-row"
+    },
+    {
+     "path": "2.1.0.15.0",
+     "tag": "SPAN",
+     "class": "t-dot"
+    },
+    {
+     "path": "2.1.0.15.1",
+     "tag": "DIV",
+     "class": "t-label",
+     "text": "poulsen 姓名"
+    },
+    {
+     "path": "2.1.0.15.2",
+     "tag": "INPUT",
+     "attrs": {
+      "type": "text",
+      "value": "後藤 ひとり"
+     }
+    },
+    {
+     "path": "2.1.0.16",
+     "tag": "DIV",
+     "class": "text-row"
+    },
+    {
+     "path": "2.1.0.16.0",
+     "tag": "SPAN",
+     "class": "t-dot"
+    },
+    {
+     "path": "2.1.0.16.1",
+     "tag": "DIV",
+     "class": "t-label",
+     "text": "poulsen 假名"
+    },
+    {
+     "path": "2.1.0.16.2",
+     "tag": "INPUT",
+     "attrs": {
+      "type": "text",
+      "value": "ご   とう"
+     }
+    },
+    {
+     "path": "2.1.0.17",
+     "tag": "DIV",
+     "class": "text-row"
+    },
+    {
+     "path": "2.1.0.17.0",
+     "tag": "SPAN",
+     "class": "t-dot"
+    },
+    {
+     "path": "2.1.0.17.1",
+     "tag": "DIV",
+     "class": "t-label",
+     "text": "poulsen 别名"
+    },
+    {
+     "path": "2.1.0.17.2",
+     "tag": "INPUT",
+     "attrs": {
+      "type": "text",
+      "value": "ギターヒーロー"
+     }
+    },
+    {
+     "path": "2.1.0.18",
+     "tag": "DIV",
+     "class": "text-row"
+    },
+    {
+     "path": "2.1.0.18.0",
+     "tag": "SPAN",
+     "class": "t-dot"
+    },
+    {
+     "path": "2.1.0.18.1",
+     "tag": "DIV",
+     "class": "t-label",
+     "text": "信息条 1"
+    },
+    {
+     "path": "2.1.0.18.2",
+     "tag": "INPUT",
+     "attrs": {
+      "type": "text",
+      "value": "FEBRUARY 21"
+     }
+    },
+    {
+     "path": "2.1.0.19",
+     "tag": "DIV",
+     "class": "text-row"
+    },
+    {
+     "path": "2.1.0.19.0",
+     "tag": "SPAN",
+     "class": "t-dot"
+    },
+    {
+     "path": "2.1.0.19.1",
+     "tag": "DIV",
+     "class": "t-label",
+     "text": "信息条 2"
+    },
+    {
+     "path": "2.1.0.19.2",
+     "tag": "INPUT",
+     "attrs": {
+      "type": "text",
+      "value": "50 kg & 156 cm"
+     }
+    },
+    {
+     "path": "2.1.0.20",
+     "tag": "DIV",
+     "class": "text-row"
+    },
+    {
+     "path": "2.1.0.20.0",
+     "tag": "SPAN",
+     "class": "t-dot"
+    },
+    {
+     "path": "2.1.0.20.1",
+     "tag": "DIV",
+     "class": "t-label",
+     "text": "信息条 3"
+    },
+    {
+     "path": "2.1.0.20.2",
+     "tag": "INPUT",
+     "attrs": {
+      "type": "text",
+      "value": "Aqua eye"
+     }
+    },
+    {
+     "path": "3",
+     "tag": "DIV",
+     "id": "sec-res-textures",
+     "class": "sec open"
+    },
+    {
+     "path": "3.0",
+     "tag": "DIV",
+     "class": "sec-head"
+    },
+    {
+     "path": "3.0.0",
+     "tag": "SPAN",
+     "class": "caret"
+    },
+    {
+     "path": "3.0.1",
+     "tag": "H2",
+     "text": "纹理 textures（上传即预览，导出时打包）"
+    },
+    {
+     "path": "3.0.2",
+     "tag": "SPAN",
+     "class": "badge"
+    },
+    {
+     "path": "3.1",
+     "tag": "DIV",
+     "class": "sec-body"
+    },
+    {
+     "path": "3.1.0",
+     "tag": "DIV",
+     "class": "res-row"
+    },
+    {
+     "path": "3.1.0.0",
+     "tag": "DIV",
+     "class": "r-label",
+     "text": "立绘 bocchi（misayos）"
+    },
+    {
+     "path": "3.1.0.1",
+     "tag": "DIV",
+     "id": "rn_textures_bocchi",
+     "class": "r-name",
+     "text": "client/textures/bocchi.png"
+    },
+    {
+     "path": "3.1.0.2",
+     "tag": "BUTTON",
+     "class": "row-reset",
+     "text": "内置",
+     "attrs": {
+      "type": null,
+      "disabled": false
+     }
+    },
+    {
+     "path": "3.1.0.3",
+     "tag": "BUTTON",
+     "class": "r-btn",
+     "text": "选择文件...",
+     "attrs": {
+      "type": null,
+      "disabled": false
+     }
+    },
+    {
+     "path": "3.1.0.4",
+     "tag": "INPUT",
+     "attrs": {
+      "type": "file",
+      "value": ""
+     },
+     "hidden": true
+    },
+    {
+     "path": "3.1.1",
+     "tag": "DIV",
+     "class": "res-row"
+    },
+    {
+     "path": "3.1.1.0",
+     "tag": "DIV",
+     "class": "r-label",
+     "text": "立绘 gotoh（poulsen）"
+    },
+    {
+     "path": "3.1.1.1",
+     "tag": "DIV",
+     "id": "rn_textures_gotoh",
+     "class": "r-name",
+     "text": "client/textures/gotoh.png"
+    },
+    {
+     "path": "3.1.1.2",
+     "tag": "BUTTON",
+     "class": "row-reset",
+     "text": "内置",
+     "attrs": {
+      "type": null,
+      "disabled": false
+     }
+    },
+    {
+     "path": "3.1.1.3",
+     "tag": "BUTTON",
+     "class": "r-btn",
+     "text": "选择文件...",
+     "attrs": {
+      "type": null,
+      "disabled": false
+     }
+    },
+    {
+     "path": "3.1.1.4",
+     "tag": "INPUT",
+     "attrs": {
+      "type": "file",
+      "value": ""
+     },
+     "hidden": true
+    },
+    {
+     "path": "3.1.2",
+     "tag": "DIV",
+     "class": "res-row"
+    },
+    {
+     "path": "3.1.2.0",
+     "tag": "DIV",
+     "class": "r-label",
+     "text": "poulsen 方块图 1"
+    },
+    {
+     "path": "3.1.2.1",
+     "tag": "DIV",
+     "id": "rn_textures_gotoh_image_1",
+     "class": "r-name",
+     "text": "client/textures/gotoh_image_1.png"
+    },
+    {
+     "path": "3.1.2.2",
+     "tag": "BUTTON",
+     "class": "row-reset",
+     "text": "内置",
+     "attrs": {
+      "type": null,
+      "disabled": false
+     }
+    },
+    {
+     "path": "3.1.2.3",
+     "tag": "BUTTON",
+     "class": "r-btn",
+     "text": "选择文件...",
+     "attrs": {
+      "type": null,
+      "disabled": false
+     }
+    },
+    {
+     "path": "3.1.2.4",
+     "tag": "INPUT",
+     "attrs": {
+      "type": "file",
+      "value": ""
+     },
+     "hidden": true
+    },
+    {
+     "path": "3.1.3",
+     "tag": "DIV",
+     "class": "res-row"
+    },
+    {
+     "path": "3.1.3.0",
+     "tag": "DIV",
+     "class": "r-label",
+     "text": "poulsen 方块图 2"
+    },
+    {
+     "path": "3.1.3.1",
+     "tag": "DIV",
+     "id": "rn_textures_gotoh_image_2",
+     "class": "r-name",
+     "text": "client/textures/gotoh_image_2.png"
+    },
+    {
+     "path": "3.1.3.2",
+     "tag": "BUTTON",
+     "class": "row-reset",
+     "text": "内置",
+     "attrs": {
+      "type": null,
+      "disabled": false
+     }
+    },
+    {
+     "path": "3.1.3.3",
+     "tag": "BUTTON",
+     "class": "r-btn",
+     "text": "选择文件...",
+     "attrs": {
+      "type": null,
+      "disabled": false
+     }
+    },
+    {
+     "path": "3.1.3.4",
+     "tag": "INPUT",
+     "attrs": {
+      "type": "file",
+      "value": ""
+     },
+     "hidden": true
+    },
+    {
+     "path": "3.1.4",
+     "tag": "DIV",
+     "class": "res-row"
+    },
+    {
+     "path": "3.1.4.0",
+     "tag": "DIV",
+     "class": "r-label",
+     "text": "加载动画雪碧图"
+    },
+    {
+     "path": "3.1.4.1",
+     "tag": "DIV",
+     "id": "rn_textures_bocchi_loading",
+     "class": "r-name",
+     "text": "client/textures/bocchi_loading.png"
+    },
+    {
+     "path": "3.1.4.2",
+     "tag": "BUTTON",
+     "class": "row-reset",
+     "text": "内置",
+     "attrs": {
+      "type": null,
+      "disabled": false
+     }
+    },
+    {
+     "path": "3.1.4.3",
+     "tag": "BUTTON",
+     "class": "r-btn",
+     "text": "选择文件...",
+     "attrs": {
+      "type": null,
+      "disabled": false
+     }
+    },
+    {
+     "path": "3.1.4.4",
+     "tag": "INPUT",
+     "attrs": {
+      "type": "file",
+      "value": ""
+     },
+     "hidden": true
+    },
+    {
+     "path": "3.1.5",
+     "tag": "DIV",
+     "class": "res-row"
+    },
+    {
+     "path": "3.1.5.0",
+     "tag": "DIV",
+     "class": "r-label",
+     "text": "Logo"
+    },
+    {
+     "path": "3.1.5.1",
+     "tag": "DIV",
+     "id": "rn_textures_logo",
+     "class": "r-name",
+     "text": "client/textures/logo.png"
+    },
+    {
+     "path": "3.1.5.2",
+     "tag": "BUTTON",
+     "class": "row-reset",
+     "text": "内置",
+     "attrs": {
+      "type": null,
+      "disabled": false
+     }
+    },
+    {
+     "path": "3.1.5.3",
+     "tag": "BUTTON",
+     "class": "r-btn",
+     "text": "选择文件...",
+     "attrs": {
+      "type": null,
+      "disabled": false
+     }
+    },
+    {
+     "path": "3.1.5.4",
+     "tag": "INPUT",
+     "attrs": {
+      "type": "file",
+      "value": ""
+     },
+     "hidden": true
+    },
+    {
+     "path": "4",
+     "tag": "DIV",
+     "id": "sec-res-svgs",
+     "class": "sec"
+    },
+    {
+     "path": "4.0",
+     "tag": "DIV",
+     "class": "sec-head"
+    },
+    {
+     "path": "4.0.0",
+     "tag": "SPAN",
+     "class": "caret"
+    },
+    {
+     "path": "4.0.1",
+     "tag": "H2",
+     "text": "按钮图标 svgs"
+    },
+    {
+     "path": "4.0.2",
+     "tag": "SPAN",
+     "class": "badge"
+    },
+    {
+     "path": "4.1",
+     "tag": "DIV",
+     "class": "sec-body",
+     "hidden": true
+    },
+    {
+     "path": "4.1.0",
+     "tag": "DIV",
+     "class": "res-row"
+    },
+    {
+     "path": "4.1.0.0",
+     "tag": "DIV",
+     "class": "r-label",
+     "text": "单人游戏"
+    },
+    {
+     "path": "4.1.0.1",
+     "tag": "DIV",
+     "id": "rn_svgs_single",
+     "class": "r-name",
+     "text": "client/svgs/single.svg"
+    },
+    {
+     "path": "4.1.0.2",
+     "tag": "BUTTON",
+     "class": "row-reset",
+     "text": "内置",
+     "attrs": {
+      "type": null,
+      "disabled": false
+     }
+    },
+    {
+     "path": "4.1.0.3",
+     "tag": "BUTTON",
+     "class": "r-btn",
+     "text": "选择文件...",
+     "attrs": {
+      "type": null,
+      "disabled": false
+     }
+    },
+    {
+     "path": "4.1.0.4",
+     "tag": "INPUT",
+     "attrs": {
+      "type": "file",
+      "value": ""
+     },
+     "hidden": true
+    },
+    {
+     "path": "4.1.1",
+     "tag": "DIV",
+     "class": "res-row"
+    },
+    {
+     "path": "4.1.1.0",
+     "tag": "DIV",
+     "class": "r-label",
+     "text": "多人游戏"
+    },
+    {
+     "path": "4.1.1.1",
+     "tag": "DIV",
+     "id": "rn_svgs_multi",
+     "class": "r-name",
+     "text": "client/svgs/multi.svg"
+    },
+    {
+     "path": "4.1.1.2",
+     "tag": "BUTTON",
+     "class": "row-reset",
+     "text": "内置",
+     "attrs": {
+      "type": null,
+      "disabled": false
+     }
+    },
+    {
+     "path": "4.1.1.3",
+     "tag": "BUTTON",
+     "class": "r-btn",
+     "text": "选择文件...",
+     "attrs": {
+      "type": null,
+      "disabled": false
+     }
+    },
+    {
+     "path": "4.1.1.4",
+     "tag": "INPUT",
+     "attrs": {
+      "type": "file",
+      "value": ""
+     },
+     "hidden": true
+    },
+    {
+     "path": "4.1.2",
+     "tag": "DIV",
+     "class": "res-row"
+    },
+    {
+     "path": "4.1.2.0",
+     "tag": "DIV",
+     "class": "r-label",
+     "text": "选项"
+    },
+    {
+     "path": "4.1.2.1",
+     "tag": "DIV",
+     "id": "rn_svgs_option",
+     "class": "r-name",
+     "text": "client/svgs/option.svg"
+    },
+    {
+     "path": "4.1.2.2",
+     "tag": "BUTTON",
+     "class": "row-reset",
+     "text": "内置",
+     "attrs": {
+      "type": null,
+      "disabled": false
+     }
+    },
+    {
+     "path": "4.1.2.3",
+     "tag": "BUTTON",
+     "class": "r-btn",
+     "text": "选择文件...",
+     "attrs": {
+      "type": null,
+      "disabled": false
+     }
+    },
+    {
+     "path": "4.1.2.4",
+     "tag": "INPUT",
+     "attrs": {
+      "type": "file",
+      "value": ""
+     },
+     "hidden": true
+    },
+    {
+     "path": "4.1.3",
+     "tag": "DIV",
+     "class": "res-row"
+    },
+    {
+     "path": "4.1.3.0",
+     "tag": "DIV",
+     "class": "r-label",
+     "text": "语言"
+    },
+    {
+     "path": "4.1.3.1",
+     "tag": "DIV",
+     "id": "rn_svgs_lang",
+     "class": "r-name",
+     "text": "client/svgs/lang.svg"
+    },
+    {
+     "path": "4.1.3.2",
+     "tag": "BUTTON",
+     "class": "row-reset",
+     "text": "内置",
+     "attrs": {
+      "type": null,
+      "disabled": false
+     }
+    },
+    {
+     "path": "4.1.3.3",
+     "tag": "BUTTON",
+     "class": "r-btn",
+     "text": "选择文件...",
+     "attrs": {
+      "type": null,
+      "disabled": false
+     }
+    },
+    {
+     "path": "4.1.3.4",
+     "tag": "INPUT",
+     "attrs": {
+      "type": "file",
+      "value": ""
+     },
+     "hidden": true
+    },
+    {
+     "path": "4.1.4",
+     "tag": "DIV",
+     "class": "res-row"
+    },
+    {
+     "path": "4.1.4.0",
+     "tag": "DIV",
+     "class": "r-label",
+     "text": "退出"
+    },
+    {
+     "path": "4.1.4.1",
+     "tag": "DIV",
+     "id": "rn_svgs_quit",
+     "class": "r-name",
+     "text": "client/svgs/quit.svg"
+    },
+    {
+     "path": "4.1.4.2",
+     "tag": "BUTTON",
+     "class": "row-reset",
+     "text": "内置",
+     "attrs": {
+      "type": null,
+      "disabled": false
+     }
+    },
+    {
+     "path": "4.1.4.3",
+     "tag": "BUTTON",
+     "class": "r-btn",
+     "text": "选择文件...",
+     "attrs": {
+      "type": null,
+      "disabled": false
+     }
+    },
+    {
+     "path": "4.1.4.4",
+     "tag": "INPUT",
+     "attrs": {
+      "type": "file",
+      "value": ""
+     },
+     "hidden": true
+    },
+    {
+     "path": "4.1.5",
+     "tag": "DIV",
+     "class": "res-row"
+    },
+    {
+     "path": "4.1.5.0",
+     "tag": "DIV",
+     "class": "r-label",
+     "text": "主题切换"
+    },
+    {
+     "path": "4.1.5.1",
+     "tag": "DIV",
+     "id": "rn_svgs_theme",
+     "class": "r-name",
+     "text": "client/svgs/theme.svg"
+    },
+    {
+     "path": "4.1.5.2",
+     "tag": "BUTTON",
+     "class": "row-reset",
+     "text": "内置",
+     "attrs": {
+      "type": null,
+      "disabled": false
+     }
+    },
+    {
+     "path": "4.1.5.3",
+     "tag": "BUTTON",
+     "class": "r-btn",
+     "text": "选择文件...",
+     "attrs": {
+      "type": null,
+      "disabled": false
+     }
+    },
+    {
+     "path": "4.1.5.4",
+     "tag": "INPUT",
+     "attrs": {
+      "type": "file",
+      "value": ""
+     },
+     "hidden": true
+    },
+    {
+     "path": "5",
+     "tag": "DIV",
+     "id": "sec-res-fonts",
+     "class": "sec"
+    },
+    {
+     "path": "5.0",
+     "tag": "DIV",
+     "class": "sec-head"
+    },
+    {
+     "path": "5.0.0",
+     "tag": "SPAN",
+     "class": "caret"
+    },
+    {
+     "path": "5.0.1",
+     "tag": "H2",
+     "text": "字体 fonts（键 = FontSet 字体名，换字体需重启游戏）"
+    },
+    {
+     "path": "5.0.2",
+     "tag": "SPAN",
+     "class": "badge"
+    },
+    {
+     "path": "5.1",
+     "tag": "DIV",
+     "class": "sec-body",
+     "hidden": true
+    },
+    {
+     "path": "5.1.0",
+     "tag": "DIV",
+     "class": "res-row"
+    },
+    {
+     "path": "5.1.0.0",
+     "tag": "DIV",
+     "class": "r-label",
+     "text": "Radikal-Black"
+    },
+    {
+     "path": "5.1.0.1",
+     "tag": "DIV",
+     "id": "rn_fonts_Radikal-Black",
+     "class": "r-name",
+     "text": "client/fonts/radikal-black.ttf"
+    },
+    {
+     "path": "5.1.0.2",
+     "tag": "BUTTON",
+     "class": "row-reset",
+     "text": "内置",
+     "attrs": {
+      "type": null,
+      "disabled": false
+     }
+    },
+    {
+     "path": "5.1.0.3",
+     "tag": "BUTTON",
+     "class": "r-btn",
+     "text": "选择文件...",
+     "attrs": {
+      "type": null,
+      "disabled": false
+     }
+    },
+    {
+     "path": "5.1.0.4",
+     "tag": "INPUT",
+     "attrs": {
+      "type": "file",
+      "value": ""
+     },
+     "hidden": true
+    },
+    {
+     "path": "5.1.1",
+     "tag": "DIV",
+     "class": "res-row"
+    },
+    {
+     "path": "5.1.1.0",
+     "tag": "DIV",
+     "class": "r-label",
+     "text": "Radikal-Regular"
+    },
+    {
+     "path": "5.1.1.1",
+     "tag": "DIV",
+     "id": "rn_fonts_Radikal-Regular",
+     "class": "r-name",
+     "text": "client/fonts/radikal-regular.ttf"
+    },
+    {
+     "path": "5.1.1.2",
+     "tag": "BUTTON",
+     "class": "row-reset",
+     "text": "内置",
+     "attrs": {
+      "type": null,
+      "disabled": false
+     }
+    },
+    {
+     "path": "5.1.1.3",
+     "tag": "BUTTON",
+     "class": "r-btn",
+     "text": "选择文件...",
+     "attrs": {
+      "type": null,
+      "disabled": false
+     }
+    },
+    {
+     "path": "5.1.1.4",
+     "tag": "INPUT",
+     "attrs": {
+      "type": "file",
+      "value": ""
+     },
+     "hidden": true
+    },
+    {
+     "path": "5.1.2",
+     "tag": "DIV",
+     "class": "res-row"
+    },
+    {
+     "path": "5.1.2.0",
+     "tag": "DIV",
+     "class": "r-label",
+     "text": "meiryo-bold"
+    },
+    {
+     "path": "5.1.2.1",
+     "tag": "DIV",
+     "id": "rn_fonts_meiryo-bold",
+     "class": "r-name",
+     "text": "client/fonts/meiryo-bold.ttf"
+    },
+    {
+     "path": "5.1.2.2",
+     "tag": "BUTTON",
+     "class": "row-reset",
+     "text": "内置",
+     "attrs": {
+      "type": null,
+      "disabled": false
+     }
+    },
+    {
+     "path": "5.1.2.3",
+     "tag": "BUTTON",
+     "class": "r-btn",
+     "text": "选择文件...",
+     "attrs": {
+      "type": null,
+      "disabled": false
+     }
+    },
+    {
+     "path": "5.1.2.4",
+     "tag": "INPUT",
+     "attrs": {
+      "type": "file",
+      "value": ""
+     },
+     "hidden": true
+    },
+    {
+     "path": "5.1.3",
+     "tag": "DIV",
+     "class": "res-row"
+    },
+    {
+     "path": "5.1.3.0",
+     "tag": "DIV",
+     "class": "r-label",
+     "text": "思源黑体 Light"
+    },
+    {
+     "path": "5.1.3.1",
+     "tag": "DIV",
+     "id": "rn_fonts_SourceHanSansSC-Light",
+     "class": "r-name",
+     "text": "client/fonts/sourcehansanssc-light.ttf"
+    },
+    {
+     "path": "5.1.3.2",
+     "tag": "BUTTON",
+     "class": "row-reset",
+     "text": "内置",
+     "attrs": {
+      "type": null,
+      "disabled": false
+     }
+    },
+    {
+     "path": "5.1.3.3",
+     "tag": "BUTTON",
+     "class": "r-btn",
+     "text": "选择文件...",
+     "attrs": {
+      "type": null,
+      "disabled": false
+     }
+    },
+    {
+     "path": "5.1.3.4",
+     "tag": "INPUT",
+     "attrs": {
+      "type": "file",
+      "value": ""
+     },
+     "hidden": true
+    },
+    {
+     "path": "5.1.4",
+     "tag": "DIV",
+     "class": "res-row"
+    },
+    {
+     "path": "5.1.4.0",
+     "tag": "DIV",
+     "class": "r-label",
+     "text": "思源黑体 Regular"
+    },
+    {
+     "path": "5.1.4.1",
+     "tag": "DIV",
+     "id": "rn_fonts_SourceHanSansSC-Regular",
+     "class": "r-name",
+     "text": "client/fonts/sourcehansanssc-regular.ttf"
+    },
+    {
+     "path": "5.1.4.2",
+     "tag": "BUTTON",
+     "class": "row-reset",
+     "text": "内置",
+     "attrs": {
+      "type": null,
+      "disabled": false
+     }
+    },
+    {
+     "path": "5.1.4.3",
+     "tag": "BUTTON",
+     "class": "r-btn",
+     "text": "选择文件...",
+     "attrs": {
+      "type": null,
+      "disabled": false
+     }
+    },
+    {
+     "path": "5.1.4.4",
+     "tag": "INPUT",
+     "attrs": {
+      "type": "file",
+      "value": ""
+     },
+     "hidden": true
+    },
+    {
+     "path": "5.1.5",
+     "tag": "DIV",
+     "class": "res-row"
+    },
+    {
+     "path": "5.1.5.0",
+     "tag": "DIV",
+     "class": "r-label",
+     "text": "思源黑体 Heavy"
+    },
+    {
+     "path": "5.1.5.1",
+     "tag": "DIV",
+     "id": "rn_fonts_SourceHanSansSC-Heavy",
+     "class": "r-name",
+     "text": "client/fonts/sourcehansanssc-heavy.ttf"
+    },
+    {
+     "path": "5.1.5.2",
+     "tag": "BUTTON",
+     "class": "row-reset",
+     "text": "内置",
+     "attrs": {
+      "type": null,
+      "disabled": false
+     }
+    },
+    {
+     "path": "5.1.5.3",
+     "tag": "BUTTON",
+     "class": "r-btn",
+     "text": "选择文件...",
+     "attrs": {
+      "type": null,
+      "disabled": false
+     }
+    },
+    {
+     "path": "5.1.5.4",
+     "tag": "INPUT",
+     "attrs": {
+      "type": "file",
+      "value": ""
+     },
+     "hidden": true
+    },
+    {
+     "path": "5.1.6",
+     "tag": "DIV",
+     "class": "res-row"
+    },
+    {
+     "path": "5.1.6.0",
+     "tag": "DIV",
+     "class": "r-label",
+     "text": "思源黑体 Normal"
+    },
+    {
+     "path": "5.1.6.1",
+     "tag": "DIV",
+     "id": "rn_fonts_SourceHanSansSC-Normal",
+     "class": "r-name",
+     "text": "client/fonts/sourcehansanssc-normal.ttf"
+    },
+    {
+     "path": "5.1.6.2",
+     "tag": "BUTTON",
+     "class": "row-reset",
+     "text": "内置",
+     "attrs": {
+      "type": null,
+      "disabled": false
+     }
+    },
+    {
+     "path": "5.1.6.3",
+     "tag": "BUTTON",
+     "class": "r-btn",
+     "text": "选择文件...",
+     "attrs": {
+      "type": null,
+      "disabled": false
+     }
+    },
+    {
+     "path": "5.1.6.4",
+     "tag": "INPUT",
+     "attrs": {
+      "type": "file",
+      "value": ""
+     },
+     "hidden": true
+    },
+    {
+     "path": "5.1.7",
+     "tag": "DIV",
+     "class": "res-row"
+    },
+    {
+     "path": "5.1.7.0",
+     "tag": "DIV",
+     "class": "r-label",
+     "text": "思源黑体 Bold"
+    },
+    {
+     "path": "5.1.7.1",
+     "tag": "DIV",
+     "id": "rn_fonts_SourceHanSansSC-Bold",
+     "class": "r-name",
+     "text": "client/fonts/sourcehansanssc-bold.ttf"
+    },
+    {
+     "path": "5.1.7.2",
+     "tag": "BUTTON",
+     "class": "row-reset",
+     "text": "内置",
+     "attrs": {
+      "type": null,
+      "disabled": false
+     }
+    },
+    {
+     "path": "5.1.7.3",
+     "tag": "BUTTON",
+     "class": "r-btn",
+     "text": "选择文件...",
+     "attrs": {
+      "type": null,
+      "disabled": false
+     }
+    },
+    {
+     "path": "5.1.7.4",
+     "tag": "INPUT",
+     "attrs": {
+      "type": "file",
+      "value": ""
+     },
+     "hidden": true
+    },
+    {
+     "path": "6",
+     "tag": "DIV",
+     "id": "sec-res-colors",
+     "class": "sec"
+    },
+    {
+     "path": "6.0",
+     "tag": "DIV",
+     "class": "sec-head"
+    },
+    {
+     "path": "6.0.0",
+     "tag": "SPAN",
+     "class": "caret"
+    },
+    {
+     "path": "6.0.1",
+     "tag": "H2",
+     "text": "配色 colors（design.json 的 colors 段，#RRGGBB / #AARRGGBB）"
+    },
+    {
+     "path": "6.0.2",
+     "tag": "SPAN",
+     "class": "badge"
+    },
+    {
+     "path": "6.1",
+     "tag": "DIV",
+     "class": "sec-body",
+     "hidden": true
+    },
+    {
+     "path": "6.1.0",
+     "tag": "DIV",
+     "class": "color-row"
+    },
+    {
+     "path": "6.1.0.0",
+     "tag": "DIV",
+     "class": "c-label",
+     "text": "唱片外缘 vinyl_edge"
+    },
+    {
+     "path": "6.1.0.1",
+     "tag": "INPUT",
+     "attrs": {
+      "type": "text",
+      "value": "#050505"
+     }
+    },
+    {
+     "path": "6.1.0.2",
+     "tag": "INPUT",
+     "attrs": {
+      "type": "color",
+      "value": "#050505"
+     }
+    },
+    {
+     "path": "6.1.0.3",
+     "tag": "BUTTON",
+     "class": "row-reset",
+     "text": "内置",
+     "attrs": {
+      "type": null,
+      "disabled": false
+     }
+    },
+    {
+     "path": "6.1.1",
+     "tag": "DIV",
+     "class": "color-row"
+    },
+    {
+     "path": "6.1.1.0",
+     "tag": "DIV",
+     "class": "c-label",
+     "text": "唱片盘面 vinyl_base"
+    },
+    {
+     "path": "6.1.1.1",
+     "tag": "INPUT",
+     "attrs": {
+      "type": "text",
+      "value": "#1A1A1A"
+     }
+    },
+    {
+     "path": "6.1.1.2",
+     "tag": "INPUT",
+     "attrs": {
+      "type": "color",
+      "value": "#1a1a1a"
+     }
+    },
+    {
+     "path": "6.1.1.3",
+     "tag": "BUTTON",
+     "class": "row-reset",
+     "text": "内置",
+     "attrs": {
+      "type": null,
+      "disabled": false
+     }
+    },
+    {
+     "path": "6.1.2",
+     "tag": "DIV",
+     "class": "color-row"
+    },
+    {
+     "path": "6.1.2.0",
+     "tag": "DIV",
+     "class": "c-label",
+     "text": "音轨 vinyl_groove"
+    },
+    {
+     "path": "6.1.2.1",
+     "tag": "INPUT",
+     "attrs": {
+      "type": "text",
+      "value": "#1FFFFFFF"
+     }
+    },
+    {
+     "path": "6.1.2.2",
+     "tag": "INPUT",
+     "attrs": {
+      "type": "color",
+      "value": "#ffffff"
+     }
+    },
+    {
+     "path": "6.1.2.3",
+     "tag": "BUTTON",
+     "class": "row-reset",
+     "text": "内置",
+     "attrs": {
+      "type": null,
+      "disabled": false
+     }
+    },
+    {
+     "path": "6.1.3",
+     "tag": "DIV",
+     "class": "color-row"
+    },
+    {
+     "path": "6.1.3.0",
+     "tag": "DIV",
+     "class": "c-label",
+     "text": "高光 1 vinyl_shine_1"
+    },
+    {
+     "path": "6.1.3.1",
+     "tag": "INPUT",
+     "attrs": {
+      "type": "text",
+      "value": "#33FFFFFF"
+     }
+    },
+    {
+     "path": "6.1.3.2",
+     "tag": "INPUT",
+     "attrs": {
+      "type": "color",
+      "value": "#ffffff"
+     }
+    },
+    {
+     "path": "6.1.3.3",
+     "tag": "BUTTON",
+     "class": "row-reset",
+     "text": "内置",
+     "attrs": {
+      "type": null,
+      "disabled": false
+     }
+    },
+    {
+     "path": "6.1.4",
+     "tag": "DIV",
+     "class": "color-row"
+    },
+    {
+     "path": "6.1.4.0",
+     "tag": "DIV",
+     "class": "c-label",
+     "text": "高光 2 vinyl_shine_2"
+    },
+    {
+     "path": "6.1.4.1",
+     "tag": "INPUT",
+     "attrs": {
+      "type": "text",
+      "value": "#1AFFFFFF"
+     }
+    },
+    {
+     "path": "6.1.4.2",
+     "tag": "INPUT",
+     "attrs": {
+      "type": "color",
+      "value": "#ffffff"
+     }
+    },
+    {
+     "path": "6.1.4.3",
+     "tag": "BUTTON",
+     "class": "row-reset",
+     "text": "内置",
+     "attrs": {
+      "type": null,
+      "disabled": false
+     }
+    },
+    {
+     "path": "6.1.5",
+     "tag": "DIV",
+     "class": "color-row"
+    },
+    {
+     "path": "6.1.5.0",
+     "tag": "DIV",
+     "class": "c-label",
+     "text": "高光 3 vinyl_shine_3"
+    },
+    {
+     "path": "6.1.5.1",
+     "tag": "INPUT",
+     "attrs": {
+      "type": "text",
+      "value": "#001A1A1A"
+     }
+    },
+    {
+     "path": "6.1.5.2",
+     "tag": "INPUT",
+     "attrs": {
+      "type": "color",
+      "value": "#1a1a1a"
+     }
+    },
+    {
+     "path": "6.1.5.3",
+     "tag": "BUTTON",
+     "class": "row-reset",
+     "text": "内置",
+     "attrs": {
+      "type": null,
+      "disabled": false
+     }
+    },
+    {
+     "path": "6.1.6",
+     "tag": "DIV",
+     "class": "color-row"
+    },
+    {
+     "path": "6.1.6.0",
+     "tag": "DIV",
+     "class": "c-label",
+     "text": "中心标签 vinyl_label"
+    },
+    {
+     "path": "6.1.6.1",
+     "tag": "INPUT",
+     "attrs": {
+      "type": "text",
+      "value": "#981A1A1A"
+     }
+    },
+    {
+     "path": "6.1.6.2",
+     "tag": "INPUT",
+     "attrs": {
+      "type": "color",
+      "value": "#1a1a1a"
+     }
+    },
+    {
+     "path": "6.1.6.3",
+     "tag": "BUTTON",
+     "class": "row-reset",
+     "text": "内置",
+     "attrs": {
+      "type": null,
+      "disabled": false
+     }
+    },
+    {
+     "path": "7",
+     "tag": "DIV",
+     "id": "sec-menu-theme",
+     "class": "sec"
+    },
+    {
+     "path": "7.0",
+     "tag": "DIV",
+     "class": "sec-head"
+    },
+    {
+     "path": "7.0.0",
+     "tag": "SPAN",
+     "class": "caret"
+    },
+    {
+     "path": "7.0.1",
+     "tag": "H2",
+     "text": "menu（主菜单主题）"
+    },
+    {
+     "path": "7.0.2",
+     "tag": "SPAN",
+     "class": "badge"
+    },
+    {
+     "path": "7.1",
+     "tag": "DIV",
+     "class": "sec-body",
+     "hidden": true
+    },
+    {
+     "path": "7.1.0",
+     "tag": "DIV",
+     "class": "slider-row"
+    },
+    {
+     "path": "7.1.0.0",
+     "tag": "LABEL",
+     "text": "theme"
+    },
+    {
+     "path": "7.1.0.1",
+     "tag": "SELECT",
+     "id": "themeSel",
+     "attrs": {
+      "value": "misayos"
+     }
+    },
+    {
+     "path": "7.1.0.1.0",
+     "tag": "OPTION",
+     "text": "misayos（默认）"
+    },
+    {
+     "path": "7.1.0.1.1",
+     "tag": "OPTION",
+     "text": "poulsen"
+    },
+    {
+     "path": "7.1.1",
+     "tag": "DIV",
+     "class": "hint",
+     "text": "游戏内优先级: ~/.bocchi/theme.json（游戏内切换）> 材质包 design.json > mod 内置默认。"
+    },
+    {
+     "path": "8",
+     "tag": "DIV",
+     "id": "sec-json",
+     "class": "sec"
+    },
+    {
+     "path": "8.0",
+     "tag": "DIV",
+     "class": "sec-head"
+    },
+    {
+     "path": "8.0.0",
+     "tag": "SPAN",
+     "class": "caret"
+    },
+    {
+     "path": "8.0.1",
+     "tag": "H2",
+     "text": "design.json 实时预览"
+    },
+    {
+     "path": "8.0.2",
+     "tag": "SPAN",
+     "class": "badge"
+    },
+    {
+     "path": "8.1",
+     "tag": "DIV",
+     "class": "sec-body",
+     "hidden": true
+    },
+    {
+     "path": "8.1.0",
+     "tag": "PRE",
+     "id": "jsonPreview",
+     "text": "<designJSON len=2577>"
+    },
+    {
+     "path": "9",
+     "tag": "DIV",
+     "id": "sec-export",
+     "class": "sec open"
+    },
+    {
+     "path": "9.0",
+     "tag": "DIV",
+     "class": "sec-head"
+    },
+    {
+     "path": "9.0.0",
+     "tag": "SPAN",
+     "class": "caret"
+    },
+    {
+     "path": "9.0.1",
+     "tag": "H2",
+     "text": "导出"
+    },
+    {
+     "path": "9.0.2",
+     "tag": "SPAN",
+     "class": "badge",
+     "text": "pack.mcmeta + design.json + 全部资源"
+    },
+    {
+     "path": "9.1",
+     "tag": "DIV",
+     "class": "sec-body"
+    },
+    {
+     "path": "9.1.0",
+     "tag": "DIV",
+     "class": "export-row"
+    },
+    {
+     "path": "9.1.0.0",
+     "tag": "BUTTON",
+     "id": "exportBtn",
+     "class": "export-btn",
+     "text": "导 出 材 质 包 (zip)",
+     "attrs": {
+      "type": null,
+      "disabled": false
+     }
+    },
+    {
+     "path": "9.1.0.1",
+     "tag": "BUTTON",
+     "id": "exportJsonBtn",
+     "class": "export-btn sec",
+     "text": "下载 design.json",
+     "attrs": {
+      "type": null,
+      "disabled": false
+     }
+    },
+    {
+     "path": "9.1.1",
+     "tag": "BUTTON",
+     "id": "copyJsonBtn",
+     "class": "export-btn sec",
+     "text": "复制 design.json",
+     "attrs": {
+      "type": null,
+      "disabled": false
+     }
+    },
+    {
+     "path": "9.1.2",
+     "tag": "DIV",
+     "class": "hint",
+     "text": "生成 pack.mcmeta + assets/minecraft/client/design.json + 全部引用资源（未上传的资源自动用内置默认）。支持 1.21.1~1.21.5+（pack_format 33-9999）。"
+    }
+   ]
+  },
+  "selBox": {
+   "display": "none",
+   "handles": "nw,n,ne,e,se,s,sw,w",
+   "rect": {
+    "w": 0,
+    "h": 0
+   }
+  }
+ },
+ "smoke": {
+  "selBoxHiddenAfterEsc": true,
+  "exportBtnExists": true,
+  "rangeInputCount": 16,
+  "ovTachieXAfterNudge": 9
+ },
+ "sliderProbe": {
+  "before": 181.74,
+  "after": 229.575
+ }
+}

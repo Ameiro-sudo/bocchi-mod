@@ -1,4 +1,4 @@
-# Bocchi Designer (web 工具) 校验: 单元测试 + 布局常量漂移检查
+# Bocchi Designer (web 工具) 校验: 单元测试 + 布局常量漂移检查 + 浏览器快照门禁
 #
 # 触发范围包含 src/**: 因为 check-layout.py 校验的正是 facts.js 记录与 Java 源码
 # 的对应关系 —— 改了 Java 布局而不跑它, 这个工具就失去了存在意义。
@@ -6,10 +6,10 @@ name: web-tool
 
 on:
   pull_request:
-    paths: ["tools/**", "src/**"]
+    paths: ["tools/**", "src/**", ".github/workflows/web-tool.yml"]
   push:
     branches: [main]
-    paths: ["tools/**", "src/**"]
+    paths: ["tools/**", "src/**", ".github/workflows/web-tool.yml"]
 
 jobs:
   designer-check:
@@ -26,6 +26,12 @@ jobs:
         with:
           python-version: "3.x"
 
+      # puppeteer-core 只是 devDependency: 页面本身零运行时依赖, 这一个包只让
+      # 快照门禁在干净 checkout 上能自己跑起来 (verify.mjs 会向上查找
+      # node_modules/puppeteer-core)。用 npm ci 是为了让锁文件决定版本。
+      - name: 安装 devDependencies
+        run: npm ci
+
       - name: 单元测试 (node --test)
         run: npm test
 
@@ -37,3 +43,13 @@ jobs:
         run: |
           python sync/check-layout.py --tree bocchi-1.21.5
           python sync/check-layout.py --tree bocchi-1.21.1
+
+      # 快照门禁: 与入库的 dev/dumps/baseline.json 比对 (三舞台几何 + 计算样式 +
+      # design.json 全量 + 工具外壳结构树 + 交互烟测 + 滑杆联动探针)。
+      # 用 --struct: 快照里的 rect 来自真实布局, Linux runner 与开发机的亚像素
+      # 取整不同, 拿全量数值比对只会得到稳定的假红 —— 假红会训练人忽略红色。
+      # 数值级等价由本地 `npm run verify` 把关。
+      # ubuntu-latest 自带 Chrome, verify.mjs 的 Linux 候选路径能命中
+      # /usr/bin/google-chrome; 探测不到时该 job 会红并打印可操作的安装指引。
+      - name: 快照门禁 (结构等价)
+        run: npm run verify:ci

@@ -11,8 +11,12 @@ __pycache__/
 *.pyc
 
 # bocchi-designer 开发验证产物
-tools/bocchi-designer/dev/dumps/
+# baseline.json 必须入库: 快照门禁的判据就是它, 不入库的话干净 checkout 手上
+# 0 份基线, 「重构前后等价」只能拿重构后跟自己比 —— 那是恒真的门禁。
+tools/bocchi-designer/dev/dumps/*
+!tools/bocchi-designer/dev/dumps/baseline.json
 tools/bocchi-designer/dev/shots*/
+node_modules/
 .DS_Store
 *.log
 hs_err_pid*
