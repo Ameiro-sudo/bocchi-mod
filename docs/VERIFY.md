@@ -54,35 +54,47 @@ python sync/check-layout.py --tree bocchi-1.21.1
 
 ```bash
 cd tools/bocchi-designer
-npm test                                    # 33 个用例，纯 Node，无需浏览器
+npm test                                    # 49 个用例，纯 Node，无需浏览器
 python sync/check-layout.py --tree bocchi-1.21.5
 python sync/check-layout.py --tree bocchi-1.21.1
 ```
 
-**改了布局 / 交互等「结构改、行为不该变」的部分**，还要做行为快照比对：
+**改了布局 / 交互等「结构改、行为不该变」的部分**，还要过行为门禁：
 
 ```bash
-# 终端 1：起服务
-python -m http.server 8833 --bind 127.0.0.1
-
-# 终端 2：改动前采基线，改动后采新快照并比对
-node dev/verify.mjs --out dev/dumps/before.json
-#   ... 做改动 ...
-node dev/verify.mjs --out dev/dumps/after.json
-node dev/compare.mjs dev/dumps/before.json dev/dumps/after.json   # 退出码 0 = 等价
+npm run verify        # 快照 + 四组断言探针，与已入库基线比对；退出码 0 = 等价
 ```
 
-> `dev/verify.mjs` 需要 `puppeteer-core`，本项目刻意保持零 npm 依赖，跑不起来时
-> 脚本会列出所有尝试过的来源和四种安装方式，照着做即可。
+`dev/verify.mjs` 自起随机端口静态服务、自找浏览器，**零环境变量可跑**
+（`puppeteer-core` 是 devDependency，与页面运行无关）。它做两件事：
+
+1. **快照比对** —— 采 `<header>` + `#controls` 的结构化节点表（tag / class / id /
+   text / attrs / hidden / rect）、`#jsonPreview` 指纹、内置资源探针结果、三舞台
+   几何与 design.json 内容；与入库的 `dev/dumps/baseline.json` 比对。
+2. **断言探针** —— 快照看不见的地方用它补，违反即退出码 1：
+   - `uiProbe` —— 舞台不应整块可 hover 描虚线；Esc 后状态栏不得为空。
+   - `sliderProbe` —— 滑杆真实 input 事件必须联动舞台几何。
+   - `historyProbe` —— 走用户路径派发 input/change，断言「改完能撤回来」：入栈
+     条数、回放后基准是否刷新、撤销后再失焦**不产生伪造条目**、预览配色回放是否
+     同时还原 CSS 变量、「已改」标记是否跟撤销走。
+   - `responsiveProbe` —— 压到 1000 / 640 两宽，断言无横向溢出、面板仍在视口内、
+     「适应」后预览区无横竖滚动。
+
+> **重构守则**：行为不变的重构应让 `npm run verify` 直接等价通过，**不需要重建
+> 基线**。需要重建基线 = 这次改动确实改了可见行为，得逐条核对差异后再重建。
 >
-> **`dev/dumps/` 不在版本控制内**，基线只在你自己机器上存在。别把某个 dump
-> 文件当成"官方基线" —— `review-final` 那类过期快照拿来做比对会直接报假红。
+> ```bash
+> npm run verify:baseline   # 确认差异都是预期的之后，重建基线
+> npm run verify           # 再跑一次 —— 端口随机，只跑一次排除不掉偶发差异
+> npm run verify           # 第二次也必须等价
+> ```
 
-**已知盲区**（改动落在这里时快照门禁帮不上忙，需手动确认）：
+**残留盲区**（改动落在这里时门禁帮不上忙，需手动确认）：
 
-- `panels.js` 产出的右侧控制面板 —— 它在舞台容器之外，快照采集不到
 - 舞台内没有 `id` 的元素（黑胶 `.m-record` 子层、主菜单背景层等）
-- `<header>` 上的撤销 / 重做 / 导入按钮状态
+- 字体渲染结果本身 —— 只度量盒尺寸，不比对像素
+- 跨平台数值差异：CI 跑 `npm run verify:ci`（`compare.mjs --struct`，只比结构与
+  字符串不比数值），因为同一组浮点公式在不同平台有尾数差异
 
 ---
 
@@ -108,7 +120,8 @@ node dev/compare.mjs dev/dumps/before.json dev/dumps/after.json   # 退出码 0 
 | 双树逐文件哈希核对 | ✅ `check-sync.py` 已代劳 | ✅ 同左 |
 | `npm test` | ✅ | ✅ `web-tool` |
 | `check-layout.py` 双树 | ✅ | ✅ `web-tool` |
-| `verify.mjs` + `compare.mjs` 快照 | ✅ | ❌ 未进 CI（需 puppeteer） |
+| `verify.mjs` + `compare.mjs` 快照 | ✅ | ✅ `web-tool`（`--struct`） |
+| 四组断言探针（ui / slider / history / responsive） | ✅ | ✅ `web-tool` |
 | 视觉验收（人眼） | ✅ | ❌ 无法自动化 |
 
 ---

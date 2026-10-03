@@ -132,6 +132,12 @@ python tools/check-sync.py        # 双树共享区域逐字节一致（例外�
 | `colors` | 唱片配色 `vinyl_*`，格式 `#RRGGBB` 或 `#AARRGGBB` |
 | `texts` | 界面文案：主菜单大标题/姓名框/介绍（`mInfoLine1~3`）、面板标题与版权行、poulsen 姓名假名别名、信息条等，键见 Bocchi Designer 文本面板 |
 | `menu` | `theme`: `"misayos"`（默认）/ `"poulsen"` |
+| `layout` | misayos 主菜单的定位微调（`Design.num()` 读取）。**尺寸类键**写绝对比例，缺省即 mod 内置值；**`…Offset` 类键**写相对内置位置的偏移比例，缺省 0，所以覆写时不必知道基准值 |
+
+`_` 开头的键为注释，未覆盖的字段自动回退 mod 内置默认值。段内任意标量键都会被
+`Design.merge()` 收进 `VALUES`（扁平查找路径 `layout.misayos.tachieH` 这种），因此
+**新增键不需要改 Java**；只有真正有消费方的键才会生效。Bocchi Designer 的布局微调
+面板按这条口径自动导出 9 个滑杆，另 7 个标「仅预览」的滑杆游戏端不读、不导出。
 
 ### 加载动画规格
 
@@ -172,7 +178,7 @@ bocchi-mod/
 └── .github/workflows/
     ├── build-pr.yml                        # PR 门禁: 版本/同步一致性 + 双树单测与构建
     ├── build-release.yml                   # CI: 构建 + Release 发布
-    └── web-tool.yml                        # 门禁: designer 单测 + 布局漂移检查
+    └── web-tool.yml                        # 门禁: designer 单测 + 布局漂移 + 行为快照/断言探针
 ```
 
 ---
@@ -184,7 +190,7 @@ bocchi-mod/
 | workflow | 触发 | 做什么 |
 |---|---|---|
 | `build-pr.yml` | `src/**`、`README.md`、`docs/**`、校验脚本 | 快门禁：版本一致性 + 双树同步；改动 Java 源码时追加双树 `:common:test` 与构建 |
-| `web-tool.yml` | `src/**`、`tools/**` | Designer 单测（`npm test`）+ 布局漂移检查（`check-layout.py` 双树） |
+| `web-tool.yml` | `src/**`、`tools/**`、`.github/workflows/web-tool.yml` | Designer 单测（`npm test`）+ 布局漂移检查（`check-layout.py` 双树）+ 行为门禁（`npm run verify:ci`：快照比对 `--struct` + 四组断言探针） |
 | `build-release.yml` | 推 `v*` tag / 手动 dispatch | preflight 校验 → 双树构建与发布 |
 
 ### 发布
