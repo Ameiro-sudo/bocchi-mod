@@ -44,19 +44,37 @@ main.js (组装根 + 启动)
 ├─ render.js      重排编排 (relayout / scheduleRelayout / 重排后回调注入点)
 ├─ ov.js          布局微调值域 (滑杆注册表 / setOV / 复位, 经 history 入栈)
 ├─ status.js      状态栏写入器
-├─ panels.js      右侧控制面板 DOM 构建
+├─ panels.js      控制面板的组装根 (只负责按顺序建段 + 转出出口)
+│   └─ ui/        一种关注点一个文件, 拆分的理由见下
+│       ├─ section.js       折叠分区骨架 + 网格小标题
+│       ├─ slider.js        布局微调滑杆行
+│       ├─ preview-color.js 预览配色 (只调设计器自己的主题)
+│       ├─ res.js           纹理/SVG/字体行 + 内置资源可达性探针
+│       ├─ color.js         design.json colors 段行
+│       ├─ text.js          文案行 (与舞台元素双向关联)
+│       ├─ theme.js         menu.theme 选择
+│       ├─ exportbar.js     design.json 预览 + 导出区
+│       ├─ dirty.js         「已改 N 项」标记
+│       └─ baseline.js      撤销基准登记 (导入后一次全量对齐)
 ├─ interactions.js 舞台切换 / 入场动画 / 选中拖拽 / 键盘微调 / 缩放
 └─ io.js          材质包导入导出 (applyDesignJSON 为纯模型变更; 导入清空历史)
 ```
 
-模块间无环 (44 条依赖边, 7 层, 由 `sync/` 与门禁共同保证)。跨层协作通过
-**main.js 组装期依赖注入** (替代全局服务定位器):
+模块间无环 (25 个模块 / 94 条依赖边)。跨层协作通过 **main.js 组装期依赖注入**
+(替代全局服务定位器):
 
 | 注入点 | 说明 |
 | --- | --- |
 | `interactions.hooks.focusText` | 双击舞台文本 -> 面板输入框定位 |
 | `render.setAfterRelayout()` | 重排后选中框跟随 |
 | `io.onModelImported()` | 导入 zip/design.json 后的 UI 全量同步 |
+
+> **`panels.js` 为什么被拆开**：它一度是 630 行的上帝模块 —— 分区骨架、滑杆、预览
+> 配色、资源上传、colors 段、文本行、主题下拉、json 预览、导出按钮，八类关注点挤在
+> 一个 170 行的 `build()` 里。改配色行要读文本行的撤销基准怎么维护，删一个导出按钮
+> 要在四百行里找。拆开不是为了行数好看，是为了让「一种关注点一个文件」之后，每种改动
+> 只需要读一个文件。拆分是**纯结构**：`js/ui/*` 的每个文件都是原函数原样搬过去，
+> `npm run verify` 在不重建基线的前提下直接等价。
 
 ## 面板上的三件新增事
 
