@@ -12,7 +12,7 @@ import { loadState } from "./design.js";
 import { initPreview, refreshPreviews } from "./preview.js";
 import { relayout } from "./render.js";
 import { setAfterRelayout } from "./render.js";
-import { build, applyAllTexts, updateResNames, focusTextInput, resyncBaselines } from "./panels.js";
+import { build, applyAllTexts, updateResNames, focusTextInput, resyncBaselines, probeBundledAssets } from "./panels.js";
 import { bind as bindIO, onModelImported } from "./io.js";
 import { showStage, replay, currentStage, fitStage, updateSelBox, hooks } from "./interactions.js";
 import { FONT_SET_NAME, loadUploadedFonts } from "./fonts.js";
@@ -119,6 +119,11 @@ function boot() {
     .then(() => Promise.all(Object.values(FONT_SET_NAME).map(f => document.fonts.load('20px "' + f + '"').catch(() => null))))
     .then(() => relayout())
     .catch(() => relayout());
+
+  // 内置资源挨个探可达性 (meiryo-bold.ttf 之类的「写着路径但没随工具分发」)。
+  // 挂到 __bocchi 上是因为它是异步的: 快照门禁必须等它落定, 否则采到的是
+  // 半成品状态, 差异会随机出现又随机消失。
+  globalThis.__bocchi.assetsReady = probeBundledAssets();
 }
 
 /* 门禁调试出口。挂在 boot() 之前、且只给读取和驱动能力, 不构成一条新的状态

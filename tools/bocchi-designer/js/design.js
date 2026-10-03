@@ -1,4 +1,4 @@
-﻿/* ============================================================================
+/* ============================================================================
  * design.js - design.json 数据模型 + 状态持久化
  *
  * S = 当前编辑态: { textures/svgs/fonts: {key: {path, blob}}, colors: {key: path},
@@ -159,7 +159,7 @@ function buildDesignJSON() {
 
 /* ---------- 状态持久化 (localStorage) ----------
  * 持久化: OV 布局微调 / 文本内容 / colors 段 / menu.theme / 预览配色 / 面板开合 / 缩放
- * 不持久化: 上传的 blob (体积大, 刷新即还原, 用 toast 提示)
+ * 不持久化: 上传的 blob (体积大, 刷新即还原; 有上传资源时 beforeunload 会提示先导出)
  * Node (单测) 下无 localStorage/window: save/load 静默跳过, beforeunload 不注册。
  */
 const LS_KEY = "bocchi-designer:v1";
@@ -193,11 +193,28 @@ function loadState() {
   } catch (e) { return false; /* 损坏状态忽略 */ }
 }
 
+/** 当前有多少个资源只活在内存里 (上传或从 zip 导入的 blob)。
+ *  它们不落 localStorage —— 刷新一次就没了, 且没有任何撤销机会。 */
+export function uploadedCount() {
+  let n = 0;
+  for (const sec of ["textures", "svgs", "fonts"])
+    for (const v of Object.values(S[sec])) if (v && v.blob) n++;
+  return n;
+}
+
 /* M3: 落盘节流 (滑杆拖动画布拖拽高频触发); 页面卸载前冲刷 */
 import { debounce } from "./core.js";
 export const scheduleSave = debounce(saveState, 250);
 if (typeof window !== "undefined") {
-  window.addEventListener("beforeunload", () => scheduleSave.flush());
+  window.addEventListener("beforeunload", (e) => {
+    scheduleSave.flush();
+    // 只在「真的有东西会丢」时才拦。没有上传资源时每次离开都弹确认, 等于把提示
+    // 训练成背景噪音, 用户下次就一路点掉 —— 那才是提示真正失效的时刻。
+    const n = uploadedCount();
+    if (!n) return;
+    e.preventDefault();
+    e.returnValue = `有 ${n} 个资源只存在于内存中, 刷新/关闭会丢失。请先导出材质包。`;
+  });
 }
 
 export {

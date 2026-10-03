@@ -1913,6 +1913,52 @@
   }
  },
  "console": [],
+ "assetProbe": {
+  "checked": {
+   "textures/bocchi": true,
+   "textures/gotoh": true,
+   "textures/gotoh_image_1": true,
+   "textures/gotoh_image_2": true,
+   "textures/bocchi_loading": true,
+   "textures/logo": true,
+   "svgs/single": true,
+   "svgs/multi": true,
+   "svgs/option": true,
+   "svgs/lang": true,
+   "svgs/quit": true,
+   "svgs/theme": true,
+   "fonts/Radikal-Black": true,
+   "fonts/Radikal-Regular": true,
+   "fonts/meiryo-bold": false,
+   "fonts/SourceHanSansSC-Light": true,
+   "fonts/SourceHanSansSC-Regular": true,
+   "fonts/SourceHanSansSC-Heavy": true,
+   "fonts/SourceHanSansSC-Normal": true,
+   "fonts/SourceHanSansSC-Bold": true
+  },
+  "probed": [
+   "http://127.0.0.1:3721/assets/textures/bocchi.png",
+   "http://127.0.0.1:3721/assets/textures/gotoh.png",
+   "http://127.0.0.1:3721/assets/textures/gotoh_image_1.png",
+   "http://127.0.0.1:3721/assets/textures/gotoh_image_2.png",
+   "http://127.0.0.1:3721/assets/textures/bocchi_loading.png",
+   "http://127.0.0.1:3721/assets/textures/logo.png",
+   "http://127.0.0.1:3721/assets/svgs/single.svg",
+   "http://127.0.0.1:3721/assets/svgs/multi.svg",
+   "http://127.0.0.1:3721/assets/svgs/option.svg",
+   "http://127.0.0.1:3721/assets/svgs/lang.svg",
+   "http://127.0.0.1:3721/assets/svgs/quit.svg",
+   "http://127.0.0.1:3721/assets/svgs/theme.svg",
+   "http://127.0.0.1:3721/assets/fonts/radikal-black.ttf",
+   "http://127.0.0.1:3721/assets/fonts/radikal-regular.ttf",
+   "http://127.0.0.1:3721/assets/fonts/meiryo-bold.ttf",
+   "http://127.0.0.1:3721/assets/fonts/sourcehansanssc-light.ttf",
+   "http://127.0.0.1:3721/assets/fonts/sourcehansanssc-regular.ttf",
+   "http://127.0.0.1:3721/assets/fonts/sourcehansanssc-heavy.ttf",
+   "http://127.0.0.1:3721/assets/fonts/sourcehansanssc-normal.ttf",
+   "http://127.0.0.1:3721/assets/fonts/sourcehansanssc-bold.ttf"
+  ]
+ },
  "chrome": {
   "header": {
    "rect": {
@@ -3316,10 +3362,13 @@
     },
     {
      "path": "3.1.0.1",
-     "tag": "DIV",
+     "tag": "INPUT",
      "id": "rn_textures_bocchi",
      "class": "r-name",
-     "text": "client/textures/bocchi.png"
+     "attrs": {
+      "type": "text",
+      "value": "client/textures/bocchi.png"
+     }
     },
     {
      "path": "3.1.0.2",
@@ -3363,10 +3412,13 @@
     },
     {
      "path": "3.1.1.1",
-     "tag": "DIV",
+     "tag": "INPUT",
      "id": "rn_textures_gotoh",
      "class": "r-name",
-     "text": "client/textures/gotoh.png"
+     "attrs": {
+      "type": "text",
+      "value": "client/textures/gotoh.png"
+     }
     },
     {
      "path": "3.1.1.2",
@@ -3410,10 +3462,13 @@
     },
     {
      "path": "3.1.2.1",
-     "tag": "DIV",
+     "tag": "INPUT",
      "id": "rn_textures_gotoh_image_1",
      "class": "r-name",
-     "text": "client/textures/gotoh_image_1.png"
+     "attrs": {
+      "type": "text",
+      "value": "client/textures/gotoh_image_1.png"
+     }
     },
     {
      "path": "3.1.2.2",
@@ -3457,10 +3512,13 @@
     },
     {
      "path": "3.1.3.1",
-     "tag": "DIV",
+     "tag": "INPUT",
      "id": "rn_textures_gotoh_image_2",
      "class": "r-name",
-     "text": "client/textures/gotoh_image_2.png"
+     "attrs": {
+      "type": "text",
+      "value": "client/textures/gotoh_image_2.png"
+     }
     },
     {
      "path": "3.1.3.2",
@@ -3504,10 +3562,13 @@
     },
     {
      "path": "3.1.4.1",
-     "tag": "DIV",
+     "tag": "INPUT",
      "id": "rn_textures_bocchi_loading",
      "class": "r-name",
-     "text": "client/textures/bocchi_loading.png"
+     "attrs": {
+      "type": "text",
+      "value": "client/textures/bocchi_loading.png"
+     }
     },
     {
      "path": "3.1.4.2",
@@ -3551,10 +3612,13 @@
     },
     {
      "path": "3.1.5.1",
-     "tag": "DIV",
+     "tag": "INPUT",
      "id": "rn_textures_logo",
      "class": "r-name",
-     "text": "client/textures/logo.png"
+     "attrs": {
+      "type": "text",
+      "value": "client/textures/logo.png"
+     }
     },
     {
      "path": "3.1.5.2",
@@ -3630,10 +3694,13 @@
     },
     {
      "path": "4.1.0.1",
-     "tag": "DIV",
+     "tag": "INPUT",
      "id": "rn_svgs_single",
      "class": "r-name",
-     "text": "client/svgs/single.svg"
+     "attrs": {
+      "type": "text",
+      "value": "client/svgs/single.svg"
+     }
     },
     {
      "path": "4.1.0.2",
@@ -3677,10 +3744,13 @@
     },
     {
      "path": "4.1.1.1",
-     "tag": "DIV",
+     "tag": "INPUT",
      "id": "rn_svgs_multi",
      "class": "r-name",
-     "text": "client/svgs/multi.svg"
+     "attrs": {
+      "type": "text",
+      "value": "client/svgs/multi.svg"
+     }
     },
     {
      "path": "4.1.1.2",
@@ -3724,10 +3794,13 @@
     },
     {
      "path": "4.1.2.1",
-     "tag": "DIV",
+     "tag": "INPUT",
      "id": "rn_svgs_option",
      "class": "r-name",
-     "text": "client/svgs/option.svg"
+     "attrs": {
+      "type": "text",
+      "value": "client/svgs/option.svg"
+     }
     },
     {
      "path": "4.1.2.2",
@@ -3771,10 +3844,13 @@
     },
     {
      "path": "4.1.3.1",
-     "tag": "DIV",
+     "tag": "INPUT",
      "id": "rn_svgs_lang",
      "class": "r-name",
-     "text": "client/svgs/lang.svg"
+     "attrs": {
+      "type": "text",
+      "value": "client/svgs/lang.svg"
+     }
     },
     {
      "path": "4.1.3.2",
@@ -3818,10 +3894,13 @@
     },
     {
      "path": "4.1.4.1",
-     "tag": "DIV",
+     "tag": "INPUT",
      "id": "rn_svgs_quit",
      "class": "r-name",
-     "text": "client/svgs/quit.svg"
+     "attrs": {
+      "type": "text",
+      "value": "client/svgs/quit.svg"
+     }
     },
     {
      "path": "4.1.4.2",
@@ -3865,10 +3944,13 @@
     },
     {
      "path": "4.1.5.1",
-     "tag": "DIV",
+     "tag": "INPUT",
      "id": "rn_svgs_theme",
      "class": "r-name",
-     "text": "client/svgs/theme.svg"
+     "attrs": {
+      "type": "text",
+      "value": "client/svgs/theme.svg"
+     }
     },
     {
      "path": "4.1.5.2",
@@ -3944,10 +4026,13 @@
     },
     {
      "path": "5.1.0.1",
-     "tag": "DIV",
+     "tag": "INPUT",
      "id": "rn_fonts_Radikal-Black",
      "class": "r-name",
-     "text": "client/fonts/radikal-black.ttf"
+     "attrs": {
+      "type": "text",
+      "value": "client/fonts/radikal-black.ttf"
+     }
     },
     {
      "path": "5.1.0.2",
@@ -3991,10 +4076,13 @@
     },
     {
      "path": "5.1.1.1",
-     "tag": "DIV",
+     "tag": "INPUT",
      "id": "rn_fonts_Radikal-Regular",
      "class": "r-name",
-     "text": "client/fonts/radikal-regular.ttf"
+     "attrs": {
+      "type": "text",
+      "value": "client/fonts/radikal-regular.ttf"
+     }
     },
     {
      "path": "5.1.1.2",
@@ -4038,10 +4126,13 @@
     },
     {
      "path": "5.1.2.1",
-     "tag": "DIV",
+     "tag": "INPUT",
      "id": "rn_fonts_meiryo-bold",
-     "class": "r-name",
-     "text": "client/fonts/meiryo-bold.ttf"
+     "class": "r-name missing",
+     "attrs": {
+      "type": "text",
+      "value": "client/fonts/meiryo-bold.ttf"
+     }
     },
     {
      "path": "5.1.2.2",
@@ -4085,10 +4176,13 @@
     },
     {
      "path": "5.1.3.1",
-     "tag": "DIV",
+     "tag": "INPUT",
      "id": "rn_fonts_SourceHanSansSC-Light",
      "class": "r-name",
-     "text": "client/fonts/sourcehansanssc-light.ttf"
+     "attrs": {
+      "type": "text",
+      "value": "client/fonts/sourcehansanssc-light.ttf"
+     }
     },
     {
      "path": "5.1.3.2",
@@ -4132,10 +4226,13 @@
     },
     {
      "path": "5.1.4.1",
-     "tag": "DIV",
+     "tag": "INPUT",
      "id": "rn_fonts_SourceHanSansSC-Regular",
      "class": "r-name",
-     "text": "client/fonts/sourcehansanssc-regular.ttf"
+     "attrs": {
+      "type": "text",
+      "value": "client/fonts/sourcehansanssc-regular.ttf"
+     }
     },
     {
      "path": "5.1.4.2",
@@ -4179,10 +4276,13 @@
     },
     {
      "path": "5.1.5.1",
-     "tag": "DIV",
+     "tag": "INPUT",
      "id": "rn_fonts_SourceHanSansSC-Heavy",
      "class": "r-name",
-     "text": "client/fonts/sourcehansanssc-heavy.ttf"
+     "attrs": {
+      "type": "text",
+      "value": "client/fonts/sourcehansanssc-heavy.ttf"
+     }
     },
     {
      "path": "5.1.5.2",
@@ -4226,10 +4326,13 @@
     },
     {
      "path": "5.1.6.1",
-     "tag": "DIV",
+     "tag": "INPUT",
      "id": "rn_fonts_SourceHanSansSC-Normal",
      "class": "r-name",
-     "text": "client/fonts/sourcehansanssc-normal.ttf"
+     "attrs": {
+      "type": "text",
+      "value": "client/fonts/sourcehansanssc-normal.ttf"
+     }
     },
     {
      "path": "5.1.6.2",
@@ -4273,10 +4376,13 @@
     },
     {
      "path": "5.1.7.1",
-     "tag": "DIV",
+     "tag": "INPUT",
      "id": "rn_fonts_SourceHanSansSC-Bold",
      "class": "r-name",
-     "text": "client/fonts/sourcehansanssc-bold.ttf"
+     "attrs": {
+      "type": "text",
+      "value": "client/fonts/sourcehansanssc-bold.ttf"
+     }
     },
     {
      "path": "5.1.7.2",

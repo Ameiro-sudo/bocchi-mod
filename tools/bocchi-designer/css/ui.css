@@ -306,12 +306,22 @@ header .sub {
 
 .res-row { display: flex; align-items: center; gap: 10px; margin-bottom: 7px; font-size: 12px; }
 .res-row .r-label { flex: none; width: 148px; color: var(--ui-ink-muted); font-size: 11.5px; }
+/* 资源路径: 曾经是只读 span (靠 ellipsis 截断), 现在是可编辑输入框 ——
+   Design.java 与 design.js 早就支持 namespace:path, 只差一个能敲的入口。 */
 .res-row .r-name {
-  flex: 1; font-size: 11px; color: var(--ui-ink-tertiary); overflow: hidden;
-  text-overflow: ellipsis; white-space: nowrap;
-  font-family: var(--font-mono);
+  flex: 1; min-width: 0; font-size: 11px; color: var(--ui-ink-tertiary);
+  font-family: var(--font-mono); margin: 0; padding: 3px 6px;
+  background: transparent; border: 1px solid transparent; border-radius: 6px;
+}
+.res-row .r-name:hover { border-color: var(--ui-hair2); }
+.res-row .r-name:focus {
+  outline: none; border-color: var(--ui-hair3); background: var(--ui-s1); color: var(--ui-ink);
 }
 .res-row .r-name.uploaded { color: var(--ui-ok); }
+/* 内置文件没随工具分发: 虚线框 = 「该在而不在」。实线会被当成用户自己改过的路径。 */
+.res-row .r-name.missing {
+  color: var(--ui-warn); border-color: var(--ui-warn); border-style: dashed;
+}
 .res-row .r-btn {
   flex: none; background: var(--ui-s1); border: 1px solid var(--ui-hair2); color: var(--ui-ink-subtle);
   border-radius: 7px; padding: 4px 10px; cursor: pointer; font-size: 11px; font-family: inherit;

@@ -7,7 +7,7 @@
 import { $, toast, download, zipWrite, zipRead } from "./core.js";
 import {
   S, buildDesignJSON, usedPath, localAsset, zipEntry,
-  UNSAFE_KEYS, cleanCopy, setBlob, splitPath,
+  UNSAFE_KEYS, cleanCopy, setBlob, splitPath, uploadedCount,
 } from "./design.js";
 import { clearHistory } from "./history.js";
 
@@ -194,7 +194,23 @@ let dragDepth = 0; // L4: 进入/离开计数, 避免跨子元素闪烁
 function hasFiles(e) {
   return e.dataTransfer && e.dataTransfer.types && Array.prototype.indexOf.call(e.dataTransfer.types, "Files") >= 0;
 }
+
+/** 导入前的破坏性确认。
+ *  导入是「整体替换模型 + 清空撤销栈」的不可撤销操作: 把一个 zip 拖进窗口, 之前
+ *  所有文案、配色、主题、布局微调、已上传的资源全没了, 而且撤不回来 —— 撤销栈是
+ *  替换的固有后果, 不是可以单独回退的一步。手滑把资源包拖到窗口上是最常见的触发方式,
+ *  而窗口上又铺着一整块 dropOverlay, 很难不看成「放这里」。 */
+function confirmImport(f) {
+  const lost = ["当前全部文案 / 配色 / 主题", "布局微调与预览配色 (仅本地预览的设置)"];
+  const n = uploadedCount();
+  if (n) lost.push(`${n} 个已上传的资源文件 (只存在于内存, 不落盘)`);
+  return confirm(
+    `即将导入「${f.name}」, 这会替换当前编辑态的全部内容:\n\n` +
+    `· ${lost.join("\n· ")}\n\n` +
+    `替换后无法撤销 —— 撤销栈会随导入一起清空。\n确定继续?`);
+}
 async function importFileByExt(f) {
+  if (!confirmImport(f)) return;
   const ok = /\.json$/i.test(f.name) ? await importJsonFile(f) : await importPack(f);
   // 历史已在 applyDesignJSON 开头清过, 这里只负责把 UI 拉齐新模型
   if (ok && onImported) onImported();

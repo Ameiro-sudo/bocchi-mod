@@ -148,8 +148,28 @@ function addResRow(body, label, sec, key) {
   row.className = "res-row";
   const lab = document.createElement("div");
   lab.className = "r-label"; lab.textContent = label;
-  const name = document.createElement("div");
+  // 路径此前是一个只读 span —— 于是「换个命名空间 / 换个文件名」这种最常见的诉求
+  // 在界面上完全没有入口, 而 Design.java 和 design.js 早就都支持 namespace:path。
+  // 能力齐备只差一个输入框: 改成 input 后 path 一栏才真正可写。
+  const name = document.createElement("input");
+  name.type = "text"; name.spellcheck = false;
   name.className = "r-name"; name.id = `rn_${sec}_${key}`;
+  name.title = "资源路径 (namespace:path, 省略命名空间则默认 minecraft)。改完回车或失焦生效, 可撤销。";
+  name.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); name.blur(); } });
+  name.addEventListener("change", () => {
+    const entry = S[sec][key];
+    const to = name.value.trim();
+    if (!to) { toast(`${label} 的路径不能为空`); updateResName(sec, key); return; }
+    if (to === entry.path) return;
+    const from = entry.path;
+    // 只换路径不动 blob: 内容还在内存里, 只是打包时落到另一个条目名。
+    applyRes(sec, key, entry.blob, to);
+    pushHistory({
+      label: `改资源路径 ${label}`,
+      undo: () => applyRes(sec, key, entry.blob, from),
+      redo: () => applyRes(sec, key, entry.blob, to),
+    });
+  });
   const rst = document.createElement("button");
   rst.className = "row-reset"; rst.textContent = "内置";
   rst.title = "恢复 mod 内置默认 (上传/导入路径一并还原, Ctrl+Z 可撤销)";
@@ -190,13 +210,47 @@ function addResRow(body, label, sec, key) {
   body.appendChild(row);
 }
 
+/* ---------- 内置资源缺失标记 ----------
+ * DEFAULT_DESIGN 里写着 client/fonts/meiryo-bold.ttf, 但那个 9.3MB 的字体没随工具
+ * 分发。面板上却显示成一条和别的资源一模一样的正常路径 —— 用户以为它会进包, 实际
+ * 导出时被 io.exportPack 静默跳过 (只留一条 toast), 游戏端 SkiaFont 回退到系统默认
+ * 字体, 日文块字形突变。路径写在表里 ≠ 文件真的在, 所以挨个探一次。 */
+const assetProbe = new Map(); // "sec/key" -> 内置文件是否可达
+export async function probeBundledAssets() {
+  const jobs = [];
+  const probed = [];   // 探过的绝对 URL: 门禁据此剔除自己造成的 404 噪声
+  for (const sec of ["textures", "svgs", "fonts"]) {
+    for (const key of Object.keys(S[sec])) {
+      if (S[sec][key].blob) continue;   // 用的是上传件, 内置在不在都无所谓
+      const id = sec + "/" + key;
+      const url = new URL(localAsset(S[sec][key].path), location.href).href;
+      probed.push(url);
+      jobs.push(
+        fetch(url, { method: "HEAD" })
+          .then(r => { assetProbe.set(id, r.ok); })
+          .catch(() => { assetProbe.set(id, false); })
+      );
+    }
+  }
+  await Promise.all(jobs);
+  updateResNames();
+  // 返回可序列化的普通对象 (Map 传不进 page.evaluate 的返回值)
+  return { checked: Object.fromEntries(assetProbe), probed };
+}
+
 function updateResName(sec, key) {
   const el = $(`rn_${sec}_${key}`);
   if (!el) return;
   const f = S[sec][key];
-  const has = !!(f.blob);
-  el.textContent = has ? "已上传: " + f.blob.name : f.path;
+  const has = !!f.blob;
+  // 正在编辑时不要回写 value —— 那会把用户敲到一半的字吞掉
+  if (document.activeElement !== el) el.value = f.path;
   el.classList.toggle("uploaded", has);
+  const missing = !has && assetProbe.get(sec + "/" + key) === false;
+  el.classList.toggle("missing", missing);
+  el.title = missing
+    ? `内置文件未随工具分发 (${localAsset(f.path)} 不可达): 导出时该条目会被跳过, 游戏端回退内置字体。改路径或上传自己的文件即可。`
+    : (has ? "已上传文件 (仅本次会话有效, 刷新后还原; 可撤销)" : "资源路径 (namespace:path, 省略命名空间则默认 minecraft)");
 }
 export function updateResNames() {
   for (const sec of ["textures", "svgs", "fonts"])

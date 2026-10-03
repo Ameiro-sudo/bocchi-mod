@@ -527,8 +527,15 @@ function dumpChrome(EXCLUDE) {
     await page.setViewport({ width: 1600, height: 900, deviceScaleFactor: 1 });
 
     const consoleMsgs = [];
-    page.on("console", (m) => { if (["error", "warning"].includes(m.type())) consoleMsgs.push(`[${m.type()}] ${m.text()}`); });
-    page.on("pageerror", (e) => consoleMsgs.push(`[pageerror] ${e.message}`));
+    // 先原样收着: 内置资源探针逐个 HEAD 一次, 已知缺失的 meiryo-bold.ttf 必然
+    // 404, Chrome 会记成一条 console error。等探针把「它到底请求了哪些 URL」交回来
+    // 之后, 再按 URL 精确剔除这几条 —— 凭 404 文本或路径正则去猜, 迟早会连带
+    // 吃掉一条真的错误, 而多一条无人认领的噪声只会让人不再看这行输出。
+    page.on("console", (m) => {
+      if (!["error", "warning"].includes(m.type())) return;
+      consoleMsgs.push({ type: m.type(), text: m.text(), url: (m.location() && m.location().url) || "" });
+    });
+    page.on("pageerror", (e) => consoleMsgs.push({ type: "pageerror", text: e.message, url: "" }));
 
     await page.goto(URL_BASE, { waitUntil: "networkidle2", timeout: 30000 });
     await page.evaluate(() => document.fonts.ready);
@@ -557,6 +564,12 @@ function dumpChrome(EXCLUDE) {
        先切回默认舞台再采, 这样外壳快照不依赖 STAGES 数组的末项是哪一个。 */
     await page.evaluate(() => document.getElementById("swMisayos").click());
     await new Promise(r => setTimeout(r, 900));
+    // 内置资源可达性探针是异步的 (HEAD 请求)。不等它落定就采快照, 差异会随机
+    // 出现又随机消失 —— 那是最坏的一种门禁故障: 它只在别人机器上红。
+    dump.assetProbe = await page.evaluate(() => globalThis.__bocchi.assetsReady);
+    // 按 URL 精确剔除探针自己造成的 404 (见 consoleMsgs 处的注释)
+    const probedUrls = new Set(dump.assetProbe.probed || []);
+    const consoleFiltered = consoleMsgs.filter(m => !(m.url && probedUrls.has(m.url)));
     dump.chrome = await page.evaluate(dumpChrome, EXCLUDE);
 
     /* 交互烟测: 选中立绘 -> 方向键微调 -> Esc 取消; 导出按钮存在。
@@ -599,6 +612,13 @@ function dumpChrome(EXCLUDE) {
       const u = document.getElementById("btnUndo"), r = document.getElementById("btnRedo");
       if (u.disabled) failures.push("烟测已压入撤销记录, 但 btnUndo 仍是 disabled (栈变化通知没接上)");
       if (!r.disabled) failures.push("重做栈为空, 但 btnRedo 未 disabled");
+      // 资源路径必须真的可编辑。Design.java 与 design.js 早就支持 namespace:path,
+      // 但面板上曾经是一个只读 span —— 能力齐备, 界面没给入口。
+      const pn = document.getElementById("rn_textures_bocchi");
+      if (!pn) failures.push("#rn_textures_bocchi 不存在");
+      else if (pn.tagName !== "INPUT") failures.push("资源路径不是可编辑输入框 (tag=" + pn.tagName + ")");
+      else if (!/^client\/textures\//.test(pn.value)) failures.push("资源路径初值不是内置默认路径: " + pn.value);
+
       // Esc 取消选中后状态栏必须回到舞台基线文案, 而不是空串
       const st = (document.getElementById("status").textContent || "").trim();
       if (!st) failures.push("Esc 取消选中后状态栏为空 (clearSel 未恢复舞台基线文案)");
@@ -606,6 +626,23 @@ function dumpChrome(EXCLUDE) {
       return { ok: failures.length === 0, failures, statusLen: st.length };
     });
     if (!uiProbe.ok) throw new Error("UI 不变量探针失败:\n  - " + uiProbe.failures.join("\n  - "));
+
+    /* 内置资源可达性: client/fonts/meiryo-bold.ttf 是已知缺失项 (9.3MB, 没随工具
+     * 分发)。面板必须把它标出来, 否则用户以为它会进包, 实际导出时被静默跳过,
+     * 游戏端回退默认字体、日文块字形突变, 而工具全程不吭声。
+     * 这条断言同时也是对「探针没跑完就采快照」的防御: 若 assetProbe 是空的,
+     * 说明上面那句 await 没等住。 */
+    const missingKeys = Object.keys(dump.assetProbe.checked || {}).filter(k => dump.assetProbe.checked[k] === false);
+    if (!missingKeys.length)
+      throw new Error("内置资源探针没跑出任何结果 (assetsReady 未落定?), 快照会采到半成品状态");
+    if (!missingKeys.includes("fonts/meiryo-bold"))
+      throw new Error("内置资源探针结果与已知事实矛盾: 应缺失的 fonts/meiryo-bold.ttf 反而可达");
+    const markedMissing = await page.evaluate(
+      () => Array.from(document.querySelectorAll(".res-row .r-name.missing")).map(el => el.id));
+    if (!markedMissing.length)
+      throw new Error("有内置资源缺失, 但面板上一行都没标 (missing 类没落地): " + missingKeys.join(", "));
+    if (!markedMissing.includes("rn_fonts_meiryo-bold"))
+      throw new Error("meiryo-bold.ttf 未被标记为缺失, 实际标记了: " + markedMissing.join(", "));
 
     dump.smoke = {
       ...smoke,
@@ -744,11 +781,11 @@ function dumpChrome(EXCLUDE) {
       throw new Error("撤销栈探针未通过");
     }
 
-    dump.console = consoleMsgs;
+    dump.console = consoleFiltered.map(m => `[${m.type}] ${m.text}`);
     fs.mkdirSync(path.dirname(OUT), { recursive: true });
     fs.writeFileSync(OUT, JSON.stringify(dump, null, 1));
     console.log("dumped:", OUT);
-    console.log("console warn/error:", consoleMsgs.length ? consoleMsgs.join(" | ") : "(none)");
+    console.log("console warn/error:", consoleFiltered.length ? consoleFiltered.map(m => `[${m.type}] ${m.text}`).join(" | ") : "(none)");
     console.log("smoke:", JSON.stringify(dump.smoke));
     console.log("uiProbe: ok");
     console.log("sliderProbe:", JSON.stringify(sliderProbe));
