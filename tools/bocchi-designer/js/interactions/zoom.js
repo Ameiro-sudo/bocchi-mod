@@ -7,6 +7,7 @@
 import { $, state } from "../core.js";
 import { saveState } from "../design.js";
 import { W, H } from "../facts.js";
+import { setScale } from "../bench.js";
 
 /* 画框自身的 padding + border, 两个方向。它同时决定「可用空间」和「画框自身尺寸」,
  * 两边必须用同一个数 —— 早先 fitStage 只扣 padding、applyScale 算尺寸时却把 border
@@ -38,7 +39,10 @@ export function fitStage() {
   const availH = wrap.clientHeight - px(wrap, "paddingTop") - px(wrap, "paddingBottom") - by
     - siblings.reduce((h, c) => h + c.getBoundingClientRect().height, 0)
     - (parseFloat(cs.rowGap) || 0) * siblings.length;
-  applyScale(Math.min(availW / W, availH / H), true);
+  /* 夹一下下界: 可用空间可能被同级元素吃光 (窄屏下读数条换行会占掉大半屏高),
+   * 这时 Math.min 会算出 0 或负数 —— scale(负数) 会把画布左右翻转, 比画不下更难
+   * 解释。留一个 2% 的下界: 画布小到看不清, 但方向和位置仍然是对的。 */
+  applyScale(Math.max(0.02, Math.min(availW / W, availH / H)), true);
 }
 function applyScale(scale, fromFit) {
   $("stageScale").style.transform = `scale(${scale})`;
@@ -51,7 +55,12 @@ function applyScale(scale, fromFit) {
     const { bx, by } = frameChrome(frame);
     frame.style.width = (W * scale + bx) + "px";
     frame.style.height = (H * scale + by) + "px";
+    // 标尺轨是 frame 的直接子元素, 不随 stageScale 缩放; 把真实缩放系数以无单位
+    // 自定义属性交给 CSS, 刻度间距 = 舞台坐标间距 × 缩放, 于是在任何缩放级别下
+    // 刻度都对得上画布像素。这是 fitStage 与样式之间唯一的耦合点。
+    frame.style.setProperty("--bench-scale", scale);
   }
+  setScale(scale, !!fromFit);
   const buttons = document.querySelectorAll(".seg button[data-zoom]");
   for (const b of buttons) b.classList.toggle("on", b.dataset.zoom == (fromFit ? "0" : state.zoom));
 }

@@ -40,7 +40,15 @@
 <div class="layout">
   <div class="preview-wrap">
     <div id="stageFrame">
-    <div id="stageScale">
+      <div class="rail rail-t" aria-hidden="true">
+        <b style="--p:0">0</b><b style="--p:160">160</b><b style="--p:320">320</b><b style="--p:480">480</b>
+        <b style="--p:640">640</b><b style="--p:800">800</b><b style="--p:960">960</b><b style="--p:1120">1120</b>
+        <b style="--p:1280">1280</b>
+      </div>
+      <div class="rail rail-b" aria-hidden="true"></div>
+      <div class="rail rail-l" aria-hidden="true"><b style="--p:0">0</b><b style="--p:360">360</b><b style="--p:720">720</b></div>
+      <div class="rail rail-r" aria-hidden="true"></div>
+      <div id="stageScale">
       <div class="stage" id="stage">
         <div class="splash-bg" id="splashStage" style="display:none">
           <div class="splash-logo" id="splashLogo"><img src="assets/textures/logo.png" alt=""></div>
@@ -137,12 +145,26 @@
         <i class="h e" data-h="e"></i><i class="h se" data-h="se"></i><i class="h s" data-h="s"></i>
         <i class="h sw" data-h="sw"></i><i class="h w" data-h="w"></i>
       </div>
+      </div>
     </div>
-    </div>
-    <div class="status" id="status">主菜单（misayos）1:1 预览 · 1280×720 设计分辨率</div>
-    <div class="stage-keys" id="stageKeys" hidden>
-      <kbd>拖拽</kbd>移动 · <kbd>方向键</kbd>微调 1px · <kbd>Shift</kbd>+方向键 10px ·
-      <kbd>双击标签</kbd>复位该项 · <kbd>Esc</kbd>取消选中
+    <div class="bench-bar">
+      <div class="bench-main">
+        <div class="status" id="status">主菜单（misayos）1:1 预览 · 1280×720 设计分辨率</div>
+        <div class="stage-keys" id="stageKeys" hidden>
+          <kbd>拖拽</kbd>移动 · <kbd>方向键</kbd>微调 1px · <kbd>Shift</kbd>+方向键 10px ·
+          <kbd>双击标签</kbd>复位该项 · <kbd>Esc</kbd>取消选中
+        </div>
+      </div>
+      <div class="bench-readout" id="benchReadout" aria-live="off">
+        <span class="ro"><span class="ro-key">X</span><span class="ro-val dim" id="roCursorX">—</span></span>
+        <span class="ro"><span class="ro-key">Y</span><span class="ro-val dim" id="roCursorY">—</span></span>
+        <span class="ro-sep"></span>
+        <span class="ro"><span class="ro-key">选中</span><span class="ro-val dim" id="roSelLabel">无</span></span>
+        <span class="ro"><span class="ro-key">W×H</span><span class="ro-val dim" id="roSelSize">—</span></span>
+        <span class="ro"><span class="ro-key">@</span><span class="ro-val dim" id="roSelPos">—</span></span>
+        <span class="ro-sep"></span>
+        <span class="ro"><span class="ro-key">缩放</span><span class="ro-val" id="roScale">100%</span></span>
+      </div>
     </div>
   </div>
   <div class="controls" id="controls"></div>

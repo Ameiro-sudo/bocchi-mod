@@ -23,6 +23,7 @@ import { currentStage } from "./interactions/stage-state.js";
 import { replay } from "./interactions/animation.js";
 import { fitStage, bindZoom } from "./interactions/zoom.js";
 import { hooks, updateSelBox, bindSelectDrag } from "./interactions/select-drag.js";
+import { bindBench } from "./bench.js";
 import { FONT_SET_NAME, loadUploadedFonts } from "./fonts.js";
 import { S } from "./design.js";
 import { undo as undoHistory, redo as redoHistory, stats as historyStats, push as pushHistory, onStackChange, canUndo, canRedo } from "./history.js";
@@ -83,6 +84,7 @@ function boot() {
   setAfterRelayout(updateSelBox);
   bindZoom();
   bindSelectDrag();
+  bindBench();
 
   // 舞台切换
   $("swSplash").addEventListener("click", () => showStage("splash"));

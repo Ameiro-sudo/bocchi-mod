@@ -9,6 +9,7 @@ import { state } from "../core.js";
 import { beginGesture, endGesture } from "../history.js";
 import { setOV, snapshotOV, pushOVGesture } from "../ov.js";
 import { setStatus } from "../status.js";
+import { setSelection, clearSelection } from "../bench.js";
 import { current, selKey, drag, setSelKey, setDrag, stageStatus } from "./stage-state.js";
 
 /** 舞台双击文本时定位输入框的回调, 由 main.js 接线为 panels.focusTextInput */
@@ -59,7 +60,10 @@ function cssRect(el) {
 export function updateSelBox() {
   const box = $("selBox");
   if (!drag) box.style.display = current === "misayos" && selKey ? "block" : "none";
-  if (current !== "misayos" || !selKey) return;
+  if (current !== "misayos" || !selKey) {
+    clearSelection();
+    return;
+  }
   let r;
   const cfg = SEL[selKey];
   if (cfg.rectIds) {
@@ -73,6 +77,8 @@ export function updateSelBox() {
     r = cssRect($(selKey));
   }
   box.style.cssText = `display:block;left:${r.left - 2}px;top:${r.top - 2}px;width:${r.width + 4}px;height:${r.height + 4}px;`;
+  /* 校准台读数: 面板滑杆写的是意图, 这里报的是实测 —— 拖动/缩放过程中实时跟着变。 */
+  setSelection(cfg.label, r.width, r.height, r.left, r.top);
   setStatus(
     `<span class="sel-chip">${cfg.label}</span> 已选中 · 拖动移动 · 拖角缩放 · 方向键微调 (Shift×10) · Esc 取消`);
 }
@@ -110,6 +116,7 @@ export function resetSelection() {
   setSelKey(null);
   setDrag(null);
   $("selBox").style.display = "none";
+  clearSelection();
 }
 
 /** 当前 OV 值视图 (缺省 0), 供键盘微调当"绝对起点"使用 */
