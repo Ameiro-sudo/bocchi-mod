@@ -1960,24 +1960,24 @@
  "console": [],
  "assetProbe": {
   "checked": {
+   "textures/bocchi": true,
    "textures/gotoh": true,
    "textures/gotoh_image_1": true,
    "textures/gotoh_image_2": true,
-   "textures/logo": true,
    "textures/bocchi_loading": true,
-   "textures/bocchi": true,
+   "textures/logo": true,
    "svgs/single": true,
    "svgs/multi": true,
    "svgs/option": true,
    "svgs/lang": true,
-   "svgs/theme": true,
    "svgs/quit": true,
-   "fonts/meiryo-bold": false,
+   "svgs/theme": true,
    "fonts/Radikal-Black": true,
+   "fonts/meiryo-bold": false,
    "fonts/SourceHanSansSC-Light": true,
-   "fonts/Radikal-Regular": true,
    "fonts/SourceHanSansSC-Heavy": true,
    "fonts/SourceHanSansSC-Regular": true,
+   "fonts/Radikal-Regular": true,
    "fonts/SourceHanSansSC-Normal": true,
    "fonts/SourceHanSansSC-Bold": true
   },
@@ -2119,6 +2119,11 @@
      }
     },
     {
+     "path": "5.0",
+     "tag": "KBD",
+     "text": "Ctrl Z"
+    },
+    {
      "path": "6",
      "tag": "BUTTON",
      "id": "btnRedo",
@@ -2128,6 +2133,11 @@
       "type": null,
       "disabled": true
      }
+    },
+    {
+     "path": "6.0",
+     "tag": "KBD",
+     "text": "Ctrl Y"
     },
     {
      "path": "7",

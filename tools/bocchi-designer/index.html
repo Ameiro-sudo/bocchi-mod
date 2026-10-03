@@ -25,8 +25,8 @@
   </nav>
   <span class="sp"></span>
   <span class="dirty-chip" id="dirtyChip" hidden title="与 mod 内置默认值不同的项数">已改 <b id="dirtyCount">0</b> 项</span>
-  <button class="btn-ghost" id="btnUndo" title="撤销 (Ctrl+Z)">↶ 撤销</button>
-  <button class="btn-ghost" id="btnRedo" title="重做 (Ctrl+Y / Ctrl+Shift+Z)">↷ 重做</button>
+  <button class="btn-ghost" id="btnUndo" title="撤销上一步 (Ctrl+Z)">↶ 撤销<kbd>Ctrl Z</kbd></button>
+  <button class="btn-ghost" id="btnRedo" title="重做 (Ctrl+Y / Ctrl+Shift+Z)">↷ 重做<kbd>Ctrl Y</kbd></button>
   <span class="h-sep"></span>
   <button class="btn-ghost" id="btnReplay">重播动画</button>
   <span class="seg" title="预览缩放: 适应窗口 / 100% / 200%">
@@ -140,6 +140,10 @@
     </div>
     </div>
     <div class="status" id="status">主菜单（misayos）1:1 预览 · 1280×720 设计分辨率</div>
+    <div class="stage-keys" id="stageKeys" hidden>
+      <kbd>拖拽</kbd>移动 · <kbd>方向键</kbd>微调 1px · <kbd>Shift</kbd>+方向键 10px ·
+      <kbd>双击标签</kbd>复位该项 · <kbd>Esc</kbd>取消选中
+    </div>
   </div>
   <div class="controls" id="controls"></div>
 </div>

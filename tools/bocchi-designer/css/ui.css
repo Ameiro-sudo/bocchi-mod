@@ -141,6 +141,17 @@ header .sub {
 .btn-pri:active { transform: translateY(1px); }
 .btn-ghost { background: transparent; color: var(--ui-ink-subtle); border: 1px solid transparent; }
 .btn-ghost:hover { color: var(--ui-ink); background: rgba(255, 255, 255, .04); }
+/* 快捷键提示: 此前只有 title 里的括号注记, 不 hover 就看不见 —— 工具栏上摆着的
+   快捷键和页面上任何一处说明都对不上号, 等于没写。做成常驻小键帽, 不用鼠标去
+   试探。 */
+.btn-ghost kbd, .btn-pri kbd {
+  margin-left: 8px; padding: 1px 5px; border-radius: 5px;
+  font-family: var(--font-mono); font-size: 10px; font-weight: 500; line-height: 15px;
+  color: var(--ui-ink-tertiary); background: rgba(255, 255, 255, .05);
+  border: 1px solid var(--ui-hair); vertical-align: 1px;
+  user-select: none; pointer-events: none;
+}
+.btn-ghost:hover kbd, .btn-pri:hover kbd { color: var(--ui-ink-subtle); }
 .tab:focus-visible, .btn-pri:focus-visible, .btn-ghost:focus-visible,
 .seg button:focus-visible, .sec-tool:focus-visible {
   outline: 2px solid var(--ui-pink); outline-offset: 2px;
@@ -203,6 +214,20 @@ header .sub {
 .status .sel-chip {
   display: inline-block; background: var(--ui-primary-soft); color: var(--ui-pink-hover);
   border-radius: 9999px; padding: 1px 10px; margin: 0 4px; font-size: 11px; font-weight: 600;
+}
+/* 舞台手势提示条: 方向键微调 / Shift 加速 / 双击复位 / Esc 取消选中, 这四条此前
+   只存在于交互代码里, 页面上一个字都没有。hidden 时不占布局高度 (fitStage 会把
+   同级元素高度算进可用区, 留着空盒子会让「适应」少算一截)。 */
+.stage-keys {
+  font-size: 11px; color: var(--ui-ink-tertiary); text-align: center;
+  max-width: 680px; line-height: 1.9; letter-spacing: .2px;
+}
+.stage-keys[hidden] { display: none; }
+.stage-keys kbd {
+  margin: 0 1px; padding: 1px 5px; border-radius: 5px;
+  font-family: var(--font-mono); font-size: 10px; font-weight: 500; line-height: 15px;
+  color: var(--ui-ink-subtle); background: rgba(255, 255, 255, .05);
+  border: 1px solid var(--ui-hair); user-select: none;
 }
 
 /* ===== 控制面板: 信号轨 + 通道 LED ===== */

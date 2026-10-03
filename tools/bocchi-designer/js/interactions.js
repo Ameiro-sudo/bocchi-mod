@@ -43,6 +43,13 @@ function showStage(name) {
   $("swMisayos").classList.toggle("active", name === "misayos");
   $("swPoulsen").classList.toggle("active", name === "poulsen");
   setStatus(stageStatus());
+  // 舞台操作提示只在 misayos 出现 —— 方向键微调/双击复位这些手势只在选中可调元素
+  // 后才有意义, 在 splash/poulsen 上摆着一行做不到的说明比不摆更糟。
+  $("stageKeys").hidden = name !== "misayos";
+  // 提示条显隐会改变画框以外可用的高度, 「适应」模式必须重算 —— 否则从加载页切回
+  // misayos 后, 舞台仍按「没有提示条」的那个高度摆, 底下会被切掉一截, 而用户看到的
+  // 是「适应」按钮亮着, 却什么都不适应。
+  if (state.zoom === 0) fitStage();
   if (name === "splash") startSplashDemo();
   else { clearInterval(splashTimer); replay(name); } // L6: 离开加载页清理演示定时器
   if (name === "misayos") startAmbient();
